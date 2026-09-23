@@ -2,6 +2,7 @@
 # Запуск RentBox одной командой.
 #
 #   ./run.sh          поднять сервис и показать, что делать дальше
+#   ./run.sh all      поднять backend и дашборд вместе
 #   ./run.sh demo     поднять и сразу посчитать прогноз на 48 часов
 #   ./run.sh check    только проверить окружение, ничего не запускать
 #   ./run.sh stop     остановить
@@ -152,7 +153,7 @@ start_local() {
     info "устанавливаю зависимости…"
     UV_CACHE_DIR="$PWD/.tools/uv-cache" UV_PYTHON_INSTALL_DIR="$PWD/.tools/python" \
         "$uv_bin" sync --project backend --frozen >/dev/null
-    set -a; . ./.env; set +a
+    # Settings reads .env as dotenv; sourcing it as shell would corrupt JSON values.
     mkdir -p .run
     backend/.venv/bin/uvicorn src.api:app --host 127.0.0.1 --port "$PORT" \
         > .run/backend.log 2>&1 &
@@ -221,6 +222,51 @@ demo() {
     info "Метрики и ограничения:  artifacts/ensemble/report.md"
 }
 
+# --- дашборд ----------------------------------------------------------------
+
+WEB_PORT="${WEB_PORT:-3000}"
+
+start_web() {
+    command -v npm >/dev/null 2>&1 || die "нужен Node.js 20+" "Скачать: https://nodejs.org"
+
+    if [ ! -d node_modules ]; then
+        bold "Ставлю зависимости дашборда (один раз, несколько минут)"
+        npm install --no-audit --no-fund >/dev/null
+    fi
+
+    bold "Запуск дашборда (порт $WEB_PORT)"
+    mkdir -p .run
+    # Адрес backend передаётся фронту; CORS на бэке уже разрешает localhost:3000.
+    NEXT_PUBLIC_API_URL="http://127.0.0.1:$PORT/api" \
+        npm run dev --workspace web -- --port "$WEB_PORT" > .run/web.log 2>&1 &
+    echo $! > .run/web.pid
+
+    printf '  ожидаю дашборд'
+    for _ in $(seq 1 45); do
+        if curl -s --max-time 2 -o /dev/null "http://127.0.0.1:$WEB_PORT"; then
+            printf '\n'
+            green "  ✓ дашборд отвечает"
+            return 0
+        fi
+        printf '.'
+        sleep 2
+    done
+    printf '\n'
+    die "дашборд не поднялся за 90 секунд" "Журнал: tail -50 .run/web.log"
+}
+
+all() {
+    start
+    printf '\n'
+    start_web
+    printf '\n'
+    bold "Оба сервиса подняты"
+    info "Дашборд:        http://127.0.0.1:$WEB_PORT"
+    info "API:            http://127.0.0.1:$PORT/api"
+    info "Документация:   http://127.0.0.1:$PORT/docs"
+    info "Остановить:     ./run.sh stop"
+}
+
 # --- остановка --------------------------------------------------------------
 
 stop() {
@@ -228,10 +274,12 @@ stop() {
     if [ -n "$COMPOSE" ] && docker info >/dev/null 2>&1; then
         $COMPOSE down 2>/dev/null || true
     fi
-    if [ -f .run/backend.pid ]; then
-        kill "$(cat .run/backend.pid)" 2>/dev/null || true
-        rm -f .run/backend.pid
-    fi
+    for name in backend web; do
+        if [ -f ".run/$name.pid" ]; then
+            kill "$(cat ".run/$name.pid")" 2>/dev/null || true
+            rm -f ".run/$name.pid"
+        fi
+    done
     green "Остановлено"
 }
 
@@ -248,9 +296,10 @@ logs() {
 
 case "${1:-start}" in
     start) start ;;
+    all)   all ;;
     demo)  demo ;;
     check) check; green "Окружение готово, режим: $MODE" ;;
     stop)  stop ;;
     logs)  logs ;;
-    *)     die "неизвестная команда: $1" "Доступно: start, demo, check, stop, logs" ;;
+    *)     die "неизвестная команда: $1" "Доступно: start, all, demo, check, stop, logs" ;;
 esac

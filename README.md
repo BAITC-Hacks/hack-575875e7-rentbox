@@ -33,6 +33,7 @@
 | Команда | Что делает |
 |---|---|
 | `./run.sh` | поднять сервис и показать адреса |
+| `./run.sh all` | поднять backend и дашборд вместе |
 | `./run.sh demo` | поднять и сразу посчитать прогноз |
 | `./run.sh check` | только проверить окружение, ничего не запуская |
 | `./run.sh logs` | последние 50 строк журнала |
@@ -66,6 +67,7 @@ Dashboard Windcast на Next.js готов и пока работает на с�
 - [Журнал изменений и интерфейсы для совместной работы](CHANGELOG.md)
 - [План работы и распределение задач](docs/PLAN.md)
 - [Контракт API для фронта](docs/API.md), [OpenAPI](backend/openapi.json)
+- [Подключение дашборда к backend](docs/frontend-integration.md) и [живые примеры ответов](docs/samples/)
 - [Устройство backend](backend/README.md)
 - [Интерфейс подключения агента](docs/backend/agent-integration.md)
 - [Результаты проверки данных](reports/data-audit.md)
