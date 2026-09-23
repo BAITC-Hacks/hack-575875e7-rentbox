@@ -1,4 +1,4 @@
-# API для фронта — контракт v0
+# API для фронта — контракт v0.3
 
 **Статус:** маршруты реализованы в `backend/app/`, точка входа — `src.api:app`.
 Прогнозирование требует подключения реального Python-модуля агента и подтверждения
@@ -164,15 +164,44 @@
 
 - `turbine_id`;
 - `storage_run_id`: числовой `run_id` записи этой турбины в DuckDB;
-- `points`: массив из 24/48 объектов `valid_time`, `lead_hour`, `predicted_power`;
-- `weather`: `provider`, `model`, `initialization_time`, `available_at`,
-  `availability_basis`, `retrieved_at`, `sha256`.
+- `points`: массив из 24/48 объектов `valid_time`, `lead_hour`, `predicted_power`,
+  `weather_inputs`;
+- `weather.sources`: каталог всех использованных погодных ответов для этой серии.
 
-`available_at` — время доступности погодного выпуска, установленное по метаданным
-источника или по явно указанной консервативной задержке публикации.
-`availability_basis` сообщает, какой способ применён. `retrieved_at` показывает
-фактическое время скачивания архива сегодня и может быть позднее `as_of`.
-Ключевая проверка: `available_at <= as_of`.
+Источник содержит `source_id`, `provider`, `model`, `product`, `initialization_time`,
+`available_at`, `availability_basis`, `retrieved_at`, `sha256`.
+`product` различает `single_run` и `previous_runs`.
+
+У каждого часа `weather_inputs` — непустой список ссылок `source_id` на каталог,
+с полями `forecast_offset_days` и `available_at_estimate`. Так сохраняются отдельно
+GFS/ICON, разные месячные ответы и offsets каждого прогнозного часа.
+
+Для `single_run` даты выпуска и доступности обязательны, проверяется
+`initialization_time <= available_at <= as_of` и `available_at <= retrieved_at`.
+У ссылки на такой источник `forecast_offset_days` и `available_at_estimate` — `null`.
+
+Для `previous_runs` `initialization_time` и `available_at` всегда `null`.
+У ссылки обязательны `forecast_offset_days` (целое 1…7) и `available_at_estimate`.
+Поддерживаемая политика `availability_basis = previous_runs_offset_plus_12h_v1`:
+
+```text
+available_at_estimate = valid_time - forecast_offset_days * 24h + 12h
+available_at_estimate <= as_of
+```
+
+Backend заново вычисляет оценку и отклоняет несовпадение, неизвестную политику,
+неизвестные/повторные ссылки и повтор модели в одном прогнозном часу.
+Каждый объявленный источник должен использоваться хотя бы одним часом.
+`retrieved_at` — фактическое скачивание архива, оно может быть позже `as_of`.
+
+Политика +12 часов остаётся допущением команды. Backend добавляет предупреждение
+в журнал, `warnings` задания и `analysis.warnings` результата. Проверка этой оценки
+не доказывает фактическое время публикации. Пример для фронта и точное отображение:
+[weather-provenance.md](backend/weather-provenance.md).
+
+Старые сохранённые ответы с единственным объектом `weather` преобразуются при чтении
+в `weather.sources` и ссылки у точек. JSON в БД не переписывается. Фронт должен
+использовать структуру v0.3 из OpenAPI.
 
 Интервалы неопределённости и фактические значения февраля в первую версию
 контракта не входят. Их нельзя рисовать как доступные данные без расчёта/источника.
@@ -180,8 +209,18 @@
 CSV: UTF-8, одна строка на турбину и прогнозный час:
 
 ```text
-run_id,as_of,turbine_id,valid_time,lead_hour,predicted_power,weather_initialization_time,weather_available_at,model_version
+run_id,as_of,turbine_id,valid_time,lead_hour,predicted_power,weather_initialization_time,weather_available_at,model_version,weather_available_at_estimate,weather_availability_basis,weather_inputs_json
 ```
+
+Первые девять колонок сохранены. `weather_initialization_time` заполнена только
+для единственного источника Single Run у данного часа. `weather_available_at`
+содержит максимальное известное время доступности, если оно известно для всех
+входов; при наличии Previous Runs остаётся пустой. Если есть оценки,
+`weather_available_at_estimate` содержит максимум времён доступности всех входов
+(точных и оценочных). Неизвестные даты — пустые ячейки.
+`weather_inputs_json` хранит JSON-массив полных метаданных всех источников данного
+часа вместе с offsets и оценками, включая хеши. Отдельные модели не дублируют
+строки мощности в CSV. Формат CSV определяется названиями колонок.
 
 Это внутренний формат экспорта; при получении официального шаблона сдачи
 добавляется преобразование в него.
@@ -235,6 +274,10 @@ run_id,as_of,turbine_id,valid_time,lead_hour,predicted_power,weather_initializat
 Текущая схема использует `TIMESTAMP` без зоны. Серверный адаптер нормализует
 даты в UTC перед записью и возвращает `Z` при сериализации. Исходную временную
 зону CSV всё равно требуется подтвердить отдельно.
+
+Для Previous Runs и набора из нескольких источников `forecast_runs.weather_run`
+равен SQL `NULL`. Полное происхождение хранится в `api_runs.result`; поле `note`
+содержит строковый API run_id. Схема `src/storage.py` не изменяется.
 
 Для будущего графика ревизий используется `store.revisions()`. Метрики из
 `store.accuracy_by_lead()` относятся к последним прогнозам на каждый час;

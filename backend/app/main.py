@@ -44,7 +44,7 @@ def create_app(
 
     application = FastAPI(
         title=settings.app_name,
-        version="0.2.0",
+        version="0.3.0",
         description=(
             "API дашборда ВЭС: исторические прогнозы, состояние агента и CSV. "
             "Расчёты доступны после подключения агента и подтверждения настроек времени."

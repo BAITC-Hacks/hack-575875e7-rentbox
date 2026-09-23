@@ -3,7 +3,7 @@
   "info": {
     "title": "RentBox Energy API",
     "description": "API дашборда ВЭС: исторические прогнозы, состояние агента и CSV. Расчёты доступны после подключения агента и подтверждения настроек времени.",
-    "version": "0.2.0"
+    "version": "0.3.0"
   },
   "paths": {
     "/api/health": {
@@ -989,6 +989,15 @@
             "maximum": 1.0,
             "minimum": 0.0,
             "title": "Predicted Power"
+          },
+          "weather_inputs": {
+            "items": {
+              "$ref": "#/components/schemas/WeatherInput"
+            },
+            "type": "array",
+            "maxItems": 16,
+            "minItems": 1,
+            "title": "Weather Inputs"
           }
         },
         "additionalProperties": false,
@@ -996,7 +1005,8 @@
         "required": [
           "valid_time",
           "lead_hour",
-          "predicted_power"
+          "predicted_power",
+          "weather_inputs"
         ],
         "title": "ForecastPoint"
       },
@@ -1298,6 +1308,67 @@
         ],
         "title": "HealthResponse"
       },
+      "PreviousRunsWeatherSource": {
+        "properties": {
+          "source_id": {
+            "type": "string",
+            "maxLength": 160,
+            "minLength": 1,
+            "pattern": "^[a-zA-Z0-9_.:-]+$",
+            "title": "Source Id"
+          },
+          "provider": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Provider"
+          },
+          "model": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Model"
+          },
+          "retrieved_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Retrieved At"
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$",
+            "title": "Sha256"
+          },
+          "product": {
+            "type": "string",
+            "const": "previous_runs",
+            "title": "Product",
+            "default": "previous_runs"
+          },
+          "initialization_time": {
+            "type": "null",
+            "title": "Initialization Time"
+          },
+          "available_at": {
+            "type": "null",
+            "title": "Available At"
+          },
+          "availability_basis": {
+            "type": "string",
+            "const": "previous_runs_offset_plus_12h_v1",
+            "title": "Availability Basis",
+            "default": "previous_runs_offset_plus_12h_v1"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "source_id",
+          "provider",
+          "model",
+          "retrieved_at",
+          "sha256"
+        ],
+        "title": "PreviousRunsWeatherSource"
+      },
       "ReplayAccepted": {
         "properties": {
           "replay_id": {
@@ -1442,6 +1513,71 @@
           "run_id"
         ],
         "title": "RunAccepted"
+      },
+      "SingleRunWeatherSource": {
+        "properties": {
+          "source_id": {
+            "type": "string",
+            "maxLength": 160,
+            "minLength": 1,
+            "pattern": "^[a-zA-Z0-9_.:-]+$",
+            "title": "Source Id"
+          },
+          "provider": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Provider"
+          },
+          "model": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Model"
+          },
+          "retrieved_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Retrieved At"
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$",
+            "title": "Sha256"
+          },
+          "product": {
+            "type": "string",
+            "const": "single_run",
+            "title": "Product",
+            "default": "single_run"
+          },
+          "initialization_time": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Initialization Time"
+          },
+          "available_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Available At"
+          },
+          "availability_basis": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Availability Basis"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "source_id",
+          "provider",
+          "model",
+          "retrieved_at",
+          "sha256",
+          "initialization_time",
+          "available_at",
+          "availability_basis"
+        ],
+        "title": "SingleRunWeatherSource"
       },
       "TimeConfiguration": {
         "properties": {
@@ -1629,54 +1765,78 @@
         ],
         "title": "TurbineRead"
       },
-      "WeatherProvenance": {
+      "WeatherInput": {
         "properties": {
-          "provider": {
+          "source_id": {
             "type": "string",
+            "maxLength": 160,
             "minLength": 1,
-            "title": "Provider"
+            "pattern": "^[a-zA-Z0-9_.:-]+$",
+            "title": "Source Id"
           },
-          "model": {
-            "type": "string",
-            "minLength": 1,
-            "title": "Model"
+          "forecast_offset_days": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 7.0,
+                "minimum": 1.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Forecast Offset Days"
           },
-          "initialization_time": {
-            "type": "string",
-            "format": "date-time",
-            "title": "Initialization Time"
-          },
-          "available_at": {
-            "type": "string",
-            "format": "date-time",
-            "title": "Available At"
-          },
-          "availability_basis": {
-            "type": "string",
-            "minLength": 1,
-            "title": "Availability Basis"
-          },
-          "retrieved_at": {
-            "type": "string",
-            "format": "date-time",
-            "title": "Retrieved At"
-          },
-          "sha256": {
-            "type": "string",
-            "pattern": "^[a-f0-9]{64}$",
-            "title": "Sha256"
+          "available_at_estimate": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Available At Estimate"
           }
         },
         "additionalProperties": false,
         "type": "object",
         "required": [
-          "provider",
-          "model",
-          "initialization_time",
-          "available_at",
-          "availability_basis",
-          "retrieved_at",
-          "sha256"
+          "source_id"
+        ],
+        "title": "WeatherInput"
+      },
+      "WeatherProvenance": {
+        "properties": {
+          "sources": {
+            "items": {
+              "oneOf": [
+                {
+                  "$ref": "#/components/schemas/SingleRunWeatherSource"
+                },
+                {
+                  "$ref": "#/components/schemas/PreviousRunsWeatherSource"
+                }
+              ],
+              "discriminator": {
+                "propertyName": "product",
+                "mapping": {
+                  "previous_runs": "#/components/schemas/PreviousRunsWeatherSource",
+                  "single_run": "#/components/schemas/SingleRunWeatherSource"
+                }
+              }
+            },
+            "type": "array",
+            "maxItems": 128,
+            "minItems": 1,
+            "title": "Sources"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "sources"
         ],
         "title": "WeatherProvenance"
       }

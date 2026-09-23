@@ -4,7 +4,7 @@ import io
 import json
 import logging
 from concurrent.futures import ThreadPoolExecutor
-from datetime import timedelta
+from datetime import datetime, timedelta
 from threading import Event, RLock
 from uuid import uuid4
 
@@ -25,10 +25,15 @@ from backend.app.schemas.forecast import (
     ReplayRead,
     RunAccepted,
 )
+from backend.app.schemas.weather import ESTIMATED_AVAILABILITY_WARNING
 from backend.app.services.data import DataService
 from backend.app.services.turbines import TurbineService
 
 logger = logging.getLogger(__name__)
+
+
+def iso_utc(value: datetime | None) -> str | None:
+    return value.isoformat().replace("+00:00", "Z") if value is not None else None
 
 
 class ForecastService:
@@ -178,10 +183,21 @@ class ForecastService:
                 AgentUpdate(
                     stage="review",
                     progress=0.98,
-                    message="Проверены горизонт, диапазон мощности и время доступности данных.",
+                    message="Проверены горизонт, мощность и временные ограничения по метаданным.",
                     tool="backend",
                 ),
             )
+            if any(series.weather.uses_estimates() for series in output.series):
+                self._emit(
+                    run_id,
+                    AgentUpdate(
+                        stage="review",
+                        progress=0.98,
+                        level="warning",
+                        message=ESTIMATED_AVAILABILITY_WARNING,
+                        tool="weather_availability",
+                    ),
+                )
             self.store.complete(run_id, output, previous)
         except AppError as exc:
             self.store.fail(run_id, exc.error)
@@ -222,7 +238,7 @@ class ForecastService:
             self.store.update_replay(replay_id, finished=True)
 
     def csv(self, run_id: str) -> str:
-        result = self.store.get_result(run_id).model_dump(mode="json")
+        result = self.store.get_result(run_id)
         stream = io.StringIO(newline="")
         writer = csv.writer(stream, lineterminator="\n")
         writer.writerow(
@@ -236,21 +252,51 @@ class ForecastService:
                 "weather_initialization_time",
                 "weather_available_at",
                 "model_version",
+                "weather_available_at_estimate",
+                "weather_availability_basis",
+                "weather_inputs_json",
             ]
         )
-        for series in result["series"]:
-            for point in series["points"]:
+        for series in result.series:
+            sources = series.weather.by_id()
+            for point in series.points:
+                inputs = [
+                    sources[item.source_id].model_dump(mode="json") | item.model_dump(mode="json")
+                    for item in point.weather_inputs
+                ]
+                exact_times = [
+                    sources[item.source_id].available_at for item in point.weather_inputs
+                ]
+                cutoffs = [
+                    sources[item.source_id].available_at or item.available_at_estimate
+                    for item in point.weather_inputs
+                ]
+                estimated = any(
+                    item.available_at_estimate is not None for item in point.weather_inputs
+                )
+                initialization = (
+                    sources[point.weather_inputs[0].source_id].initialization_time
+                    if len(point.weather_inputs) == 1
+                    else None
+                )
+                available_at = max(exact_times) if all(t is not None for t in exact_times) else None
+                estimated_at = max(cutoffs) if estimated else None
                 writer.writerow(
                     [
-                        result["run_id"],
-                        result["as_of"],
-                        series["turbine_id"],
-                        point["valid_time"],
-                        point["lead_hour"],
-                        point["predicted_power"],
-                        series["weather"]["initialization_time"],
-                        series["weather"]["available_at"],
-                        result["model_version"],
+                        result.run_id,
+                        iso_utc(result.as_of),
+                        series.turbine_id,
+                        iso_utc(point.valid_time),
+                        point.lead_hour,
+                        point.predicted_power,
+                        iso_utc(initialization),
+                        iso_utc(available_at),
+                        result.model_version,
+                        iso_utc(estimated_at),
+                        "; ".join(sorted({item["availability_basis"] for item in inputs})),
+                        json.dumps(
+                            inputs, ensure_ascii=False, sort_keys=True, separators=(",", ":")
+                        ),
                     ]
                 )
         return stream.getvalue()
