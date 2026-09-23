@@ -1,21 +1,25 @@
 # Первичный разбор данных ВЭС
 
-Проверено 23.09.2026. Исходные CSV сохранены в `data/incoming/` без изменений.
+Проверено 23.09.2026. Исходные CSV сохранены в `data/incoming/` без изменений содержимого
+(переименованы в `turbine_1.csv` и `turbine_2.csv`, SHA-256 в JSON подтверждают совпадение байтов).
 Машиночитаемый отчёт с SHA-256: `reports/data-audit.json`.
 Повторить проверку: `python scripts/audit_data.py` (нужны pandas и numpy).
 
 ## Источники и соответствие турбинам
 
-| Турбина | CSV от организаторов | Координаты из предоставленных Google Maps |
-|---|---|---|
-| 1 | https://drive.google.com/file/d/1hubNF3tgc7DbgXxHLpIF6zIBHtvMyzLX/view | 43.645150, 78.535604 |
-| 2 | https://drive.google.com/file/d/1_WTrYhZ3-71A9IpkBb9RHPN7ncVaupBk/view | 43.643198, 78.538828 |
+| Турбина | Файл в репозитории | CSV от организаторов | Координаты из предоставленных Google Maps |
+|---|---|---|---|
+| 1 | `data/incoming/turbine_1.csv` | https://drive.google.com/file/d/1hubNF3tgc7DbgXxHLpIF6zIBHtvMyzLX/view | 43.645150, 78.535604 |
+| 2 | `data/incoming/turbine_2.csv` | https://drive.google.com/file/d/1_WTrYhZ3-71A9IpkBb9RHPN7ncVaupBk/view | 43.643198, 78.538828 |
 
 Ссылки на карты: [турбина 1](https://maps.app.goo.gl/iN6svMt69D5qRpFU9),
 [турбина 2](https://maps.app.goo.gl/8UQMwsYavY6nLvFY8).
 Координаты извлечены из конечных URL после редиректов. Первая присланная ссылка
 на CSV относится к **турбине 2**; порядок сообщений не совпадает с номером турбины.
-Лицензия/условия дальнейшего распространения датасетов в CSV не указаны.
+Исходные имена файлов содержали идентификаторы Google Drive и сортировались так, что
+турбина 2 оказывалась первой. Файлы переименованы в `turbine_1.csv` и `turbine_2.csv`,
+а `scripts/audit_data.py` определяет турбину по имени файла и упорядочивает отчёт по её номеру,
+а не по алфавиту. Лицензия/условия дальнейшего распространения датасетов в CSV не указаны.
 
 ## Фактическое содержимое
 

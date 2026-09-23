@@ -9,11 +9,14 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import re
 from pathlib import Path
 
 import numpy as np
 import pandas as pd
 
+
+TURBINE_IN_NAME = re.compile(r"turbine[_\s-]*(\d+)", re.IGNORECASE)
 
 COLUMNS = {
     "ID": "id",
@@ -22,6 +25,23 @@ COLUMNS = {
     "Нормализованная активная мощность": "power",
     "Средняя температура окружающей среды(°C)": "temperature",
 }
+
+
+def turbine_id(path: Path) -> int:
+    """Read the turbine number out of the file name.
+
+    Alphabetical order must not decide which turbine a file belongs to: the
+    two sites are 300 m apart and their series correlate at 0.96, so a swap
+    would attach one turbine's coordinates to the other's measurements and
+    stay unnoticed.
+    """
+    match = TURBINE_IN_NAME.search(path.stem)
+    if match is None:
+        raise ValueError(
+            f"Cannot tell which turbine {path.name!r} holds. "
+            "Name the files turbine_1.csv and turbine_2.csv."
+        )
+    return int(match.group(1))
 
 
 def inspect(path: Path) -> dict:
@@ -43,6 +63,7 @@ def inspect(path: Path) -> dict:
     measurements = frame[["wind_speed", "power", "temperature"]]
     january = frame.loc["2026-01"]
     return {
+        "turbine_id": turbine_id(path),
         "file": path.name,
         "sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
         "rows": len(frame),
@@ -89,9 +110,17 @@ def main() -> None:
     paths = sorted(arguments.input.glob("*.csv"))
     if not paths:
         parser.error(f"No CSV files in {arguments.input}")
+    try:
+        # Order by the turbine the file declares, never by file name.
+        turbines = sorted((inspect(path) for path in paths), key=lambda t: t["turbine_id"])
+    except ValueError as error:
+        parser.error(str(error))
+    identifiers = [turbine["turbine_id"] for turbine in turbines]
+    if len(set(identifiers)) != len(identifiers):
+        parser.error(f"Two files claim the same turbine: {identifiers}")
     result = {
         "scope": "Original source data only; no interpolation, timezone assignment or training",
-        "turbines": [inspect(path) for path in paths],
+        "turbines": turbines,
     }
     arguments.output.parent.mkdir(parents=True, exist_ok=True)
     arguments.output.write_text(
@@ -100,7 +129,7 @@ def main() -> None:
     )
     for turbine in result["turbines"]:
         print(
-            f"{turbine['file']}: {turbine['rows']} records, "
+            f"turbine {turbine['turbine_id']} ({turbine['file']}): {turbine['rows']} records, "
             f"{turbine['missing_10min_records']} missing timestamps "
             f"({turbine['missing_percent']}%), "
             f"{turbine['full_hours']} full hours"
