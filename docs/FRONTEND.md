@@ -41,7 +41,7 @@ Import shared components from `@workspace/ui/components/*`.
 
 ## Windcast dashboard
 
-The root page implements a Russian-language dashboard for the [wind farm forecasting case](https://docs.google.com/document/d/1Fn5IJoj87Fx7IAknG26zkfX8c0eq7feCujd0m66PCgY/preview).
+The root page implements a Russian, English, and Kazakh dashboard for the [wind farm forecasting case](https://docs.google.com/document/d/1Fn5IJoj87Fx7IAknG26zkfX8c0eq7feCujd0m66PCgY/preview).
 
 - Overview with normalized generation, peak power, wind speed, nMAE, weather, and two turbine cards.
 - Interactive hourly forecast: 24/48-hour horizons, turbine/date filters, forecast/actual comparison, illustrative uncertainty band, keyboard and pointer inspection.
@@ -78,7 +78,7 @@ The overview includes an original turbine modeled in Blender 5.2 through [MCP fo
 - `apps/web/components/turbine-stage.tsx`: lazy-loaded Three.js viewer driven by dashboard state, with an animation pause control. Manual camera rotation, zoom, and drag are disabled.
 - `apps/web/components/turbine-hero.tsx`: persistent scene panel connected to the section, selected turbine, selected hour, forecast horizon, and mock agent stage.
 
-The browser uses [Three.js](https://threejs.org/) (MIT), installed through npm. Blender and MCP are authoring tools only; they are not needed to run the dashboard. WebGL failure falls back to the still render. Animation respects reduced-motion preferences, pauses offscreen, and releases its GPU resources when leaving the overview.
+The browser uses [Three.js](https://threejs.org/) (MIT), installed through npm. Blender and MCP are authoring tools only; they are not needed to run the dashboard. WebGL failure falls back to the still render. Animation respects reduced-motion preferences, pauses offscreen, and releases its GPU resources when the viewer unmounts.
 
 MOCK: rotor speed is an illustrative function of the displayed synthetic wind speed; it is not measured turbine RPM. The dashboard explicitly labels its demo data and simplified geometry.
 
@@ -109,3 +109,20 @@ MOCK: ice is a deliberate educational visualization, not an inferred diagnosis. 
 Reference material: [DOE wind turbine components](https://www.energy.gov/cmei/systems/explore-wind-turbine-text-version) and [IEA Wind Task 19 ice detection guidelines](https://iea-wind.org/wp-content/uploads/2022/09/Task-19-Technical-Report-on-Ice-Detection-Guidelines-for-Wind-Energy-Applications.pdf). The procedural geometry is original; no third-party model was imported.
 
 Checks: `npm test` covers scene selection during agent execution, horizon bounds, illustrative motion rules, and the self-contained GLB's blade/drivetrain structure, alongside the forecast tests. Browser QA covers navigation, component selection, timeline synchronization, and responsive layout.
+
+
+## Dashboard v2 and languages
+
+This version is isolated on `design/dashboard-v2`. The previous frontend is preserved at tag `dashboard-before-v2` (commit `1428a97`); `main` is not merged with v2. With a clean working tree, `git switch main` returns to the previous branch. To inspect the exact baseline, use `git switch --detach dashboard-before-v2`; `git switch design/dashboard-v2` restores v2. Keep any unrelated local changes saved before switching.
+
+- Overview and forecast put the four KPIs first, followed by a chart and compact turbine panel. Smaller screens stack the panels. Text and chart contrast have been increased.
+- One selected hour drives the chart, weather readout, turbine metrics, and scene. The shared timeline includes dates for 48-hour forecasts, arrow-key controls, and peak/cold shortcuts.
+- Three insight cards jump to the highest/lowest forecast power and lowest air temperature. The cold card selects the educational icing scene below freezing, otherwise the temperature source. These summaries never read retrospective actual power and do not diagnose ice.
+- Labels attach to projected model locations and can select the shaft, gearbox, generator, or weather source. Inactive drivetrain parts are dimmed; the camera remains controlled by the system.
+- The header language selector offers **Русский / English / Қазақша** without reloading or resetting forecast settings. It translates navigation, tooltips, dialogs, notices, sources, agent stages, and 3D labels. The document language/title and displayed dates/numbers follow the selection.
+- The preference is saved in `localStorage` under `windcast.locale` and synchronized across tabs. If storage is unavailable, switching still works for the current page. Russian is the default. Kazakh month names are explicit to support embedded browsers with incomplete ICU data; all three languages keep Kazakhstan time (UTC+5).
+- CSV column names, decimal serialization, UTC timestamps, model object IDs, and run IDs are stable across languages. Language changes affect presentation only. Existing mock limitations still apply.
+
+Implementation: `locale-provider.tsx` holds the language preference and locale-bound formatters; `lib/translations.ts` is the RU/EN/KK message catalog. Add translations there when adding visible UI text. `forecast-focus.tsx` and `forecast-insights.ts` implement synchronized timeline and insight cards; `dashboard-v2.css` scopes the new visual treatment.
+
+Validation: `npm test` includes translation/placeholder coverage, localized formatting and unchanged CSV output, plus forecast extrema, tie-breaking, and the February/March boundary. Browser checks cover desktop/mobile layouts, language persistence, preserved hour/scene on language changes, localized dialogs, navigation, and system-driven model scenes.

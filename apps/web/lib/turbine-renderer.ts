@@ -144,6 +144,7 @@ export async function mountTurbineScene(
     const rotor = gltf.scene.getObjectByName("Rotor")
     const shells: Mesh[] = []
     const internals: Mesh[] = []
+    const materialColors = new Map<Mesh, THREE.Color>()
     const sensors: Mesh[] = []
     const bladeRoots: THREE.Object3D[] = []
     gltf.scene.traverse((obj) => {
@@ -156,6 +157,7 @@ export async function mountTurbineScene(
       const mesh = obj as Mesh
       mesh.castShadow = true
       mesh.receiveShadow = true
+      materialColors.set(mesh, mesh.material.color.clone())
       if (obj.name.startsWith("Internal_")) internals.push(mesh)
       else if (/Nacelle|Rear_vent|Roof/.test(obj.name)) shells.push(mesh)
       if (/anemometer|Anemometer/.test(obj.name)) sensors.push(mesh)
@@ -274,6 +276,59 @@ export async function mountTurbineScene(
     const targetGoal = new THREE.Vector3()
     const olive = new THREE.Color(0x3f8555)
     const amber = new THREE.Color(0xa95a12)
+    const subdued = new THREE.Color(0xa9b1a7)
+    const anchors: Record<SceneFocus, THREE.Vector3> = {
+      rotor: new THREE.Vector3(0, 10.64, 0.45),
+      gearbox: new THREE.Vector3(0.28, 10.64, -0.25),
+      generator: new THREE.Vector3(0.23, 10.62, -0.87),
+      wind: new THREE.Vector3(0, 11.32, -0.18),
+      temperature: new THREE.Vector3(0.4, 8.8, 0.1),
+      power: new THREE.Vector3(0.23, 10.62, -0.87),
+    }
+    const projected = new THREE.Vector3()
+    const drawCallouts = () => {
+      const stage = host.parentElement
+      if (!stage) return
+      camera.updateMatrixWorld()
+      stage
+        .querySelectorAll<HTMLElement>("[data-scene-anchor]")
+        .forEach((label) => {
+          const id = label.dataset.sceneAnchor as SceneFocus
+          projected.copy(anchors[id]).project(camera)
+          const x = host.offsetLeft + ((projected.x + 1) * host.clientWidth) / 2
+          const y = host.offsetTop + ((1 - projected.y) * host.clientHeight) / 2
+          const line = stage.querySelector<SVGLineElement>(
+            `[data-anchor-line="${id}"]`
+          )
+          const dot = stage.querySelector<SVGCircleElement>(
+            `[data-anchor-dot="${id}"]`
+          )
+          const inside =
+            x >= 0 &&
+            x <= stage.clientWidth &&
+            y >= 0 &&
+            y <= stage.clientHeight &&
+            projected.z < 1
+          if (line) {
+            line.setAttribute("x1", String(x))
+            line.setAttribute("y1", String(y))
+            line.setAttribute(
+              "x2",
+              String(label.offsetLeft + label.offsetWidth / 2)
+            )
+            line.setAttribute(
+              "y2",
+              String(label.offsetTop + label.offsetHeight / 2)
+            )
+            line.style.opacity = inside ? "1" : "0"
+          }
+          if (dot) {
+            dot.setAttribute("cx", String(x))
+            dot.setAttribute("cy", String(y))
+            dot.style.opacity = inside ? "1" : "0"
+          }
+        })
+    }
     let lastSceneKey: string | undefined
     let previous = 0
     let stoppedAngle = 0
@@ -306,6 +361,9 @@ export async function mountTurbineScene(
           ((s.focus === "generator" || s.focus === "power") &&
             /Generator|Converter/.test(mesh.name)) ||
           (s.focus === "rotor" && /Shaft/.test(mesh.name))
+        mesh.material.color
+          .copy(materialColors.get(mesh)!)
+          .lerp(subdued, highlight ? 0 : 0.65)
         mesh.material.emissive.copy(amber)
         mesh.material.emissiveIntensity = highlight ? 0.45 : 0.035
       })
@@ -389,6 +447,7 @@ export async function mountTurbineScene(
       host.dataset.cutaway = String(cut)
       host.dataset.ice = String(frozen)
       renderer.render(scene, camera)
+      drawCallouts()
     }
     tick(0)
     return dispose

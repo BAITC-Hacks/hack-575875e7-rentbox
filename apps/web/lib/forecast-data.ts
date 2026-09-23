@@ -60,25 +60,64 @@ export const TEST_DATES = Array.from(
 export const clamp = (n: number, min: number, max: number) =>
   Math.min(max, Math.max(min, n))
 const round = (n: number) => Math.round(n * 100) / 100
-export const number = (n: number, digits = 1) =>
-  n.toLocaleString("ru-RU", {
+const kazakhMonths = [
+  ["қаң.", "қаңтар"],
+  ["ақп.", "ақпан"],
+  ["нау.", "наурыз"],
+  ["сәу.", "сәуір"],
+  ["мам.", "мамыр"],
+  ["мау.", "маусым"],
+  ["шіл.", "шілде"],
+  ["там.", "тамыз"],
+  ["қыр.", "қыркүйек"],
+  ["қаз.", "қазан"],
+  ["қар.", "қараша"],
+  ["жел.", "желтоқсан"],
+]
+const localDate = (date: string) =>
+  new Date(date.length === 10 ? `${date}T00:00:00+05:00` : date)
+// Some embedded browsers have partial Kazakh ICU data ("M02" instead of a month).
+// Use explicit Kazakh month names and the same decimal/group separators as RU.
+export const number = (n: number, digits = 1, locale = "ru-RU") =>
+  n.toLocaleString(locale.startsWith("kk") ? "ru-RU" : locale, {
     minimumFractionDigits: digits,
     maximumFractionDigits: digits,
   })
-export const formatDate = (date: string, long = false) =>
-  new Intl.DateTimeFormat("ru-RU", {
+export function formatDate(date: string, long = false, locale = "ru-RU") {
+  if (locale.startsWith("kk")) {
+    const parts = new Intl.DateTimeFormat("en-GB", {
+      day: "2-digit",
+      month: "numeric",
+      timeZone: "Asia/Almaty",
+    }).formatToParts(localDate(date))
+    const day = parts.find((p) => p.type === "day")!.value
+    const month = Number(parts.find((p) => p.type === "month")!.value)
+    return `${day} ${kazakhMonths[month - 1]![long ? 1 : 0]}`
+  }
+  return new Intl.DateTimeFormat(locale, {
     day: "2-digit",
     month: long ? "long" : "short",
     timeZone: "Asia/Almaty",
-  }).format(new Date(date.length === 10 ? `${date}T00:00:00+05:00` : date))
-export const formatTimestamp = (date: string) =>
-  new Intl.DateTimeFormat("ru-RU", {
+  }).format(localDate(date))
+}
+export function formatTimestamp(date: string, locale = "ru-RU") {
+  if (locale.startsWith("kk")) {
+    const time = new Intl.DateTimeFormat("en-GB", {
+      hour: "2-digit",
+      minute: "2-digit",
+      hourCycle: "h23",
+      timeZone: "Asia/Almaty",
+    }).format(localDate(date))
+    return `${formatDate(date, false, locale)}, ${time}`
+  }
+  return new Intl.DateTimeFormat(locale, {
     day: "2-digit",
     month: "short",
     hour: "2-digit",
     minute: "2-digit",
     timeZone: "Asia/Almaty",
-  }).format(new Date(date))
+  }).format(localDate(date))
+}
 
 export function getProvenance(date: string) {
   const start = new Date(`${date}T00:00:00+05:00`).getTime()
