@@ -3,6 +3,10 @@
 .env.local
 *.key
 
+# генерируемая БД истории прогнозов (создаётся: python -m src.storage init)
+data/*.duckdb
+data/*.duckdb.wal
+
 # python
 __pycache__/
 *.py[cod]
