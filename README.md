@@ -401,6 +401,19 @@ RENTBOX_TIME_CONFIGURATION_CONFIRMED=false
 Для повторного обучения нужны зависимости backend и PyTorch с CUDA.
 Для готового прогноза обучение не требуется. Все команды — из корня проекта:
 
+Одной командой — скрипт сам найдёт NVIDIA и выберет устройство:
+
+```bash
+./scripts/train.sh            # GPU, если доступна; иначе CPU с подтверждением
+./scripts/train.sh --check    # только показать, что будет использовано
+./scripts/train.sh --cloud    # инструкция по запуску на NVIDIA Brev
+```
+
+Своё окружение с PyTorch: `PYTHON=/path/to/python ./scripts/train.sh`.
+Инференс от PyTorch не зависит — обученная модель хранится как NumPy-веса.
+
+Пошагово, если нужен контроль над каждым этапом:
+
 ```bash
 # Сохранённые циклы уже в git; загрузка недостающих требует сети и ecCodes.
 python -m scripts.fetch_gfs_runs --start 2024-03-01 --end 2026-02-28
