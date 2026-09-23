@@ -7,6 +7,11 @@
 data/*.duckdb
 data/*.duckdb.wal
 
+# рабочие файлы run.sh: pid и журналы локального запуска
+.run/
+# результат ./run.sh demo — пересоздаётся при каждом запуске
+artifacts/demo-forecast.csv
+
 # python
 __pycache__/
 *.py[cod]

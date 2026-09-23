@@ -15,7 +15,6 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-
 TURBINE_IN_NAME = re.compile(r"turbine[_\s-]*(\d+)", re.IGNORECASE)
 
 COLUMNS = {
@@ -97,7 +96,7 @@ def inspect(path: Path) -> dict:
         ],
         "january_2026_records": len(january),
         "january_2026_complete": len(january) == 31 * 24 * 6
-        and january.index.is_unique,
+                                 and january.index.is_unique,
         "records_from_february_2026": int((frame.index >= pd.Timestamp("2026-02-01")).sum()),
     }
 
