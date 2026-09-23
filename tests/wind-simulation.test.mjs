@@ -174,3 +174,26 @@ test("energy scales with assumed capacity and turbine count; CSV preserves scena
     .reduce((sum, row) => sum + Number(row.split(",")[10]), 0)
   assert.ok(Math.abs(exported - summary.energyMWh) < 0.0001)
 })
+
+test("live simulation rotates through icing while preserving actual shutdowns and still inspection", () => {
+  for (const scenario of SCENARIOS.map((s) => s.id)) {
+    const points = generateSimulation({ ...base, scenario }).t1
+    for (const point of points) {
+      const stopped = point.forecast === 0
+      for (const mode of ["flow", "icing", "cutaway", "sensors"]) {
+        const speed = illustrativeRotorSpeed(point.wind, mode, stopped, true)
+        if (stopped) assert.equal(speed, 0)
+        else
+          assert.ok(
+            speed > 0,
+            `${scenario}/${mode}: positive power must animate`
+          )
+      }
+      assert.equal(
+        illustrativeRotorSpeed(point.wind, "history", stopped, true),
+        0
+      )
+      assert.equal(illustrativeRotorSpeed(point.wind, "icing", false, false), 0)
+    }
+  }
+})

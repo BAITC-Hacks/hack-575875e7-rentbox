@@ -104,7 +104,7 @@ Add `-- --render` to also regenerate the PNG using Cycles. The script writes onl
 
 There are no OrbitControls, pointer-driven camera handlers, or drag-to-rotate controls. Camera poses interpolate when the section or inspection target changes. Reduced-motion preferences disable animation and snap camera transitions. A user can pause motion independently.
 
-MOCK: ice is a deliberate educational visualization, not an inferred diagnosis. Humidity, liquid water content, and ice sensor measurements are absent; the UI does not invent an icing probability or loss percentage, and does not change the forecast because the illustration is active. The rotor freezes in ice view to make the blades inspectable, not to claim a real turbine shutdown. Mechanical geometry is a generic geared turbine, not the confirmed design of the case assets.
+MOCK: ice is a deliberate educational visualization, not an inferred diagnosis. Humidity, liquid water content, and ice sensor measurements are absent; the UI does not invent an icing probability or loss percentage, and does not change the forecast because the illustration is active. In the retrospective forecast, the rotor freezes in ice view to make the blades inspectable, not to claim a real turbine shutdown. In a live generation simulation, the ice layer does not itself freeze the rotor: positive simulated output keeps it rotating, while zero output stops it. Mechanical geometry is a generic geared turbine, not the confirmed design of the case assets.
 
 Reference material: [DOE wind turbine components](https://www.energy.gov/cmei/systems/explore-wind-turbine-text-version) and [IEA Wind Task 19 ice detection guidelines](https://iea-wind.org/wp-content/uploads/2022/09/Task-19-Technical-Report-on-Ice-Detection-Guidelines-for-Wind-Energy-Applications.pdf). The procedural geometry is original; no third-party model was imported.
 
@@ -155,3 +155,12 @@ Use **Simulation** in the heading to generate an inclusive 1–31-day period (24
 Implementation: `apps/web/lib/wind-simulation.ts` is the pure generator, validation, metrics and serializer; `simulation-controls.tsx` provides the accessible configuration dialog, result summary and assumptions; `simulation.css` uses the shared theme palette. The configuration is a reproducibility aid, not server persistence.
 
 Checks: `tests/wind-simulation.test.mjs` covers invalid periods/capacities, leap days/year boundaries, all scenarios over 31 days, bounds, reproducibility, station aggregation, power-curve thresholds, storm stop/restart behavior, icing losses, capacity scaling and CSV units. Translation coverage includes scenario/error/status messages. Browser QA covers form validation, a February/March period, reruns/history replay, turbine switching, selected-hour/3D synchronization, dark/low-vision/mobile layouts, and return to the retrospective forecast.
+
+
+### Simulation motion and period playback
+
+The shared timeline offers **Play period** for simulation results: one real second advances one simulated hour. Graph, weather and turbine follow the same hour. Playback stops at the final hour; starting there replays from the beginning. Timeline arrows, slider and event shortcuts pause playback for inspection. Creating a new realization, leaving the analytical view, or changing reduced-motion/low-vision preferences resets playback. Manual navigation remains available when autoplay is disabled by motion preferences.
+
+The model caption now explains a stopped rotor: insufficient wind, storm protection/recovery, manual pause, low-vision mode, static history or blade inspection. A positive-power icing simulation rotates with the ice geometry attached to its blades; the original educational icing inspection remains still. Protective stops never restart just because a user enables animation. The pause control is also available in live icing simulations.
+
+Validation adds a regression covering positive-power rotation and zero-power stops across every weather scenario and scene, including live icing versus still inspection. Renderer DOM diagnostics expose rotor angle and speed alongside the existing scene/camera state for browser verification.

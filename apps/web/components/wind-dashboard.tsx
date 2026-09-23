@@ -1,5 +1,6 @@
 "use client"
 
+import { useSystemReducedMotion } from "@/components/motion-preference"
 import { LanguageSelector, useI18n } from "@/components/locale-provider"
 
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react"
@@ -1128,6 +1129,7 @@ function HourlyTable({
   )
 }
 export function WindDashboard() {
+  const systemReducedMotion = useSystemReducedMotion()
   const { tr, number, formatDate, formatTimestamp } = useI18n()
   const { highVisibility } = useAppearance()
 
@@ -1754,6 +1756,9 @@ export function WindDashboard() {
                   {turbineScene}
                 </div>
                 <ForecastTimeline
+                  key={`${simulation?.seed ?? "forecast"}-${highVisibility}-${systemReducedMotion}`}
+                  allowPlayback={Boolean(simulation)}
+                  playbackDisabled={highVisibility || systemReducedMotion}
                   data={data}
                   index={inspectedHour}
                   onSelect={selectHour}

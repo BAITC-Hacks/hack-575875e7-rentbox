@@ -1,5 +1,6 @@
 "use client"
 
+import { useEffect, useState } from "react"
 import { useI18n } from "@/components/locale-provider"
 
 import {
@@ -8,6 +9,8 @@ import {
   ChevronLeft,
   ChevronRight,
   Link2,
+  Play,
+  Pause,
   Snowflake,
 } from "lucide-react"
 import { type ForecastPoint } from "@/lib/forecast-data"
@@ -20,13 +23,31 @@ export function ForecastTimeline({
   data,
   index,
   onSelect,
+  allowPlayback = false,
+  playbackDisabled = false,
 }: {
+  allowPlayback?: boolean
+  playbackDisabled?: boolean
   data: ForecastPoint[]
   index: number
   onSelect: (index: number) => void
 }) {
   const { tr, formatDate } = useI18n()
 
+  const [playing, setPlaying] = useState(false)
+  useEffect(() => {
+    if (!playing || !allowPlayback || playbackDisabled) return
+    const timer = window.setTimeout(() => {
+      const next = Math.min(index + 1, data.length - 1)
+      onSelect(next)
+      if (next === data.length - 1) setPlaying(false)
+    }, 1000)
+    return () => window.clearTimeout(timer)
+  }, [playing, allowPlayback, playbackDisabled, index, data.length, onSelect])
+  function selectManually(next: number) {
+    setPlaying(false)
+    onSelect(next)
+  }
   const point = data[index]!
   const events = getForecastInsights(data).filter(
     (event) => event.kind !== "low"
@@ -49,7 +70,7 @@ export function ForecastTimeline({
         <div className="wc-focus-range-row">
           <button
             type="button"
-            onClick={() => onSelect(index - 1)}
+            onClick={() => selectManually(index - 1)}
             disabled={index === 0}
             aria-label={tr("Предыдущий час")}
           >
@@ -62,7 +83,7 @@ export function ForecastTimeline({
               min={0}
               max={data.length - 1}
               value={index}
-              onChange={(event) => onSelect(Number(event.target.value))}
+              onChange={(event) => selectManually(Number(event.target.value))}
               aria-valuetext={`${formatDate(point.date)}, ${point.hour}`}
             />
             <div className="wc-focus-markers" aria-hidden="true">
@@ -79,7 +100,7 @@ export function ForecastTimeline({
           </div>
           <button
             type="button"
-            onClick={() => onSelect(index + 1)}
+            onClick={() => selectManually(index + 1)}
             disabled={index === data.length - 1}
             aria-label={tr("Следующий час")}
           >
@@ -98,12 +119,43 @@ export function ForecastTimeline({
           </span>
         </div>
       </div>
+      {allowPlayback && (
+        <div className="wc-period-playback">
+          <button
+            type="button"
+            disabled={playbackDisabled}
+            aria-pressed={playing && !playbackDisabled}
+            onClick={() => {
+              if (!playing && index === data.length - 1) onSelect(0)
+              setPlaying(!playing)
+            }}
+          >
+            {playing && !playbackDisabled ? (
+              <Pause size={15} />
+            ) : (
+              <Play size={15} />
+            )}{" "}
+            {tr(
+              playing && !playbackDisabled
+                ? "Остановить проигрывание"
+                : "Проиграть период"
+            )}
+          </button>
+          <span>
+            {tr(
+              playbackDisabled
+                ? "Автопроигрывание отключено в режиме без анимации"
+                : "1 секунда = 1 час · выработка и 3D следуют времени"
+            )}
+          </span>
+        </div>
+      )}
       <div className="wc-focus-events">
         {events.map((event) => (
           <button
             type="button"
             key={event.kind}
-            onClick={() => onSelect(event.index)}
+            onClick={() => selectManually(event.index)}
             className={event.kind}
             aria-label={`${event.kind === "peak" ? tr("Перейти к пику выработки") : tr("Перейти к минимуму температуры")}: ${formatDate(event.point.date)}, ${event.point.hour}`}
           >

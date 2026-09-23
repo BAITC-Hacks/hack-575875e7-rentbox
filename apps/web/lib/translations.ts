@@ -1,5 +1,49 @@
 // Source keys are the Russian copy; technical IDs and CSV columns remain stable.
 export const translations: Record<string, { en: string; kk: string }> = {
+  "Штормовая защита · ротор остановлен": {
+    en: "Storm protection · rotor stopped",
+    kk: "Дауылдан қорғау · ротор тоқтады",
+  },
+  "Ротор ждёт безопасного ветра": {
+    en: "Rotor waiting for safe wind",
+    kk: "Ротор қауіпсіз желді күтуде",
+  },
+  "Слабый ветер · ротор остановлен": {
+    en: "Low wind · rotor stopped",
+    kk: "Әлсіз жел · ротор тоқтады",
+  },
+  "Архивный снимок · без вращения": {
+    en: "Historical snapshot · no rotation",
+    kk: "Мұрағаттық көрініс · айналмайды",
+  },
+  "Пауза для осмотра лопастей": {
+    en: "Paused for blade inspection",
+    kk: "Қалақтарды қарау үшін тоқтатылған",
+  },
+  "Анимация на паузе": {
+    en: "Animation paused",
+    kk: "Анимация тоқтатылған",
+  },
+  "Ротор вращается по выбранному часу": {
+    en: "Rotor follows the selected hour",
+    kk: "Ротор таңдалған сағатқа сәйкес айналады",
+  },
+  "Остановить проигрывание": {
+    en: "Stop playback",
+    kk: "Ойнатуды тоқтату",
+  },
+  "Проиграть период": {
+    en: "Play period",
+    kk: "Кезеңді ойнату",
+  },
+  "Автопроигрывание отключено в режиме без анимации": {
+    en: "Playback is disabled in reduced-motion mode",
+    kk: "Анимациясыз режимде ойнату өшірілген",
+  },
+  "1 секунда = 1 час · выработка и 3D следуют времени": {
+    en: "1 second = 1 hour · generation and 3D follow time",
+    kk: "1 секунд = 1 сағат · өндіру мен 3D уақытқа ілеседі",
+  },
   "Порывы, м/с": {
     en: "Gusts, m/s",
     kk: "Екпін, м/с",

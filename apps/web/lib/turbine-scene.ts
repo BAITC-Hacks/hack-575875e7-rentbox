@@ -77,9 +77,16 @@ export const SCENE_COPY: Record<
 export function illustrativeRotorSpeed(
   wind: number,
   mode: SceneMode,
-  stopped = false
+  stopped = false,
+  liveSimulation = false
 ) {
   // MOCK: animation only. Neither measured RPM nor an icing loss estimate.
-  if (stopped || mode === "history" || mode === "icing" || wind <= 0) return 0
+  if (
+    stopped ||
+    mode === "history" ||
+    (mode === "icing" && !liveSimulation) ||
+    wind <= 0
+  )
+    return 0
   return Math.min(wind * 0.075, 1.4) * (mode === "cutaway" ? 0.35 : 1)
 }
