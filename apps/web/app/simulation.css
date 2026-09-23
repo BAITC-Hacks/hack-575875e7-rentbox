@@ -357,3 +357,74 @@
   color: var(--wc-theme-muted, #56664c);
   line-height: 1.7;
 }
+/* Keep animation state explicit beside the existing system-controlled camera. */
+.wc-scene-caption > span {
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  white-space: normal;
+  text-align: center;
+}
+.wc-scene-caption > span > small {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: inherit;
+}
+.wc-scene-caption .wc-rotor-status {
+  font-size: max(11px, var(--wc-min-font, 0px));
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--wc-theme-text, #30452b);
+}
+.wc-scene-caption {
+  width: max-content;
+  max-width: calc(100% - 24px);
+}
+.wc-period-playback {
+  grid-column: 1 / -1;
+  grid-row: 2;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  border-top: 1px solid var(--wc-theme-border, #dde5d5);
+  padding-top: 12px;
+}
+.wc-period-playback button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 36px;
+  padding: 8px 13px;
+  border-radius: 8px;
+  border: 1px solid var(--wc-control-border);
+  background: var(--wc-control-bg);
+  color: var(--wc-control-text);
+  font-size: max(12px, var(--wc-min-font, 0px));
+  cursor: pointer;
+}
+.wc-period-playback button[aria-pressed="true"] {
+  background: var(--wc-control-active);
+}
+.wc-period-playback button:disabled {
+  opacity: 0.75;
+  cursor: default;
+}
+.wc-period-playback button:focus-visible {
+  outline: 3px solid var(--wc-control-ring);
+  outline-offset: 3px;
+}
+.wc-period-playback > span {
+  font-size: max(11px, var(--wc-min-font, 0px));
+  color: var(--wc-theme-muted, #56664c);
+}
+:root[data-vision="high"] .wc-period-playback button {
+  min-height: 44px;
+}
+@media (max-width: 760px) {
+  .wc-period-playback {
+    grid-row: auto;
+  }
+}

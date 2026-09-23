@@ -10,10 +10,11 @@ import {
 export type TurbineSceneSettings = {
   mode: SceneMode
   focus: SceneFocus
-  wind: number | null
+  wind: number
+  liveSimulation?: boolean
   operationalStop?: boolean
-  power: number | null
-  temperature: number | null
+  power: number
+  temperature: number
   playing: boolean
   reducedMotion: boolean
 }
@@ -344,7 +345,8 @@ export async function mountTurbineScene(
         s.mode === "cutaway" || (s.mode === "sensors" && s.focus === "power")
       const sensing = s.mode === "sensors"
       const frozen = s.mode === "icing"
-      const sceneKey = `${s.mode}-${s.focus}`
+      const inspectionStill = frozen && !s.liveSimulation
+      const sceneKey = `${s.mode}-${s.focus}-${s.liveSimulation}`
       if (sceneKey !== lastSceneKey) {
         shells.forEach((mesh) => {
           mesh.material.clippingPlanes = cut ? [cutPlane] : []
@@ -352,7 +354,7 @@ export async function mountTurbineScene(
           mesh.material.clipShadows = true
           mesh.material.needsUpdate = true
         })
-        if (frozen) stoppedAngle = 0
+        if (inspectionStill) stoppedAngle = 0
         lastSceneKey = sceneKey
       }
       internals.forEach((mesh) => {
@@ -424,7 +426,7 @@ export async function mountTurbineScene(
       camera.lookAt(target)
       camera.updateProjectionMatrix()
       if (rotor) {
-        if (frozen)
+        if (inspectionStill)
           rotor.rotation.z = THREE.MathUtils.lerp(
             rotor.rotation.z,
             stoppedAngle,
@@ -432,11 +434,17 @@ export async function mountTurbineScene(
           )
         else if (s.playing)
           rotor.rotation.z -=
-            dt * illustrativeRotorSpeed(s.wind ?? 0, s.mode, s.operationalStop)
+            dt *
+            illustrativeRotorSpeed(
+              s.wind,
+              s.mode,
+              s.operationalStop,
+              s.liveSimulation
+            )
       }
       if (s.playing && flow.visible) {
         for (let i = 2; i < coords.length; i += 3) {
-          coords[i]! -= dt * Math.min((s.wind ?? 0) * 0.4, 6)
+          coords[i]! -= dt * Math.min(s.wind * 0.4, 6)
           if (coords[i]! < -5) coords[i] = 6
         }
         particlesGeo.attributes.position!.needsUpdate = true
@@ -446,6 +454,17 @@ export async function mountTurbineScene(
         .toArray()
         .map((v) => v.toFixed(2))
         .join(",")
+      host.dataset.rotorAngle = rotor ? rotor.rotation.z.toFixed(4) : "missing"
+      host.dataset.rotorSpeed = String(
+        s.playing
+          ? illustrativeRotorSpeed(
+              s.wind,
+              s.mode,
+              s.operationalStop,
+              s.liveSimulation
+            )
+          : 0
+      )
       host.dataset.operationalStop = String(Boolean(s.operationalStop))
       host.dataset.cutaway = String(cut)
       host.dataset.ice = String(frozen)

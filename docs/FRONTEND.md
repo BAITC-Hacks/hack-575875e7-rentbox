@@ -42,36 +42,30 @@ Import shared components from `@workspace/ui/components/*`.
 ## Windcast dashboard
 
 The root page implements a Russian, English, and Kazakh dashboard for the [wind farm forecasting case](https://docs.google.com/document/d/1Fn5IJoj87Fx7IAknG26zkfX8c0eq7feCujd0m66PCgY/preview).
-The dashboard uses the real FastAPI service. Start both services
-with `./run.sh all`, select a turbine/date/horizon, and click «Рассчитать прогноз».
-The browser uses the same-origin `/api` proxy configured by `RENTBOX_API_URL`.
-See [integration guide](frontend-integration.md) for configuration and API mappings.
 
-- Real 24/48-hour model predictions, normalized power displayed as percent.
-- Actual agent status, progress, events and errors; polling every 1.5 seconds.
-- Server history from DuckDB: the latest 100 runs, including failed and pending jobs.
-- Hourly table, point inspection, source metadata and original server CSV download.
-- Turbine names and coordinates from the API; dataset audit and research-mode warnings.
-- Display time UTC+5; the date picker maps February 1 to issuance January 31, 18:00 UTC.
+- Overview with normalized generation, peak power, wind speed, nMAE, weather, and two turbine cards.
+- Interactive hourly forecast: 24/48-hour horizons, turbine/date filters, forecast/actual comparison, illustrative uncertainty band, keyboard and pointer inspection.
+- February 1–28, 2026 retrospective dates. A forecast for each day is issued at 23:00 on the previous day, UTC+5.
+- Searchable and sortable hourly table, pagination, detail dialogs, and UTF-8 CSV export with source timestamps.
+- Six-stage simulated AI-agent cycle with an event log and session-local run history. Open a run to restore its forecast settings.
+- Source availability timeline, original turbine map links, and responsive navigation with keyboard support.
 
-February observations, forecast error, calibrated uncertainty intervals, and numerical
-weather fields are unavailable in the current API. They remain null/blank; synthetic
-values are not substituted. The station view averages normalized power across the two
-turbines. It does not represent a sum in MW. CSV preserves the server's 0–1 scale and
-contains the entire selected run, even when the chart shows just one turbine.
+### Data and limitations
+
+All displayed values are deterministic synthetic data. No external weather API, SCADA dataset, trained ML model, authentication, or backend persistence is connected. Reloading resets the session history. Source names illustrate potential integrations, not active connections.
+
+Power is expressed as a percentage of nominal capacity because installed MW capacity is not provided by the case. The station view averages both turbines' normalized outputs. Full-load hours are the sum of hourly normalized power fractions. nMAE and RMSE use only available mock observations; they do not claim real model accuracy. The uncertainty band is illustrative and has no calibrated confidence level.
+
+Weather issue and availability timestamps precede forecast issuance. Observed values are generated separately and never used as forecast inputs. A 48-hour forecast beginning February 28 continues into March; March observations remain unavailable. The training cutoff is January 31, 2026, at 23:00 UTC+5.
 
 ### Implementation
 
-- `apps/web/lib/forecast-api.ts`: contract types, requests, export and display mapping.
-- `apps/web/lib/use-forecast-dashboard.ts`: loading, submission, polling and recovery.
-- `apps/web/lib/forecast-data.ts`: shared display types/metrics plus retained legacy fixtures;
-  the running dashboard does not call its synthetic generator or CSV serializer.
+- `apps/web/lib/forecast-data.ts`: deterministic fixtures, time provenance, metrics, and CSV serialization.
 - `apps/web/components/wind-dashboard.tsx`: interactive views and charts.
 - `apps/web/app/dashboard.css`: responsive visual system.
+- `tests/forecast-data.test.mjs`: chronology, availability, bounds, aggregation, February/March boundary, and CSV checks.
 
-TypeScript and ESLint are the static checks for this integration. Automated tests,
-browser QA and a Docker build were not run for this change. Existing legacy fixture
-tests are not evidence of a working API integration.
+The frontend can be connected to a forecasting service by replacing the mock data generator while retaining the forecast-point schema and source timestamps.
 
 ## Interactive Blender turbine
 
@@ -82,11 +76,11 @@ The overview includes an original turbine modeled in Blender 5.2 through [MCP fo
 - `apps/web/public/models/windcast-turbine.glb`: self-contained browser asset, approximately 1.6 MB. The `Rotor` node groups the hub and three blades for animation.
 - `apps/web/public/models/windcast-turbine.png`: transparent fallback render.
 - `apps/web/components/turbine-stage.tsx`: lazy-loaded Three.js viewer driven by dashboard state, with an animation pause control. Manual camera rotation, zoom, and drag are disabled.
-- `apps/web/components/turbine-hero.tsx`: persistent scene panel connected to the section, selected turbine, selected hour, forecast horizon, and server agent stage.
+- `apps/web/components/turbine-hero.tsx`: persistent scene panel connected to the section, selected turbine, selected hour, forecast horizon, and mock agent stage.
 
 The browser uses [Three.js](https://threejs.org/) (MIT), installed through npm. Blender and MCP are authoring tools only; they are not needed to run the dashboard. WebGL failure falls back to the still render. Animation respects reduced-motion preferences, pauses offscreen, and releases its GPU resources when the viewer unmounts.
 
-Rotor motion is illustrative, not measured RPM. The current API does not provide numerical wind values, so flow and rotor motion remain stopped. The model power values are real predictions; the geometry remains illustrative.
+MOCK: rotor speed is an illustrative function of the displayed synthetic wind speed; it is not measured turbine RPM. The dashboard explicitly labels its demo data and simplified geometry.
 
 To regenerate the GLB and editable scene from the repository root (Blender on PATH):
 
@@ -100,17 +94,17 @@ Add `-- --render` to also regenerate the PNG using Cycles. The script writes onl
 
 | Dashboard interaction                               | 3D response                                                                                                                         |
 | --------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
-| Overview / forecast                                 | Power follows the selected forecast hour; wind-driven motion requires weather values.                                                                        |
+| Overview / forecast                                 | Wind streams and rotor motion follow the selected mock hour.                                                                        |
 | AI agent                                            | Close-up cutaway exposes the shaft, gearbox, and generator modeled in Blender. Component buttons change emphasis and camera target. |
 | Sources                                             | Wind and air-temperature selections focus the illustrative measurement location. Power opens the nacelle to show the generator.     |
 | History                                             | A still turbine shows a snapshot. Opening a saved run restores its filters and resets the selected hour.                            |
 | Hour slider, chart pointer/keyboard, hourly details | The scene metrics and animation follow the same selected hourly point.                                                              |
-| Weather hour                                        | Opens the source view; no ice diagnosis is inferred from missing weather values.                         |
-| Running API agent                                  | Follows actual backend stages through inputs, model, prediction, review and saving.                           |
+| Weather hour                                        | Opens a labeled ice illustration for a sub-zero mock temperature, or the temperature source view otherwise.                         |
+| Running demo agent                                  | Automatically advances through weather inputs, cutaway, forecast, analysis illustration, and publication.                           |
 
 There are no OrbitControls, pointer-driven camera handlers, or drag-to-rotate controls. Camera poses interpolate when the section or inspection target changes. Reduced-motion preferences disable animation and snap camera transitions. A user can pause motion independently.
 
-MOCK: ice is a deliberate educational visualization, not an inferred diagnosis. Humidity, liquid water content, and ice sensor measurements are absent; the UI does not invent an icing probability or loss percentage, and does not change the forecast because the illustration is active. The rotor freezes in ice view to make the blades inspectable, not to claim a real turbine shutdown. Mechanical geometry is a generic geared turbine, not the confirmed design of the case assets.
+MOCK: ice is a deliberate educational visualization, not an inferred diagnosis. Humidity, liquid water content, and ice sensor measurements are absent; the UI does not invent an icing probability or loss percentage, and does not change the forecast because the illustration is active. In the retrospective forecast, the rotor freezes in ice view to make the blades inspectable, not to claim a real turbine shutdown. In a live generation simulation, the ice layer does not itself freeze the rotor: positive simulated output keeps it rotating, while zero output stops it. Mechanical geometry is a generic geared turbine, not the confirmed design of the case assets.
 
 Reference material: [DOE wind turbine components](https://www.energy.gov/cmei/systems/explore-wind-turbine-text-version) and [IEA Wind Task 19 ice detection guidelines](https://iea-wind.org/wp-content/uploads/2022/09/Task-19-Technical-Report-on-Ice-Detection-Guidelines-for-Wind-Energy-Applications.pdf). The procedural geometry is original; no third-party model was imported.
 
@@ -119,17 +113,17 @@ Checks: `npm test` covers scene selection during agent execution, horizon bounds
 
 ## Dashboard v2 and languages
 
-Dashboard v2 was developed on `design/dashboard-v2` against synthetic data and merged into `main` on 23.09.2026 on top of the real API integration. The previous frontend is preserved at tag `dashboard-before-v2` (commit `1428a97`). The merge kept the API plumbing from `main` (`use-forecast-dashboard.ts`, `forecast-api.ts`) and took layout, locales, display preferences and the simulation from the design branch.
+This version is isolated on `design/dashboard-v2`. The previous frontend is preserved at tag `dashboard-before-v2` (commit `1428a97`); `main` is not merged with v2. With a clean working tree, `git switch main` returns to the previous branch. To inspect the exact baseline, use `git switch --detach dashboard-before-v2`; `git switch design/dashboard-v2` restores v2. Keep any unrelated local changes saved before switching.
 
 - Overview and forecast put the four KPIs first, followed by a chart and compact turbine panel. Smaller screens stack the panels. Text and chart contrast have been increased.
 - One selected hour drives the chart, weather readout, turbine metrics, and scene. The shared timeline includes dates for 48-hour forecasts, arrow-key controls, and peak/cold shortcuts.
-- Three insight cards jump to the highest/lowest forecast power and lowest air temperature. The cold card selects the educational icing scene below freezing, otherwise the temperature source. These summaries never read retrospective actual power and do not diagnose ice. The cold card is omitted for runs stored before the server exported weather values.
+- Three insight cards jump to the highest/lowest forecast power and lowest air temperature. The cold card selects the educational icing scene below freezing, otherwise the temperature source. These summaries never read retrospective actual power and do not diagnose ice.
 - Labels attach to projected model locations and can select the shaft, gearbox, generator, or weather source. Inactive drivetrain parts are dimmed; the camera remains controlled by the system.
-- The header language selector offers **Русский / English / Қазақша** without reloading or resetting forecast settings. It translates navigation, tooltips, dialogs, notices, sources, agent stages, and 3D labels. The document language/title and displayed dates/numbers follow the selection. Server-side messages (agent events, warnings, error details) stay in the language the API returns.
+- The header language selector offers **Русский / English / Қазақша** without reloading or resetting forecast settings. It translates navigation, tooltips, dialogs, notices, sources, agent stages, and 3D labels. The document language/title and displayed dates/numbers follow the selection.
 - The preference is saved in `localStorage` under `windcast.locale` and synchronized across tabs. If storage is unavailable, switching still works for the current page. Russian is the default. Kazakh month names are explicit to support embedded browsers with incomplete ICU data; all three languages keep Kazakhstan time (UTC+5).
-- CSV column names, decimal serialization, UTC timestamps, model object IDs, and run IDs are stable across languages. Language changes affect presentation only.
+- CSV column names, decimal serialization, UTC timestamps, model object IDs, and run IDs are stable across languages. Language changes affect presentation only. Existing mock limitations still apply.
 
-Implementation: `locale-provider.tsx` holds the language preference and locale-bound formatters; `lib/translations.ts` is the RU/EN/KK message catalog. Add translations there when adding visible UI text (`tests/localization.test.mjs` fails on untranslated strings). `forecast-focus.tsx` and `forecast-insights.ts` implement synchronized timeline and insight cards; `dashboard-v2.css` scopes the new visual treatment.
+Implementation: `locale-provider.tsx` holds the language preference and locale-bound formatters; `lib/translations.ts` is the RU/EN/KK message catalog. Add translations there when adding visible UI text. `forecast-focus.tsx` and `forecast-insights.ts` implement synchronized timeline and insight cards; `dashboard-v2.css` scopes the new visual treatment.
 
 Validation: `npm test` includes translation/placeholder coverage, localized formatting and unchanged CSV output, plus forecast extrema, tie-breaking, and the February/March boundary. Browser checks cover desktop/mobile layouts, language persistence, preserved hour/scene on language changes, localized dialogs, navigation, and system-driven model scenes.
 
@@ -150,16 +144,23 @@ Checks: `tests/appearance.test.mjs` verifies the defined text/background pairs a
 
 Use **Simulation** in the heading to generate an inclusive 1–31-day period (24–744 hourly points, fixed UTC+5). Choose typical weather, steady wind, calm, storm, or icing, and an **assumed** capacity per turbine (0.1–20 MW, default 5 MW). Dates from 2020–2100 are supported. This assumption is independent of the real case assets, whose rated capacity is not established.
 
-**The simulation is synthetic.** It is a what-if scenario tool built entirely in the browser: it does not call the API, is not a forecast of the trained model, and is never stored in the server run history. Every simulation view is labelled «Синтетическая симуляция · не прогноз погоды». The retrospective forecast from the API is the product's core functionality; the simulation is an illustrative add-on.
-
 - Weather is seeded and temporally correlated: seasonal/daily temperature, varying wind, gusts, humidity, and small local differences for the two turbines. **Generate again** draws a new seed. Switching turbines uses the same generated weather. There is no weather API or calibrated statistical match to site observations.
 - A simplified cubic power curve uses 3 m/s cut-in, 11.4 m/s rated wind, and 25 m/s cut-out as reference thresholds from the [NREL 5-MW reference turbine report](https://www.nrel.gov/docs/fy09osti/38060.pdf). These do not describe the case turbines. The shape, air-density approximation, gust threshold of 32 m/s, and restart after two consecutive hours below 20 m/s wind / 27 m/s gusts are **illustrative generator assumptions**, not a certified controller.
 - Storm fronts produce protective shutdowns and recovery. The icing preset imposes subzero temperature and high humidity with gradual assumed losses capped at 48%; this differs from the original forecast's educational ice view, which never changes forecast power. Normal presets do not infer ice from temperature alone.
 - A single generated dataset drives KPIs, chart, hourly table, weather, turbine cards/details, insights and 3D. The table exposes gusts and operating state instead of unavailable actuals/error columns. Scenario events jump to the associated hour. The rotor stops at zero simulated output; wind animation remains visible. Both display preferences and all three languages apply.
 - Station power averages two equal-capacity turbines; energy sums hourly normalized power times assumed total MW. Individual turbine views use one turbine's capacity. Energy is shown in MWh. Simulated actual observations are absent; nMAE/RMSE are not presented as simulation accuracy.
-- **Back to forecast** restores the retrospective data controls without losing the existing historical forecast settings. Opening a saved run from history also leaves the simulation.
-- Simulation CSV has a separate schema marked `synthetic_simulation`, including scenario, seed, inclusive period, assumed capacity, hourly power/energy, weather, assumed icing losses and operating state. It does not fabricate observation or weather-issue timestamps. The forecast CSV is downloaded from the server unchanged.
+- History stores the configuration and seed in the current browser session. Opening it regenerates the identical result. Reloading clears the simulation and history. **Back to forecast** restores the retrospective data controls without losing the existing historical forecast settings.
+- Simulation CSV has a separate schema marked `synthetic_simulation`, including scenario, seed, inclusive period, assumed capacity, hourly power/energy, weather, assumed icing losses and operating state. It does not fabricate observation or weather-issue timestamps. Existing forecast CSV remains unchanged.
 
 Implementation: `apps/web/lib/wind-simulation.ts` is the pure generator, validation, metrics and serializer; `simulation-controls.tsx` provides the accessible configuration dialog, result summary and assumptions; `simulation.css` uses the shared theme palette. The configuration is a reproducibility aid, not server persistence.
 
-Checks: `tests/wind-simulation.test.mjs` covers invalid periods/capacities, leap days/year boundaries, all scenarios over 31 days, bounds, reproducibility, station aggregation, power-curve thresholds, storm stop/restart behavior, icing losses, capacity scaling and CSV units. Translation coverage includes scenario/error/status messages.
+Checks: `tests/wind-simulation.test.mjs` covers invalid periods/capacities, leap days/year boundaries, all scenarios over 31 days, bounds, reproducibility, station aggregation, power-curve thresholds, storm stop/restart behavior, icing losses, capacity scaling and CSV units. Translation coverage includes scenario/error/status messages. Browser QA covers form validation, a February/March period, reruns/history replay, turbine switching, selected-hour/3D synchronization, dark/low-vision/mobile layouts, and return to the retrospective forecast.
+
+
+### Simulation motion and period playback
+
+The shared timeline offers **Play period** for simulation results: one real second advances one simulated hour. Graph, weather and turbine follow the same hour. Playback stops at the final hour; starting there replays from the beginning. Timeline arrows, slider and event shortcuts pause playback for inspection. Creating a new realization, leaving the analytical view, or changing reduced-motion/low-vision preferences resets playback. Manual navigation remains available when autoplay is disabled by motion preferences.
+
+The model caption now explains a stopped rotor: insufficient wind, storm protection/recovery, manual pause, low-vision mode, static history or blade inspection. A positive-power icing simulation rotates with the ice geometry attached to its blades; the original educational icing inspection remains still. Protective stops never restart just because a user enables animation. The pause control is also available in live icing simulations.
+
+Validation adds a regression covering positive-power rotation and zero-power stops across every weather scenario and scene, including live icing versus still inspection. Renderer DOM diagnostics expose rotor angle and speed alongside the existing scene/camera state for browser verification.
