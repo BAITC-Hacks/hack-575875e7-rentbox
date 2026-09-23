@@ -1,5 +1,7 @@
 # Backend дашборда ВЭС
 
+**Русский** · [English](README.en.md) · [Қазақша](README.kk.md)
+
 Python 3.12, FastAPI, Pydantic, DuckDB. Единая точка входа из корня репозитория:
 `src.api:app`. Публичный контракт: [docs/API.md](../docs/API.md), машинная
 спецификация: [openapi.json](openapi.json).
