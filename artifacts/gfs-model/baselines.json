@@ -1,0 +1,42 @@
+{
+  "time_assumptions": {
+    "utc_offset_hours": 5,
+    "timestamp_convention": "start"
+  },
+  "persistence_definition": "Last completed hourly power available at as_of, constant over horizon",
+  "overall": {
+    "n": 2928,
+    "mae": 0.3426815801457195,
+    "rmse": 0.4515488643938073,
+    "bias": 0.023609403460837897
+  },
+  "model": {
+    "n": 2928,
+    "mae": 0.15946577377420976,
+    "rmse": 0.2318989607933578,
+    "bias": -0.0036760292475362427
+  },
+  "seasonal_persistence": {
+    "n": 2928,
+    "mae": 0.3647984972677596,
+    "rmse": 0.4793346323966325,
+    "bias": -0.01920992714025499
+  },
+  "seasonal_missing_hours": 0,
+  "seasonal_definition": "Latest same clock hour fully available at as_of; 24/48/72h lag, never future telemetry",
+  "by_horizon": {
+    "1-24h": {
+      "n": 1488,
+      "mae": 0.3233725358422939,
+      "rmse": 0.44028227994826186,
+      "bias": 0.022722894265232985
+    },
+    "25-48h": {
+      "n": 1440,
+      "mae": 0.3626342592592593,
+      "rmse": 0.46290301093302927,
+      "bias": 0.024525462962962975
+    }
+  },
+  "note": "January telemetry revealed only up to each issue. No February actuals; persistence becomes stale in February."
+}

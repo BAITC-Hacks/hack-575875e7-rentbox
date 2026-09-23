@@ -104,6 +104,8 @@ def fetch_day(day: pd.Timestamp, output: Path, resolution: str, executor: Thread
     manifest = output / f"{key}.meta.json"
     if csv.exists() and manifest.exists() and not refresh:
         saved = json.loads(manifest.read_text())
+        if saved["resolution"] != resolution:
+            raise ValueError("Cached GFS resolution differs from the requested grid")
         if saved["sha256"] != hashlib.sha256(csv.read_bytes()).hexdigest():
             raise ValueError("GFS point cache checksum mismatch")
         return saved
@@ -113,10 +115,15 @@ def fetch_day(day: pd.Timestamp, output: Path, resolution: str, executor: Thread
     futures = [executor.submit(fetch_anchor, client, initialization, lead, as_of, resolution)
                for lead in range(6, 55, 3)]
     records, sources = [], []
-    for future in as_completed(futures):
-        values, source = future.result()
-        records.extend(values)
-        sources.append(source)
+    try:
+        for future in as_completed(futures):
+            values, source = future.result()
+            records.extend(values)
+            sources.append(source)
+    except BaseException:
+        for future in futures:
+            future.cancel()
+        raise
     anchors = pd.DataFrame(records)
     anchors["valid_time"] = pd.to_datetime(anchors.valid_time, utc=True)
     hourly = []

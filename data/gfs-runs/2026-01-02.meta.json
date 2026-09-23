@@ -1,0 +1,796 @@
+{
+  "provider": "NOAA GFS operational forecast archive",
+  "resolution": "0p25",
+  "as_of": "2026-01-02T18:00:00+00:00",
+  "initialization_time": "2026-01-02T12:00:00+00:00",
+  "available_at": "2026-01-02T16:01:00+00:00",
+  "availability_basis": "Maximum original S3 Last-Modified of all contributing GRIB objects; checked <= as_of",
+  "interpolation": "Nearest spatial grid point; linear time interpolation of same-cycle 3-hour forecast anchors, never observations",
+  "retrieved_at": "2026-09-23T09:51:51.376832+00:00",
+  "rows": 96,
+  "sha256": "3a5725b1123218b73a96380284770aaa8bdd835daab8a4ceb5fecefa2cc68a73",
+  "sources": [
+    {
+      "url": "https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260102/12/atmos/gfs.t12z.pgrb2.0p25.f006",
+      "initialization_time": "2026-01-02T12:00:00+00:00",
+      "forecast_hour": 6,
+      "available_at": "2026-01-02T15:48:09+00:00",
+      "etag": "\"a8477a0ac3e1dd3c09586b25a03d6383\"",
+      "index_sha256": "0e17b098e3f5813f67329a072e3399bc693c596835163c04dd0ce4f7ef1c17d6",
+      "byte_ranges": [
+        {
+          "field": "surface_pressure",
+          "start": 407336559,
+          "end": 408179521,
+          "sha256": "f05254a192c4cf1107a3c3f39fbbb001eb55c7508091f3b6f9acda3dc7f3a838"
+        },
+        {
+          "field": "temperature_2m",
+          "start": 416542807,
+          "end": 417440059,
+          "sha256": "9115ac615f676211e0d21e848f4897d3c94eb97eef7be7ee14e88a0c672d08e7"
+        },
+        {
+          "field": "u10",
+          "start": 422318420,
+          "end": 423294653,
+          "sha256": "08584f515f80f525ca63b63f94d2f7754896141ce64b99cd933a40e5a674f5b4"
+        },
+        {
+          "field": "v10",
+          "start": 423294654,
+          "end": 424247359,
+          "sha256": "1760c07305d7c4f00088d9464860213a7ffe6935f04c1aedbb86997f3500ae5c"
+        },
+        {
+          "field": "u100",
+          "start": 499509498,
+          "end": 500495053,
+          "sha256": "f8f651e3b92ca8b3953f6df5e54bb052f38d03fb1bb347e7666f2e622d160079"
+        },
+        {
+          "field": "v100",
+          "start": 500495054,
+          "end": 501468671,
+          "sha256": "6b9c5f1d18d1a9758dd6ec1f0de0e8a98d8e75201599374b2f0ccd9f2804ac04"
+        }
+      ]
+    },
+    {
+      "url": "https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260102/12/atmos/gfs.t12z.pgrb2.0p25.f009",
+      "initialization_time": "2026-01-02T12:00:00+00:00",
+      "forecast_hour": 9,
+      "available_at": "2026-01-02T15:34:47+00:00",
+      "etag": "\"1bfc3c2a88202600aedc9d6877323844\"",
+      "index_sha256": "567a331bf41fb0b3cb9ff69bed8be109bd255e746de10aed5914f2a0d31ed42f",
+      "byte_ranges": [
+        {
+          "field": "surface_pressure",
+          "start": 410492217,
+          "end": 411335599,
+          "sha256": "00303ffbe1c90704a3c2eec514b63caaca70bdcecee7f9e6984d8a27e9e553a1"
+        },
+        {
+          "field": "temperature_2m",
+          "start": 419700729,
+          "end": 420594630,
+          "sha256": "109b1dfc26f5672cc2a77ad784e7faa5d28b5af710ef786c593e93292bc370cc"
+        },
+        {
+          "field": "u10",
+          "start": 425855055,
+          "end": 426833476,
+          "sha256": "56c30f3496e96c168bfc19d17c17a3841a92f5a5f3c1a6cf174b4d17e32bdf67"
+        },
+        {
+          "field": "v10",
+          "start": 426833477,
+          "end": 427789127,
+          "sha256": "8bb45e62de4dc8ad9f343e262f53570106da2064ca8fc29dd76e14a78f8b9575"
+        },
+        {
+          "field": "u100",
+          "start": 501463437,
+          "end": 502448262,
+          "sha256": "fabd919e24c754d23ecefb53d551c5933b9c2908d5e5533390c8e9505125692a"
+        },
+        {
+          "field": "v100",
+          "start": 502448263,
+          "end": 503420849,
+          "sha256": "4d7a25f5a4473a4e9dc9e00cdaed55efbae6723cbf71fb13e03bed109d8e5474"
+        }
+      ]
+    },
+    {
+      "url": "https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260102/12/atmos/gfs.t12z.pgrb2.0p25.f012",
+      "initialization_time": "2026-01-02T12:00:00+00:00",
+      "forecast_hour": 12,
+      "available_at": "2026-01-02T15:35:23+00:00",
+      "etag": "\"2159ff035b0df777f41fb767592915a4\"",
+      "index_sha256": "936c95e68a608c4457c6bf006b8cf766204432915f8bccd9a8a19695baa37014",
+      "byte_ranges": [
+        {
+          "field": "surface_pressure",
+          "start": 412104421,
+          "end": 412947213,
+          "sha256": "f3caa890d63b36f14a11fe6daf6c127c3358ee61268135126a7981ff172c05da"
+        },
+        {
+          "field": "temperature_2m",
+          "start": 421311667,
+          "end": 422201861,
+          "sha256": "878aed2f19db3c36a720cf263a528e6d9d3cf986fa227e38ec579dfd120949e5"
+        },
+        {
+          "field": "u10",
+          "start": 427822854,
+          "end": 428794268,
+          "sha256": "678855430d62b151d21cfb0f4686a2f5fb4a7da596ca7267988c2f088c4fe9c4"
+        },
+        {
+          "field": "v10",
+          "start": 428794269,
+          "end": 429746880,
+          "sha256": "62f3f901b89f043e0d85752ede092f6eb3b31c7673ada5b243ca0216a128b6ad"
+        },
+        {
+          "field": "u100",
+          "start": 505280211,
+          "end": 506257286,
+          "sha256": "1f351d1583996da47dc85a5e394ea6643aa2b76ace164355a4a71e357f977531"
+        },
+        {
+          "field": "v100",
+          "start": 506257287,
+          "end": 507226995,
+          "sha256": "d5c58e7283760c59c497f03d0d2aa0e2a6ec6fd0d33e9ed15af661e6c2ed8ba3"
+        }
+      ]
+    },
+    {
+      "url": "https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260102/12/atmos/gfs.t12z.pgrb2.0p25.f015",
+      "initialization_time": "2026-01-02T12:00:00+00:00",
+      "forecast_hour": 15,
+      "available_at": "2026-01-02T15:50:18+00:00",
+      "etag": "\"3139e86722410270a4dc2508d4c0f973\"",
+      "index_sha256": "73cf2bf5179c7a4a7637b91949873cbdc93fb863c8ce4a64221ea412f4fbb749",
+      "byte_ranges": [
+        {
+          "field": "surface_pressure",
+          "start": 414713693,
+          "end": 415554989,
+          "sha256": "1b02f53b4fd3768409725fc0a0fd9233ec5363c30257db8aaa5e48c1e3bba664"
+        },
+        {
+          "field": "temperature_2m",
+          "start": 423929166,
+          "end": 424812334,
+          "sha256": "df618f8d6f943305a86f73a9a4400331514920215298f9d81d7b85ba5cd44aa7"
+        },
+        {
+          "field": "u10",
+          "start": 430424801,
+          "end": 431393370,
+          "sha256": "7852a6ef4d791840c6f9980dd3b806d213210e9e21150e7a06a22582dc1f3e37"
+        },
+        {
+          "field": "v10",
+          "start": 431393371,
+          "end": 432339979,
+          "sha256": "95a2a221b3c2490b79c73930a1095ca5d830b72224a347f4f8569d4b561045da"
+        },
+        {
+          "field": "u100",
+          "start": 506005881,
+          "end": 506979444,
+          "sha256": "9584a7501069fe649e49dc72e889a3eaeee7e17464a3896530b5a822509531df"
+        },
+        {
+          "field": "v100",
+          "start": 506979445,
+          "end": 507946687,
+          "sha256": "5ed278ffdc59ae93218c093fff719b540f11f21b75f1dd1c8f7db329102c53d3"
+        }
+      ]
+    },
+    {
+      "url": "https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260102/12/atmos/gfs.t12z.pgrb2.0p25.f018",
+      "initialization_time": "2026-01-02T12:00:00+00:00",
+      "forecast_hour": 18,
+      "available_at": "2026-01-02T15:51:03+00:00",
+      "etag": "\"b738344f3173e4fd2ee734f8a93f4cd9\"",
+      "index_sha256": "61e324c5c74f95ec37a92aab36ad3e91a55feb33cd4afd48fab81a44df62ce79",
+      "byte_ranges": [
+        {
+          "field": "surface_pressure",
+          "start": 416620419,
+          "end": 417461370,
+          "sha256": "ddda406581ecd0805ec90ef2fb58de3dbb1d3f10d832a826f1f2212d762597b4"
+        },
+        {
+          "field": "temperature_2m",
+          "start": 425652812,
+          "end": 426535114,
+          "sha256": "25f81bb4a4164f1f0bfb405182efbc6dc6ffe49de8d1e81c948266e16be80d61"
+        },
+        {
+          "field": "u10",
+          "start": 432141163,
+          "end": 433112286,
+          "sha256": "b3abd9cd0b8532caeaea6f10a195548d423a8bf10ceead146287e7ded8b5816a"
+        },
+        {
+          "field": "v10",
+          "start": 433112287,
+          "end": 434057704,
+          "sha256": "4c12c0ab167df5f931ecd5db65b69fa340f28b538276d8476de7934a893e1155"
+        },
+        {
+          "field": "u100",
+          "start": 509032569,
+          "end": 510008633,
+          "sha256": "97081755a43865bb17ff7e13ffb5f2b8c20207dfadf00de9542b9ff999ec87d5"
+        },
+        {
+          "field": "v100",
+          "start": 510008634,
+          "end": 510974622,
+          "sha256": "5ced36c5764626d10d24c24d3b66a871819a8e6c02d05ccaf90fa5aaa92c0199"
+        }
+      ]
+    },
+    {
+      "url": "https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260102/12/atmos/gfs.t12z.pgrb2.0p25.f021",
+      "initialization_time": "2026-01-02T12:00:00+00:00",
+      "forecast_hour": 21,
+      "available_at": "2026-01-02T15:37:11+00:00",
+      "etag": "\"0ef7839efe157a777341a8e87892bf71\"",
+      "index_sha256": "c4d8b92c0a414aa92cf4b3c1a5337b30da6a15eac37ca0c24a94e4b43abd0301",
+      "byte_ranges": [
+        {
+          "field": "surface_pressure",
+          "start": 414830196,
+          "end": 415670373,
+          "sha256": "aeaaa76499905915b942ca6a11b1f73caa2a064eb3df5f3509c1c264bd440f62"
+        },
+        {
+          "field": "temperature_2m",
+          "start": 423846690,
+          "end": 424735003,
+          "sha256": "0176f6f40d2d5d7af292ca6a56199bb59e563a49cfa9a81479a974bfe1e947c5"
+        },
+        {
+          "field": "u10",
+          "start": 430331832,
+          "end": 431299114,
+          "sha256": "3f923f3c9ad65f0151eaf3ad113b3f76f20c6c79be28641d6ae8e88ce9ad57fe"
+        },
+        {
+          "field": "v10",
+          "start": 431299115,
+          "end": 432243807,
+          "sha256": "5f3779d7108295039c26c03cebd4a827eb2044b650d6fe19e4d87d142c30d40d"
+        },
+        {
+          "field": "u100",
+          "start": 506176041,
+          "end": 507151468,
+          "sha256": "77f1769e1a815a3c0b619100fdab69a24fa9c1003f829f71259d1c9bc3bf164d"
+        },
+        {
+          "field": "v100",
+          "start": 507151469,
+          "end": 508115065,
+          "sha256": "db456467370e2a83c03e9e322810f0732c293974858bb919cea237df1b80f86c"
+        }
+      ]
+    },
+    {
+      "url": "https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260102/12/atmos/gfs.t12z.pgrb2.0p25.f024",
+      "initialization_time": "2026-01-02T12:00:00+00:00",
+      "forecast_hour": 24,
+      "available_at": "2026-01-02T15:52:58+00:00",
+      "etag": "\"b3cab105715614cc50a5258f173c1d46\"",
+      "index_sha256": "380e966e7dbfd4adc8869add84ccdd38afeae4182a5ff0fcb4392d45d6150971",
+      "byte_ranges": [
+        {
+          "field": "surface_pressure",
+          "start": 418477839,
+          "end": 419318051,
+          "sha256": "73be04cdef0141cd032bf86cc511eeb5b0429cabf372d823adad1f2219bc674f"
+        },
+        {
+          "field": "temperature_2m",
+          "start": 427692671,
+          "end": 428584852,
+          "sha256": "68ca7a24308bdba1f9d3f1ea37ef87f722ced50b5c622b63168a2b2d22f05f5f"
+        },
+        {
+          "field": "u10",
+          "start": 434204312,
+          "end": 435172062,
+          "sha256": "590e001dc51409327b722526f216a2335e00612ccfc452184b6bac8c83a7d338"
+        },
+        {
+          "field": "v10",
+          "start": 435172063,
+          "end": 436116951,
+          "sha256": "0f4db2c01f7c61f997bc5d2b8fbaaf9d4297714b2839f8d370e3e88394f23a80"
+        },
+        {
+          "field": "u100",
+          "start": 511493207,
+          "end": 512467964,
+          "sha256": "287c214c2ba6bf8f8a662a110101049166a3046b041971bf6f824ff4570a8cd6"
+        },
+        {
+          "field": "v100",
+          "start": 512467965,
+          "end": 513431912,
+          "sha256": "dab39f8be1cd62b6512c2b27101ce54e7901d3a902c2e878f6e063a550ab316b"
+        }
+      ]
+    },
+    {
+      "url": "https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260102/12/atmos/gfs.t12z.pgrb2.0p25.f027",
+      "initialization_time": "2026-01-02T12:00:00+00:00",
+      "forecast_hour": 27,
+      "available_at": "2026-01-02T15:53:50+00:00",
+      "etag": "\"7adff1309bf888309a464275ea2ffc0b\"",
+      "index_sha256": "6ad279715552e92cb381e6cbf5e622eaaa0b979379f38b4a549852badb98f8cf",
+      "byte_ranges": [
+        {
+          "field": "surface_pressure",
+          "start": 414123220,
+          "end": 414962010,
+          "sha256": "dda09374bf092969c6ca9c2bbe0b7ac42012a05e70129cafe087a4e2b844b46f"
+        },
+        {
+          "field": "temperature_2m",
+          "start": 423334520,
+          "end": 424229716,
+          "sha256": "3f76e2a7e32fbdae2f585fbf2e8ac7fcf289f2a34de97c36fdffe6b5d2303202"
+        },
+        {
+          "field": "u10",
+          "start": 429488790,
+          "end": 430463420,
+          "sha256": "4a6c62ba3e48fd57b8bc6058bdf7f5ab7be82b062166348553666b8091ad58a0"
+        },
+        {
+          "field": "v10",
+          "start": 430463421,
+          "end": 431415520,
+          "sha256": "c41cb3c29fd9d409ebe5983c357aeb881dfd989bca1ce7cd458a60c7efe9d059"
+        },
+        {
+          "field": "u100",
+          "start": 505374836,
+          "end": 506352884,
+          "sha256": "a580a5875c7bc40ca1054e6b087c5d6c14cf1c0222a17338bbfcfa4f9366ee7e"
+        },
+        {
+          "field": "v100",
+          "start": 506352885,
+          "end": 507319764,
+          "sha256": "4800f2acc8035295cf6fa710b5ccf12d9c9c3917e795856869b69adf875295d1"
+        }
+      ]
+    },
+    {
+      "url": "https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260102/12/atmos/gfs.t12z.pgrb2.0p25.f030",
+      "initialization_time": "2026-01-02T12:00:00+00:00",
+      "forecast_hour": 30,
+      "available_at": "2026-01-02T15:54:48+00:00",
+      "etag": "\"107ee11c06789f3bf0720951b88e4d4d\"",
+      "index_sha256": "84825ab55c96c698337c0967fc9c48c2f4f35fa97f785d3e0f96579c757abddb",
+      "byte_ranges": [
+        {
+          "field": "surface_pressure",
+          "start": 416107174,
+          "end": 416946318,
+          "sha256": "733aafdffacf9454b03757d46c56ed27289c281cfa59459bcd1e8dbe4e50167e"
+        },
+        {
+          "field": "temperature_2m",
+          "start": 425335331,
+          "end": 426230989,
+          "sha256": "41dc608ae038817bb1d5dfe45aa4c019ce8973f35f6dd08000a2a6cf15644545"
+        },
+        {
+          "field": "u10",
+          "start": 431487122,
+          "end": 432458990,
+          "sha256": "8d98b0a41b22574f224c986f6f37ffae58e34ec14f08fb38f829abd912647adc"
+        },
+        {
+          "field": "v10",
+          "start": 432458991,
+          "end": 433408273,
+          "sha256": "bc00d3acf8c7e5b42b168d14ebea0d2ae58b7348e1f70c327f30d2e873918f5d"
+        },
+        {
+          "field": "u100",
+          "start": 508588551,
+          "end": 509568531,
+          "sha256": "21d5d996ac9a1dfc430f2ec08ff1691fc8691a839ec73c714e07a20150031490"
+        },
+        {
+          "field": "v100",
+          "start": 509568532,
+          "end": 510538035,
+          "sha256": "8bd803dcd09281a81a9366c73710c2efea274c30e80fc685fc714cdf7b496260"
+        }
+      ]
+    },
+    {
+      "url": "https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260102/12/atmos/gfs.t12z.pgrb2.0p25.f033",
+      "initialization_time": "2026-01-02T12:00:00+00:00",
+      "forecast_hour": 33,
+      "available_at": "2026-01-02T15:40:49+00:00",
+      "etag": "\"016c39a44d57ba6dd2777ffd0305f20d\"",
+      "index_sha256": "444a965d9b4b1f3b4dee35138e7d9757d52ac2aa2e1e083e202d317fad1cce57",
+      "byte_ranges": [
+        {
+          "field": "surface_pressure",
+          "start": 414444308,
+          "end": 415282357,
+          "sha256": "00ddffe1260ff8fb0d2197c9d36676973ca8bbceb8e1e5518b98a4062edc6fa8"
+        },
+        {
+          "field": "temperature_2m",
+          "start": 423657196,
+          "end": 424549439,
+          "sha256": "05abc478959ed45857a154db5cca0487f8a970513d9f75666cfa11185559afce"
+        },
+        {
+          "field": "u10",
+          "start": 430194926,
+          "end": 431164664,
+          "sha256": "6f28756662f2cf77295beb4272ba1dad6ae543673605667a4acfa08c5093f723"
+        },
+        {
+          "field": "v10",
+          "start": 431164665,
+          "end": 432111961,
+          "sha256": "86f10294f6792e045e11d48b9c5ecb30d679066d26b00331b4c8d3ff3f21d8c8"
+        },
+        {
+          "field": "u100",
+          "start": 504958115,
+          "end": 505936130,
+          "sha256": "584d18d16f2721a5cce1c325625e75d7f9c8f155b8ee93910b315d128b1d9310"
+        },
+        {
+          "field": "v100",
+          "start": 505936131,
+          "end": 506904678,
+          "sha256": "ceb45daed52a1fe0f6e560fe0919104c9d34f65c34aa2422430b8937172260ab"
+        }
+      ]
+    },
+    {
+      "url": "https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260102/12/atmos/gfs.t12z.pgrb2.0p25.f036",
+      "initialization_time": "2026-01-02T12:00:00+00:00",
+      "forecast_hour": 36,
+      "available_at": "2026-01-02T15:56:28+00:00",
+      "etag": "\"05799c72d4f8950921761387d8990b93\"",
+      "index_sha256": "36a92b75026799c53593a2d99f2985823d9478c8b60e177edd092a708d8b1f82",
+      "byte_ranges": [
+        {
+          "field": "surface_pressure",
+          "start": 414080206,
+          "end": 414916830,
+          "sha256": "52b5efe681d3ab395db4ab62d72078608ca56cb8dbb393b2599dcb0c11ba3676"
+        },
+        {
+          "field": "temperature_2m",
+          "start": 423293849,
+          "end": 424178830,
+          "sha256": "0d82d45baad3b407600e4a83cc5bc1be8e7814e340d7ebe7dd2c6f2cd751a747"
+        },
+        {
+          "field": "u10",
+          "start": 429795993,
+          "end": 430761680,
+          "sha256": "975d04d73bf8061a523d2becf2440f44f169adf8df217c2394516393485d23ba"
+        },
+        {
+          "field": "v10",
+          "start": 430761681,
+          "end": 431706368,
+          "sha256": "8558c669fdaa838a618ef9f5a8e31e774a632084ee39fa6c66c4ab3017a942e1"
+        },
+        {
+          "field": "u100",
+          "start": 506454364,
+          "end": 507425563,
+          "sha256": "efb0a6ca9987eb2f71c8f59847788bbf8bf33129a36ef915f43cdd14cafe971f"
+        },
+        {
+          "field": "v100",
+          "start": 507425564,
+          "end": 508392785,
+          "sha256": "84f3261c2067b31643dec523b9b1eea95b34baf87afa447bf7403b6de14a034b"
+        }
+      ]
+    },
+    {
+      "url": "https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260102/12/atmos/gfs.t12z.pgrb2.0p25.f039",
+      "initialization_time": "2026-01-02T12:00:00+00:00",
+      "forecast_hour": 39,
+      "available_at": "2026-01-02T15:56:49+00:00",
+      "etag": "\"dc94827a27ba196308014ba6694272f1\"",
+      "index_sha256": "65a0fb03691f6da24d95abdc14616f17b940a8fe236bb8cf0b741cdcaaa9bd54",
+      "byte_ranges": [
+        {
+          "field": "surface_pressure",
+          "start": 412769510,
+          "end": 413605746,
+          "sha256": "c0577d9a51d33022e0d1f0994f68af69b22bb290cd4a340612088a7da56996f9"
+        },
+        {
+          "field": "temperature_2m",
+          "start": 421987190,
+          "end": 422870092,
+          "sha256": "782ab47054192ef3595d0e36c8e1494e3e10f07a2ad4b54c38670fe9f888298e"
+        },
+        {
+          "field": "u10",
+          "start": 428096214,
+          "end": 429060596,
+          "sha256": "5617213bbb013aa9167791dc18a2ac95a5a83fa9640f4cdabf7dab1fb7b25832"
+        },
+        {
+          "field": "v10",
+          "start": 429060597,
+          "end": 430007931,
+          "sha256": "861dd25e69eb110964cb7ba79b0c5d6f628c53a3a49c5873cc83fa41fb1b3f77"
+        },
+        {
+          "field": "u100",
+          "start": 503060251,
+          "end": 504028848,
+          "sha256": "6d4a4776de9a350f685ddd171b572b9709f8a9bbe7dd9ec1487a107232fd4038"
+        },
+        {
+          "field": "v100",
+          "start": 504028849,
+          "end": 504994224,
+          "sha256": "aa0d2bf72e4a2cb906956c12d33d270a61a538992009a746e432fb3c5221b33a"
+        }
+      ]
+    },
+    {
+      "url": "https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260102/12/atmos/gfs.t12z.pgrb2.0p25.f042",
+      "initialization_time": "2026-01-02T12:00:00+00:00",
+      "forecast_hour": 42,
+      "available_at": "2026-01-02T15:57:39+00:00",
+      "etag": "\"c32f95dff0af4e078fb05dc8fc9915af\"",
+      "index_sha256": "d196fcbf8c70b797bd396dd9599f24d41e2ab646f45aab7136f57329ac2a2ab7",
+      "byte_ranges": [
+        {
+          "field": "surface_pressure",
+          "start": 413356953,
+          "end": 414193173,
+          "sha256": "28328b4cee1233a82001ea0192f664470a3e25aab0126afe68fbc8542bc5969c"
+        },
+        {
+          "field": "temperature_2m",
+          "start": 422391482,
+          "end": 423274216,
+          "sha256": "ea6ad071103ca0edbf2f2e01fe6b43aa4f2d41df126edc7a1562c80d0ec09b0f"
+        },
+        {
+          "field": "u10",
+          "start": 428494625,
+          "end": 429458928,
+          "sha256": "e7ee6d955632051b1d006edc45c2e9f54d236fa96267b2b00ce76302b9462ae5"
+        },
+        {
+          "field": "v10",
+          "start": 429458929,
+          "end": 430402333,
+          "sha256": "fc52766e9b003f6ea7b6711db13338baa73da235e4f31b24caeda435aa361ccd"
+        },
+        {
+          "field": "u100",
+          "start": 505622738,
+          "end": 506595006,
+          "sha256": "2216c50facf5fd180c3662d09864b4d449b096a3944e20e9f0a4b23ea462ab95"
+        },
+        {
+          "field": "v100",
+          "start": 506595007,
+          "end": 507558819,
+          "sha256": "512691fd5ec88dfe2ecfc7344a1c823d04857fe1a9bbab5297ef28cbf5d8e6ac"
+        }
+      ]
+    },
+    {
+      "url": "https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260102/12/atmos/gfs.t12z.pgrb2.0p25.f045",
+      "initialization_time": "2026-01-02T12:00:00+00:00",
+      "forecast_hour": 45,
+      "available_at": "2026-01-02T15:58:27+00:00",
+      "etag": "\"24878fdfb9eab4909cfadb5ed81843f0\"",
+      "index_sha256": "0a059c58fb679c330a638dd233a9f222dfb9aff3ba3545f1472b10bf989e3caa",
+      "byte_ranges": [
+        {
+          "field": "surface_pressure",
+          "start": 413014373,
+          "end": 413851288,
+          "sha256": "363346bb4e835b7d20fc0fa9233ad92bbb1733c44028aecbbd8fb82c51fb59cd"
+        },
+        {
+          "field": "temperature_2m",
+          "start": 422029925,
+          "end": 422914239,
+          "sha256": "94b1930985a9ebf203de63ee6bcd46a54c361ae752a0cf3d3735896b7b09f2eb"
+        },
+        {
+          "field": "u10",
+          "start": 428126494,
+          "end": 429095900,
+          "sha256": "277f468a75d5861010d879d55430879c6d9d1e33895ccf6b9069787c6a4f53ce"
+        },
+        {
+          "field": "v10",
+          "start": 429095901,
+          "end": 430044132,
+          "sha256": "860d26686426a4c8a5ada154605fd9c672885a199930b389afb83381adf009c5"
+        },
+        {
+          "field": "u100",
+          "start": 503755535,
+          "end": 504727543,
+          "sha256": "2c0a2d577fa3f29912c4652865d7bbae9ae8196a4202d240806672d9c4548aa3"
+        },
+        {
+          "field": "v100",
+          "start": 504727544,
+          "end": 505690988,
+          "sha256": "05de14a775c40d09bdbfe386514073b85c68681043b4aa6bb1f4824e87d1f080"
+        }
+      ]
+    },
+    {
+      "url": "https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260102/12/atmos/gfs.t12z.pgrb2.0p25.f048",
+      "initialization_time": "2026-01-02T12:00:00+00:00",
+      "forecast_hour": 48,
+      "available_at": "2026-01-02T15:59:41+00:00",
+      "etag": "\"93e81c989342afd072860d70370b6d19\"",
+      "index_sha256": "74d98628371e64051b2553180c33f728abc3c349cd3706a53e7bb9cc982f249d",
+      "byte_ranges": [
+        {
+          "field": "surface_pressure",
+          "start": 414426352,
+          "end": 415263423,
+          "sha256": "731707a61d0d1163df4434c1eacfd8079011ffe56acd47e9e26510e617d9d0b8"
+        },
+        {
+          "field": "temperature_2m",
+          "start": 423640529,
+          "end": 424532522,
+          "sha256": "b7d19024b5b9bff4f678bcdbfb61a0e2e3c68c0cf0d2e4700412a47c612fa19c"
+        },
+        {
+          "field": "u10",
+          "start": 430143674,
+          "end": 431113319,
+          "sha256": "3eb82a350adf9a89c27d0579b54064713c7d72f531420ee635cd0b43ff4e368b"
+        },
+        {
+          "field": "v10",
+          "start": 431113320,
+          "end": 432057492,
+          "sha256": "17e2e57bb32e692277984bda6a867e74d96b5650af843b98eab28e190fcb8dc8"
+        },
+        {
+          "field": "u100",
+          "start": 507320292,
+          "end": 508291706,
+          "sha256": "cee820ebe3bbc377de33be4243c9bcfc3d3e9e4237384859d7bbdc32c4fd30c8"
+        },
+        {
+          "field": "v100",
+          "start": 508291707,
+          "end": 509254842,
+          "sha256": "e658b18453f7c252d845c205179e36d073c45e61664c0e8515c5318405d7c6c9"
+        }
+      ]
+    },
+    {
+      "url": "https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260102/12/atmos/gfs.t12z.pgrb2.0p25.f051",
+      "initialization_time": "2026-01-02T12:00:00+00:00",
+      "forecast_hour": 51,
+      "available_at": "2026-01-02T16:00:13+00:00",
+      "etag": "\"f7c3c10f1af1d0b518164810c2ad6bd6\"",
+      "index_sha256": "db94c1f21d46893b02da608d7059b6c07b8e4df0a976735aba1646c58210a2a9",
+      "byte_ranges": [
+        {
+          "field": "surface_pressure",
+          "start": 409008434,
+          "end": 409846305,
+          "sha256": "db333a419b73219840150f719dff3ed65e8fcec5a0b185443fe4a9992c636450"
+        },
+        {
+          "field": "temperature_2m",
+          "start": 418219341,
+          "end": 419107912,
+          "sha256": "2172283cf0ae0ecc6f90cae3b956ddc906f85d45514e7b7170416b69325cd96c"
+        },
+        {
+          "field": "u10",
+          "start": 424358443,
+          "end": 425330269,
+          "sha256": "a4f04eba4562e4a3fd248e4116748dc1c349bf310a8296948dcd6949ae53416a"
+        },
+        {
+          "field": "v10",
+          "start": 425330270,
+          "end": 426276268,
+          "sha256": "ef97527889df25ef155fff989636ff1e115a16a67cf7c98e5caab3fa37cb37ce"
+        },
+        {
+          "field": "u100",
+          "start": 500138168,
+          "end": 501112887,
+          "sha256": "ba02fc363d1da8ffa7d9f348c5ac8b64378e0b4a84b83b7b94e34d25c40a31b2"
+        },
+        {
+          "field": "v100",
+          "start": 501112888,
+          "end": 502078776,
+          "sha256": "1994ba84d4a518f1cc58929b73db9d9ba29ff547b2ce480dfaf36268026f007e"
+        }
+      ]
+    },
+    {
+      "url": "https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.20260102/12/atmos/gfs.t12z.pgrb2.0p25.f054",
+      "initialization_time": "2026-01-02T12:00:00+00:00",
+      "forecast_hour": 54,
+      "available_at": "2026-01-02T16:01:00+00:00",
+      "etag": "\"07b8c06139099650fcd5c9da8e3109d4\"",
+      "index_sha256": "c785a318c2a4216c67b3839038ca4c149b5c5a5f49497ee7f5e3d47678f50b76",
+      "byte_ranges": [
+        {
+          "field": "surface_pressure",
+          "start": 407856256,
+          "end": 408693711,
+          "sha256": "e763b0322f3c356a220e3c4137eefb5659dcd81f6f951f1874c9df78a54c5d15"
+        },
+        {
+          "field": "temperature_2m",
+          "start": 417074504,
+          "end": 417967930,
+          "sha256": "79f187e4638b47485c1c019e6613518efbce738b6a2b751900874f650cd0149f"
+        },
+        {
+          "field": "u10",
+          "start": 423215342,
+          "end": 424184432,
+          "sha256": "561c6a9c1c3b42adb4e95020cdac8a68da8acf8e1eb5924fb9e5742bc5aa8164"
+        },
+        {
+          "field": "v10",
+          "start": 424184433,
+          "end": 425136008,
+          "sha256": "9d4d6fc3606ab790f46a94335d9add800a2e920863661132709a8fc96d795199"
+        },
+        {
+          "field": "u100",
+          "start": 500258947,
+          "end": 501235085,
+          "sha256": "fed47a44e1539b3f15efecfbbd8a9929eb0318a8e85c6da75c51eade4883bb2d"
+        },
+        {
+          "field": "v100",
+          "start": 501235086,
+          "end": 502203137,
+          "sha256": "5a020828ad71d39f12e94f6f3899f65c87371c98a00b2f8c525971f28af9dc72"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,479 @@
+{
+  "kind": "noaa_gfs_operational_forecast",
+  "winner": "gfs_top_5_mean",
+  "feature_set": "trajectory",
+  "features": [
+    "turbine_id",
+    "lead_hour",
+    "u10",
+    "v10",
+    "u100",
+    "v100",
+    "temperature_2m",
+    "surface_pressure",
+    "wind_speed_10m",
+    "wind_speed_100m",
+    "hour_sin",
+    "hour_cos",
+    "year_sin",
+    "year_cos",
+    "nwp_lead_hour",
+    "air_density",
+    "density_adjusted_wind",
+    "wind_power_density",
+    "wind_shear",
+    "direction_sin",
+    "direction_cos",
+    "freezing_distance",
+    "wind_speed_100m_shift-6",
+    "wind_speed_100m_shift-3",
+    "wind_speed_100m_shift3",
+    "wind_speed_100m_shift6",
+    "u100_shift-6",
+    "u100_shift-3",
+    "u100_shift3",
+    "u100_shift6",
+    "v100_shift-6",
+    "v100_shift-3",
+    "v100_shift3",
+    "v100_shift6",
+    "temperature_2m_shift-6",
+    "temperature_2m_shift-3",
+    "temperature_2m_shift3",
+    "temperature_2m_shift6",
+    "surface_pressure_shift-6",
+    "surface_pressure_shift-3",
+    "surface_pressure_shift3",
+    "surface_pressure_shift6",
+    "wind_trajectory_mean",
+    "wind_trajectory_std",
+    "wind_trajectory_min",
+    "wind_trajectory_max"
+  ],
+  "members": [
+    {
+      "name": "local-gpu_078",
+      "config": {
+        "family": "mlp",
+        "features": "point",
+        "hidden": [
+          512,
+          256,
+          128
+        ],
+        "loss_name": "mae",
+        "learning_rate": 0.002,
+        "seed": 307,
+        "epochs": 350,
+        "patience": 40,
+        "batch_size": 2048,
+        "weight_decay": 0.02,
+        "cpu_threads": 2
+      },
+      "fit": {
+        "device": "cuda",
+        "gpu": "NVIDIA GeForce RTX 5090 Laptop GPU",
+        "best_epoch": 6,
+        "epochs_run": 46,
+        "seed": 307,
+        "hidden": [
+          512,
+          256,
+          128
+        ],
+        "loss": "mae",
+        "learning_rate": 0.002,
+        "weight_decay": 0.02,
+        "batch_size": 2048,
+        "seconds": 2.36,
+        "inference_backend": "numpy; no GPU or torch needed"
+      },
+      "hostname": "DESKTOP-C97CP8C",
+      "metrics": {
+        "n": 5732,
+        "mae": 0.165068404772138,
+        "rmse": 0.250390052047342,
+        "bias": -0.013432426410509474
+      },
+      "seconds": 2.39,
+      "by_month": {
+        "2025-11": {
+          "n": 2832,
+          "mae": 0.15018605370492158,
+          "rmse": 0.22572960538713327,
+          "bias": -0.009946458494712082
+        },
+        "2025-12": {
+          "n": 2900,
+          "mae": 0.17960179036605417,
+          "rmse": 0.27232551806590816,
+          "bias": -0.01683665438897094
+        }
+      },
+      "train_sha256": "dece992267e7b624922ecb4f54ddbbd8aabdf283524dc17e03745c0701abb2b3",
+      "validation_sha256": "5f9be81bedba40dc28f69cd49fdfcbc03dfe32d1766718858c51344d55c61b9a",
+      "prediction_path": "artifacts/gfs-search/local-gpu/local-gpu_078.predictions.npy"
+    },
+    {
+      "name": "local-gpu_101",
+      "config": {
+        "family": "mlp",
+        "features": "trajectory",
+        "hidden": [
+          512,
+          256,
+          128
+        ],
+        "loss_name": "huber",
+        "learning_rate": 0.002,
+        "seed": 211,
+        "epochs": 350,
+        "patience": 40,
+        "batch_size": 2048,
+        "weight_decay": 0.02,
+        "cpu_threads": 2
+      },
+      "fit": {
+        "device": "cuda",
+        "gpu": "NVIDIA GeForce RTX 5090 Laptop GPU",
+        "best_epoch": 3,
+        "epochs_run": 43,
+        "seed": 211,
+        "hidden": [
+          512,
+          256,
+          128
+        ],
+        "loss": "huber",
+        "learning_rate": 0.002,
+        "weight_decay": 0.02,
+        "batch_size": 2048,
+        "seconds": 2.19,
+        "inference_backend": "numpy; no GPU or torch needed"
+      },
+      "hostname": "DESKTOP-C97CP8C",
+      "metrics": {
+        "n": 5732,
+        "mae": 0.16514909492924748,
+        "rmse": 0.24961907863405627,
+        "bias": -0.007563395923067238
+      },
+      "seconds": 2.22,
+      "by_month": {
+        "2025-11": {
+          "n": 2832,
+          "mae": 0.13984281467394413,
+          "rmse": 0.2120581304834226,
+          "bias": -0.013577687901049225
+        },
+        "2025-12": {
+          "n": 2900,
+          "mae": 0.1898619865440817,
+          "rmse": 0.2815032873517589,
+          "bias": -0.0016901287225000062
+        }
+      },
+      "train_sha256": "dece992267e7b624922ecb4f54ddbbd8aabdf283524dc17e03745c0701abb2b3",
+      "validation_sha256": "5f9be81bedba40dc28f69cd49fdfcbc03dfe32d1766718858c51344d55c61b9a",
+      "prediction_path": "artifacts/gfs-search/local-gpu/local-gpu_101.predictions.npy"
+    },
+    {
+      "name": "local-gpu_043",
+      "config": {
+        "family": "mlp",
+        "features": "trajectory",
+        "hidden": [
+          256,
+          128,
+          64
+        ],
+        "loss_name": "mae",
+        "learning_rate": 0.002,
+        "seed": 307,
+        "epochs": 350,
+        "patience": 40,
+        "batch_size": 2048,
+        "weight_decay": 0.02,
+        "cpu_threads": 2
+      },
+      "fit": {
+        "device": "cuda",
+        "gpu": "NVIDIA GeForce RTX 5090 Laptop GPU",
+        "best_epoch": 5,
+        "epochs_run": 45,
+        "seed": 307,
+        "hidden": [
+          256,
+          128,
+          64
+        ],
+        "loss": "mae",
+        "learning_rate": 0.002,
+        "weight_decay": 0.02,
+        "batch_size": 2048,
+        "seconds": 2.67,
+        "inference_backend": "numpy; no GPU or torch needed"
+      },
+      "hostname": "DESKTOP-C97CP8C",
+      "metrics": {
+        "n": 5732,
+        "mae": 0.16515971608043384,
+        "rmse": 0.25347542078377583,
+        "bias": -0.0030497623565036444
+      },
+      "seconds": 2.7,
+      "by_month": {
+        "2025-11": {
+          "n": 2832,
+          "mae": 0.13865338166084556,
+          "rmse": 0.21363645416221475,
+          "bias": -0.009350593673728388
+        },
+        "2025-12": {
+          "n": 2900,
+          "mae": 0.1910445226584593,
+          "rmse": 0.2870935185708491,
+          "bias": 0.00310332532983445
+        }
+      },
+      "train_sha256": "dece992267e7b624922ecb4f54ddbbd8aabdf283524dc17e03745c0701abb2b3",
+      "validation_sha256": "5f9be81bedba40dc28f69cd49fdfcbc03dfe32d1766718858c51344d55c61b9a",
+      "prediction_path": "artifacts/gfs-search/local-gpu/local-gpu_043.predictions.npy"
+    },
+    {
+      "name": "cloud-gpu_143",
+      "config": {
+        "family": "mlp",
+        "features": "point",
+        "hidden": [
+          512,
+          512,
+          256,
+          128
+        ],
+        "loss_name": "mae",
+        "learning_rate": 0.002,
+        "seed": 503,
+        "epochs": 350,
+        "patience": 40,
+        "batch_size": 2048,
+        "weight_decay": 0.02,
+        "cpu_threads": 2
+      },
+      "fit": {
+        "device": "cuda",
+        "gpu": "NVIDIA RTX A6000",
+        "best_epoch": 6,
+        "epochs_run": 46,
+        "seed": 503,
+        "hidden": [
+          512,
+          512,
+          256,
+          128
+        ],
+        "loss": "mae",
+        "learning_rate": 0.002,
+        "weight_decay": 0.02,
+        "batch_size": 2048,
+        "seconds": 2.46,
+        "inference_backend": "numpy; no GPU or torch needed"
+      },
+      "hostname": "brev-yf4lxgjo1",
+      "metrics": {
+        "n": 5732,
+        "mae": 0.16530361350365302,
+        "rmse": 0.2539887283572008,
+        "bias": -0.03360429611774057
+      },
+      "seconds": 2.54,
+      "by_month": {
+        "2025-11": {
+          "n": 2832,
+          "mae": 0.14992794940023849,
+          "rmse": 0.2291318120325114,
+          "bias": -0.035278021845198806
+        },
+        "2025-12": {
+          "n": 2900,
+          "mae": 0.18031874479360815,
+          "rmse": 0.2761115232802211,
+          "bias": -0.031969816372857215
+        }
+      },
+      "train_sha256": "dece992267e7b624922ecb4f54ddbbd8aabdf283524dc17e03745c0701abb2b3",
+      "validation_sha256": "5f9be81bedba40dc28f69cd49fdfcbc03dfe32d1766718858c51344d55c61b9a",
+      "prediction_path": "artifacts/gfs-search/cloud-gpu/cloud-gpu_143.predictions.npy"
+    },
+    {
+      "name": "cloud-gpu_071",
+      "config": {
+        "family": "mlp",
+        "features": "point",
+        "hidden": [
+          512,
+          256,
+          128
+        ],
+        "loss_name": "mae",
+        "learning_rate": 0.002,
+        "seed": 401,
+        "epochs": 350,
+        "patience": 40,
+        "batch_size": 2048,
+        "weight_decay": 0.02,
+        "cpu_threads": 2
+      },
+      "fit": {
+        "device": "cuda",
+        "gpu": "NVIDIA RTX A6000",
+        "best_epoch": 5,
+        "epochs_run": 45,
+        "seed": 401,
+        "hidden": [
+          512,
+          256,
+          128
+        ],
+        "loss": "mae",
+        "learning_rate": 0.002,
+        "weight_decay": 0.02,
+        "batch_size": 2048,
+        "seconds": 1.73,
+        "inference_backend": "numpy; no GPU or torch needed"
+      },
+      "hostname": "brev-yf4lxgjo1",
+      "metrics": {
+        "n": 5732,
+        "mae": 0.16536836519332074,
+        "rmse": 0.2510605378845045,
+        "bias": -0.02396711911541128
+      },
+      "seconds": 1.78,
+      "by_month": {
+        "2025-11": {
+          "n": 2832,
+          "mae": 0.14956084867880598,
+          "rmse": 0.22384586345299956,
+          "bias": -0.02271573538409647
+        },
+        "2025-12": {
+          "n": 2900,
+          "mae": 0.18080522269990892,
+          "rmse": 0.2750504705368422,
+          "bias": -0.025189160055784907
+        }
+      },
+      "train_sha256": "dece992267e7b624922ecb4f54ddbbd8aabdf283524dc17e03745c0701abb2b3",
+      "validation_sha256": "5f9be81bedba40dc28f69cd49fdfcbc03dfe32d1766718858c51344d55c61b9a",
+      "prediction_path": "artifacts/gfs-search/cloud-gpu/cloud-gpu_071.predictions.npy"
+    }
+  ],
+  "created_at": "2026-09-23T10:05:05.761388+00:00",
+  "data": {
+    "sources": [
+      {
+        "turbine_id": 1,
+        "file": "turbine_1.csv",
+        "sha256": "c4c341582fb2dd348b7187f0128cff265fe055f469413871ebb5db50eef58b5b",
+        "source_rows": 142360,
+        "source_last_timestamp": "2026-01-31 23:50:00",
+        "accepted_hours": 23667,
+        "excluded_hours": 1725
+      },
+      {
+        "turbine_id": 2,
+        "file": "turbine_2.csv",
+        "sha256": "820578cd18bb557cd30c2e102f3ae5a386dfc6c489a5a15743339c2b017305e5",
+        "source_rows": 149499,
+        "source_last_timestamp": "2026-01-31 23:50:00",
+        "accepted_hours": 24785,
+        "excluded_hours": 607
+      }
+    ],
+    "timezone": "unspecified; source-clock labels retained",
+    "timestamp_convention_assumption": "start",
+    "hour_label": "interval_start",
+    "aggregation": "arithmetic mean",
+    "minimum_samples_per_hour": 6,
+    "target": "normalized_power",
+    "missing_target_policy": "exclude incomplete hours; never impute"
+  },
+  "training_rows": 63052,
+  "training_data_available_until": "2026-01-30T19:00:00+00:00",
+  "time_assumptions": {
+    "utc_offset_hours": 5,
+    "timestamp_convention": "start",
+    "daily_issue_hour": 23,
+    "confirmed_by_organizers": false
+  },
+  "search": {
+    "candidate_count": 400,
+    "selection_months": [
+      "2025-11",
+      "2025-12"
+    ],
+    "chosen": {
+      "count": 5,
+      "members": [
+        "local-gpu_078",
+        "local-gpu_101",
+        "local-gpu_043",
+        "cloud-gpu_143",
+        "cloud-gpu_071"
+      ],
+      "metrics": {
+        "n": 5732,
+        "mae": 0.16261204694948303,
+        "rmse": 0.24649184514145037,
+        "bias": -0.016323399984646443
+      }
+    },
+    "january_used_for_search": false
+  },
+  "january": {
+    "overall": {
+      "n": 2928,
+      "mae": 0.15946577377420976,
+      "rmse": 0.23189896079335778,
+      "bias": -0.003676029247536226
+    },
+    "by_turbine": {
+      "1": {
+        "n": 1464,
+        "mae": 0.1589888409352529,
+        "rmse": 0.23011663971245475,
+        "bias": -0.0024165321504947923
+      },
+      "2": {
+        "n": 1464,
+        "mae": 0.1599427066131666,
+        "rmse": 0.23366768745705277,
+        "bias": -0.0049355263445776615
+      }
+    },
+    "by_horizon": {
+      "1-24h": {
+        "n": 1488,
+        "mae": 0.15225502068350757,
+        "rmse": 0.21898467749128608,
+        "bias": -0.005023213000456954
+      },
+      "25-48h": {
+        "n": 1440,
+        "mae": 0.16691688530126864,
+        "rmse": 0.24452824313935306,
+        "bias": -0.002283939369518145
+      }
+    },
+    "unique_target_hours": 1488,
+    "daily_issues": 31
+  },
+  "weather": {
+    "days": 730,
+    "availability": "Original S3 Last-Modified <= as_of, verified for every source object",
+    "manifest_sha256": "d158a931b2fa3a458c1f82d4c2fab85f65ca03d67ea4c260ec1f67df82c51c6f"
+  },
+  "note": "January is a development monitoring month; February actuals are absent. Availability checked against original GFS S3 object timestamps.",
+  "artifact_sha256": "f4374978cd918ab250b5408118290a0762d7a388614b70309a125f69b18aff50"
+}

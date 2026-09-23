@@ -112,6 +112,10 @@ def train_worker(worker: str, shard: int, shards: int) -> None:
         if hashlib.sha256((SEARCH / (split + ".parquet")).read_bytes()).hexdigest() != protocol[split + "_sha256"]:
             raise ValueError("Training pack changed")
     train, valid = [pd.read_parquet(SEARCH / (s + ".parquet")) for s in ["train", "validation"]]
+    if not train.hour.lt(protocol["train_before"]).all():
+        raise ValueError("Search training crossed its historical cutoff")
+    if not valid.hour.dt.strftime("%Y-%m").isin(protocol["selection_months"]).all():
+        raise ValueError("Search validation includes an undeclared month")
     output = SEARCH / worker
     output.mkdir(parents=True, exist_ok=True)
     with threadpool_limits(limits=2):
@@ -141,6 +145,11 @@ def train_worker(worker: str, shard: int, shards: int) -> None:
 def finalize() -> None:
     protocol = json.loads((SEARCH / "protocol.json").read_text())
     valid = pd.read_parquet(SEARCH / "validation.parquet")
+    for worker in ["cpu", "local-gpu", "cloud-gpu"]:
+        expected = len(configurations(worker))
+        complete = len(list((SEARCH / worker).glob(worker + "_*.json")))
+        if complete != expected:
+            raise ValueError(f"Search incomplete: {worker} {complete}/{expected}")
     rows = []
     for path in sorted(SEARCH.glob("*/*.json")):
         info = json.loads(path.read_text())

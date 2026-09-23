@@ -19,6 +19,8 @@ def load_runs(cache: Path = CACHE, days: list[str] | None = None) -> tuple[pd.Da
     paths = [cache / (day + ".csv") for day in days] if days is not None else sorted(cache.glob("????-??-??.csv"))
     for path in paths:
         metadata = json.loads(path.with_suffix(".meta.json").read_text())
+        if metadata["resolution"] != "0p25":
+            raise ValueError("The production model requires the GFS 0.25-degree grid")
         if hashlib.sha256(path.read_bytes()).hexdigest() != metadata["sha256"]:
             raise ValueError(f"NOAA point cache checksum mismatch: {path.name}")
         as_of, initialization, available = [pd.Timestamp(metadata[k]) for k in ("as_of", "initialization_time", "available_at")]
