@@ -5,6 +5,11 @@ from pydantic import AfterValidator, BeforeValidator, Field, model_validator
 
 from backend.app.schemas.common import SHA256, ErrorDetail, Schema, UTCDateTime
 from backend.app.schemas.turbine import TurbineId
+from backend.app.schemas.weather import (
+    ESTIMATED_AVAILABILITY_WARNING,
+    WeatherInput,
+    WeatherProvenance,
+)
 
 RunStatus = Literal["queued", "running", "completed", "failed"]
 Stage = Literal["validate", "weather", "prepare", "model", "predict", "review", "save"]
@@ -82,23 +87,11 @@ class ForecastPoint(Schema):
     valid_time: UTCDateTime
     lead_hour: int = Field(strict=True, ge=1, le=48)
     predicted_power: float = Field(strict=True, ge=0, le=1)
-
-
-class WeatherProvenance(Schema):
-    provider: str = Field(min_length=1)
-    model: str = Field(min_length=1)
-    initialization_time: UTCDateTime
-    available_at: UTCDateTime
-    availability_basis: str = Field(min_length=1)
-    retrieved_at: UTCDateTime
-    sha256: SHA256
+    weather_inputs: list[WeatherInput] = Field(min_length=1, max_length=16)
 
     @model_validator(mode="after")
-    def time_order(self) -> Self:
-        if self.initialization_time > self.available_at:
-            raise ValueError("Weather cannot be available before initialization")
-        if self.available_at > self.retrieved_at:
-            raise ValueError("Weather cannot be retrieved before availability")
+    def ordered_inputs(self) -> Self:
+        self.weather_inputs.sort(key=lambda item: item.source_id)
         return self
 
 
@@ -106,6 +99,41 @@ class ComputedSeries(Schema):
     turbine_id: TurbineId
     points: list[ForecastPoint] = Field(min_length=24, max_length=48)
     weather: WeatherProvenance
+
+    @model_validator(mode="before")
+    @classmethod
+    def read_legacy_single_run(cls, value):
+        """Normalize the original one-source format without changing stored JSON."""
+        if not isinstance(value, dict):
+            return value
+        weather = value.get("weather")
+        if not isinstance(weather, dict) or "sources" in weather or "sha256" not in weather:
+            return value
+        source_id = f"legacy_{weather['sha256']}"
+        source = {**weather, "source_id": source_id, "product": "single_run"}
+        points = value.get("points")
+        if not isinstance(points, list):
+            return value
+        return {
+            **value,
+            "weather": {"sources": [source]},
+            "points": [
+                {**point, "weather_inputs": [{"source_id": source_id}]}
+                if isinstance(point, dict) and "weather_inputs" not in point
+                else point
+                for point in points
+            ],
+        }
+
+    @model_validator(mode="after")
+    def consistent_weather(self) -> Self:
+        referenced = set()
+        for point in self.points:
+            self.weather.validate_inputs(point.valid_time, point.weather_inputs)
+            referenced.update(item.source_id for item in point.weather_inputs)
+        if referenced != set(self.weather.by_id()):
+            raise ValueError("Every declared weather source must be used by a forecast hour")
+        return self
 
 
 class ForecastSeries(ComputedSeries):
@@ -134,8 +162,6 @@ class AgentResult(Schema):
         if sorted(series.turbine_id for series in self.series) != request.turbine_ids:
             raise ValueError("Agent must return exactly the requested turbines")
         for series in self.series:
-            if series.weather.available_at > request.as_of:
-                raise ValueError("Weather was not yet available at as_of")
             if len(series.points) != request.horizon_hours:
                 raise ValueError("Each turbine must contain the complete forecast horizon")
             for lead, point in enumerate(series.points, start=1):
@@ -143,6 +169,11 @@ class AgentResult(Schema):
                     raise ValueError("Forecast hours must be unique and ordered from 1")
                 if point.valid_time != request.as_of + timedelta(hours=lead):
                     raise ValueError("valid_time must equal as_of + lead_hour")
+                series.weather.validate_inputs(point.valid_time, point.weather_inputs)
+                series.weather.validate_as_of(request.as_of, point.weather_inputs)
+        if any(series.weather.uses_estimates() for series in self.series):
+            if ESTIMATED_AVAILABILITY_WARNING not in self.analysis.warnings:
+                self.analysis.warnings.append(ESTIMATED_AVAILABILITY_WARNING)
 
 
 class ForecastRead(Schema):

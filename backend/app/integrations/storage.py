@@ -51,8 +51,11 @@ def comparable_result(result: AgentResult | ForecastRead) -> dict:
         series.append(
             {
                 "turbine_id": item.turbine_id,
-                "points": [point.model_dump(mode="json") for point in item.points],
-                "weather": item.weather.model_dump(mode="json", exclude={"retrieved_at"}),
+                "points": [
+                    point.model_dump(mode="json", exclude={"weather_inputs"})
+                    | {"weather_inputs": item.weather.comparable_inputs(point.weather_inputs)}
+                    for point in item.points
+                ],
             }
         )
     return {
@@ -254,12 +257,13 @@ class JobStore:
                     storage_id = self.forecasts.record_run(
                         issued_at=request.as_of.replace(tzinfo=None),
                         turbine_id=computed.turbine_id,
-                        weather_source=computed.weather.provider,
-                        weather_run=computed.weather.initialization_time.isoformat(),
+                        weather_source=computed.weather.storage_provider(),
+                        weather_run=computed.weather.storage_run(),
                         model_name=output.model_name,
                         model_version=output.model_version,
                         horizon_hours=request.horizon_hours,
                         trigger="weather_update" if previous else "manual",
+                        note=f"api_run_id={run_id}; weather provenance in api_runs.result",
                     )
                     self.forecasts.record_forecast(
                         storage_id,
