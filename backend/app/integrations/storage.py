@@ -139,6 +139,14 @@ class JobStore:
                     [replay.replay_id, replay.model_dump_json(), replay.status],
                 )
 
+    def list_runs(self, limit: int = 100) -> list[ForecastRunRead]:
+        with self._lock:
+            rows = self.connection.execute(
+                "SELECT state FROM api_runs ORDER BY created_at DESC, run_id DESC LIMIT ?",
+                [limit],
+            ).fetchall()
+        return [ForecastRunRead.model_validate_json(row[0]) for row in rows]
+
     def get_run(self, run_id: str) -> ForecastRunRead:
         with self._lock:
             row = self.connection.execute(

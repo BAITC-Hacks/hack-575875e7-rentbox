@@ -21,7 +21,7 @@ type Props = {
   turbine: TurbineId
   mode: SceneMode
   focus: SceneFocus
-  point: ForecastPoint
+  point: ForecastPoint | null
   hourIndex: number
   data: ForecastPoint[]
   busy: boolean
@@ -127,7 +127,7 @@ export function TurbineHero({
             : turbine === "t1"
               ? "WTG–001 · СЕВЕРНЫЙ УЧАСТОК"
               : "WTG–002 · ЮЖНЫЙ УЧАСТОК"}{" "}
-          <i /> {point.hour} · UTC+5
+          <i /> {point?.hour ?? "Час не выбран"} · UTC+5
         </span>
         <h2>
           {copy.title}
@@ -142,7 +142,7 @@ export function TurbineHero({
               Ветер
             </span>
             <strong>
-              {number(point.wind)}
+              {number(point?.wind)}
               <small>м/с</small>
             </strong>
           </div>
@@ -152,7 +152,7 @@ export function TurbineHero({
               Мощность
             </span>
             <strong>
-              {number(point.forecast)}
+              {number(point?.forecast)}
               <small>%</small>
             </strong>
           </div>
@@ -162,7 +162,7 @@ export function TurbineHero({
               Воздух
             </span>
             <strong>
-              {number(point.temperature)}
+              {number(point?.temperature)}
               <small>°C</small>
             </strong>
           </div>
@@ -205,21 +205,21 @@ export function TurbineHero({
           </div>
         )}
         <span className="wc-turbine-disclaimer">
-          Демо-данные · условная конструкция турбины
+          {point ? "Прогноз модели" : "Ожидание прогноза"} · условная конструкция турбины
         </span>
       </div>
       <TurbineStage
         mode={mode}
         focus={focus}
-        wind={point.wind}
-        power={point.forecast}
-        temperature={point.temperature}
+        wind={point?.wind ?? null}
+        power={point?.forecast ?? null}
+        temperature={point?.temperature ?? null}
       />
       <div className="wc-twin-timeline">
         <div>
           <span>ВЫБРАННЫЙ ЧАС</span>
           <strong>
-            {formatDate(point.date)} · {point.hour}
+            {point ? `${formatDate(point.date)} · ${point.hour}` : "Прогноз не выбран"}
           </strong>
         </div>
         <div className="wc-twin-scrubber">
@@ -227,15 +227,16 @@ export function TurbineHero({
             type="range"
             aria-label="Час 3D-модели"
             min={0}
-            max={data.length - 1}
+            max={Math.max(0, data.length - 1)}
+            disabled={!data.length}
             value={hourIndex}
             onChange={(e) => onHour(Number(e.target.value))}
-            aria-valuetext={`${formatDate(point.date)}, ${point.hour}`}
+            aria-valuetext={point ? `${formatDate(point.date)}, ${point.hour}` : "Нет данных"}
           />
           <div>
-            <span>{data[0]!.hour}</span>
-            <span>Горизонт {data.length} ч · UTC+5</span>
-            <span>{data.at(-1)!.hour}</span>
+            <span>{data[0]?.hour ?? "—"}</span>
+            <span>{data.length ? `Горизонт ${data.length} ч · UTC+5` : "Ожидание расчёта"}</span>
+            <span>{data.at(-1)?.hour ?? "—"}</span>
           </div>
         </div>
         <span className="wc-twin-sync" role="status">

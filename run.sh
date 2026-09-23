@@ -236,8 +236,8 @@ start_web() {
 
     bold "Запуск дашборда (порт $WEB_PORT)"
     mkdir -p .run
-    # Адрес backend передаётся фронту; CORS на бэке уже разрешает localhost:3000.
-    NEXT_PUBLIC_API_URL="http://127.0.0.1:$PORT/api" \
+    # Next.js проксирует /api на backend; браузер обращается к своему origin.
+    RENTBOX_API_URL="http://127.0.0.1:$PORT/api" \
         npm run dev --workspace web -- --port "$WEB_PORT" > .run/web.log 2>&1 &
     echo $! > .run/web.pid
 

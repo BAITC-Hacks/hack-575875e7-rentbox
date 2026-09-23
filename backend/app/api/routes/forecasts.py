@@ -1,9 +1,12 @@
-from fastapi import APIRouter, Response
+from typing import Annotated
+
+from fastapi import APIRouter, Query, Response
 
 from backend.app.api.deps import ForecastServiceDep
 from backend.app.schemas.forecast import (
     ForecastRead,
     ForecastRunCreate,
+    ForecastRunList,
     ForecastRunRead,
     ReplayAccepted,
     ReplayCreate,
@@ -12,6 +15,11 @@ from backend.app.schemas.forecast import (
 )
 
 router = APIRouter(prefix="/agent", tags=["agent"])
+
+
+@router.get("/runs", response_model=ForecastRunList)
+def list_runs(service: ForecastServiceDep, limit: Annotated[int, Query(ge=1, le=200)] = 100):
+    return ForecastRunList(items=service.store.list_runs(limit))
 
 
 @router.post("/runs", response_model=RunAccepted, status_code=202)

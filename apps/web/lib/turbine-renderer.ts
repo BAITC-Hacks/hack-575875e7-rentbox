@@ -10,9 +10,9 @@ import {
 export type TurbineSceneSettings = {
   mode: SceneMode
   focus: SceneFocus
-  wind: number
-  power: number
-  temperature: number
+  wind: number | null
+  power: number | null
+  temperature: number | null
   playing: boolean
   reducedMotion: boolean
 }
@@ -372,11 +372,11 @@ export async function mountTurbineScene(
             ease
           )
         else if (s.playing)
-          rotor.rotation.z -= dt * illustrativeRotorSpeed(s.wind, s.mode)
+          rotor.rotation.z -= dt * illustrativeRotorSpeed(s.wind ?? 0, s.mode)
       }
       if (s.playing && flow.visible) {
         for (let i = 2; i < coords.length; i += 3) {
-          coords[i]! -= dt * Math.min(s.wind * 0.4, 6)
+          coords[i]! -= dt * Math.min((s.wind ?? 0) * 0.4, 6)
           if (coords[i]! < -5) coords[i] = 6
         }
         particlesGeo.attributes.position!.needsUpdate = true

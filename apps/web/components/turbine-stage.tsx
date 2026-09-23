@@ -26,9 +26,9 @@ export function TurbineStage({
 }: {
   mode: SceneMode
   focus: SceneFocus
-  wind: number
-  power: number
-  temperature: number
+  wind: number | null
+  power: number | null
+  temperature: number | null
 }) {
   const hostRef = useRef<HTMLDivElement>(null)
   const [status, setStatus] = useState<"loading" | "ready" | "fallback">(

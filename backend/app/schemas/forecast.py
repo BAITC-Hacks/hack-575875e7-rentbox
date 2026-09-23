@@ -83,6 +83,10 @@ class ForecastRunRead(Schema):
     error: ErrorDetail | None = None
 
 
+class ForecastRunList(Schema):
+    items: list[ForecastRunRead]
+
+
 class ForecastPoint(Schema):
     valid_time: UTCDateTime
     lead_hour: int = Field(strict=True, ge=1, le=48)

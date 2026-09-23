@@ -6,10 +6,10 @@ export type ForecastPoint = {
   date: string
   forecast: number
   actual: number | null
-  lower: number
-  upper: number
-  wind: number
-  temperature: number
+  lower: number | null
+  upper: number | null
+  wind: number | null
+  temperature: number | null
 }
 export type ForecastRun = {
   id: string
@@ -37,15 +37,15 @@ export const TURBINES = [
   },
 ]
 export const AGENT_STEPS = [
-  { title: "Получение погоды", detail: "Архивные выпуски ECMWF и GFS" },
+  { title: "Получение погоды", detail: "Проверка входов и доступности архивного прогноза" },
   {
     title: "Подготовка данных",
     detail: "Проверка пропусков и временных меток",
   },
-  { title: "Запуск модели", detail: "Демонстрационный расчёт выработки" },
+  { title: "Запуск модели", detail: "Загрузка обученной модели" },
   {
     title: "Почасовой прогноз",
-    detail: "Значения и диапазон неопределённости",
+    detail: "Нормализованная мощность на 24–48 часов",
   },
   {
     title: "Анализ результата",
@@ -60,8 +60,8 @@ export const TEST_DATES = Array.from(
 export const clamp = (n: number, min: number, max: number) =>
   Math.min(max, Math.max(min, n))
 const round = (n: number) => Math.round(n * 100) / 100
-export const number = (n: number, digits = 1) =>
-  n.toLocaleString("ru-RU", {
+export const number = (n: number | null | undefined, digits = 1) =>
+  n == null || !Number.isFinite(n) ? "—" : n.toLocaleString("ru-RU", {
     minimumFractionDigits: digits,
     maximumFractionDigits: digits,
   })
@@ -69,7 +69,7 @@ export const formatDate = (date: string, long = false) =>
   new Intl.DateTimeFormat("ru-RU", {
     day: "2-digit",
     month: long ? "long" : "short",
-    timeZone: "Asia/Almaty",
+    timeZone: "Etc/GMT-5",
   }).format(new Date(date.length === 10 ? `${date}T00:00:00+05:00` : date))
 export const formatTimestamp = (date: string) =>
   new Intl.DateTimeFormat("ru-RU", {
@@ -77,7 +77,7 @@ export const formatTimestamp = (date: string) =>
     month: "short",
     hour: "2-digit",
     minute: "2-digit",
-    timeZone: "Asia/Almaty",
+    timeZone: "Etc/GMT-5",
   }).format(new Date(date))
 
 export function getProvenance(date: string) {
@@ -149,23 +149,25 @@ export function generateForecast(
 
 export function getMetrics(points: ForecastPoint[]) {
   const measured = points.filter((p) => p.actual !== null)
+  const wind = points.filter((p) => p.wind !== null)
+  const intervals = measured.filter((p) => p.lower !== null && p.upper !== null)
   return {
-    mean: points.reduce((sum, p) => sum + p.forecast, 0) / points.length,
-    peak: Math.max(...points.map((p) => p.forecast)),
-    wind: points.reduce((sum, p) => sum + p.wind, 0) / points.length,
+    mean: points.length ? points.reduce((sum, p) => sum + p.forecast, 0) / points.length : null,
+    peak: points.length ? Math.max(...points.map((p) => p.forecast)) : null,
+    wind: wind.length ? wind.reduce((sum, p) => sum + p.wind!, 0) / wind.length : null,
     nmae:
-      measured.reduce((sum, p) => sum + Math.abs(p.forecast - p.actual!), 0) /
-      (measured.length || 1),
-    rmse: Math.sqrt(
+      measured.length ? measured.reduce((sum, p) => sum + Math.abs(p.forecast - p.actual!), 0) /
+      measured.length : null,
+    rmse: measured.length ? Math.sqrt(
       measured.reduce((sum, p) => sum + (p.forecast - p.actual!) ** 2, 0) /
         (measured.length || 1)
-    ),
+    ) : null,
     coverage:
-      (measured.filter((p) => p.actual! >= p.lower && p.actual! <= p.upper)
+      intervals.length ? (intervals.filter((p) => p.actual! >= p.lower! && p.actual! <= p.upper!)
         .length /
-        (measured.length || 1)) *
-      100,
-    fullLoadHours: points.reduce((sum, p) => sum + p.forecast / 100, 0),
+        intervals.length) *
+      100 : null,
+    fullLoadHours: points.length ? points.reduce((sum, p) => sum + p.forecast / 100, 0) : null,
   }
 }
 
