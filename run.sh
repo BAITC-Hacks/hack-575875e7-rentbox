@@ -3,10 +3,12 @@
 #
 #   ./run.sh          меню выбора (или сразу запуск, если терминал неинтерактивный)
 #   ./run.sh all      поднять backend и дашборд вместе
+#   ./run.sh web      подключить дашборд к уже запущенному backend
 #   ./run.sh demo     поднять и сразу посчитать прогноз на 48 часов
 #   ./run.sh check    только проверить окружение, ничего не запускать
 #   ./run.sh stop     остановить
 #   ./run.sh logs     показать журнал сервиса
+#   ./run.sh settings  OpenAI: ChatGPT / API key / отключить
 #
 # Ключи и внешние учётные записи не нужны: прогнозы погоды лежат в репозитории
 # (data/gfs-runs), модель — в artifacts. Достаточно Docker; если его нет,
@@ -19,6 +21,7 @@ cd "$(dirname "$0")"
 PORT="${BACKEND_PORT:-8000}"
 COMPOSE=""
 MODE=""
+OPENAI_MODE="api_key"
 
 red()   { printf '\033[31m%s\033[0m\n' "$*"; }
 green() { printf '\033[32m%s\033[0m\n' "$*"; }
@@ -59,12 +62,82 @@ pick_port() {
     die "порты $PORT..$candidate заняты" "Освободите порт или задайте свой: BACKEND_PORT=9000 ./run.sh"
 }
 
+# Read only two non-secret flags. Never source dotenv as executable shell code.
+helper_setting() {
+    local key="$1" fallback="$2"
+    if [ -n "${!key+x}" ]; then
+        printf '%s\n' "${!key}"
+        return
+    fi
+    local files=(/dev/null)
+    [ ! -f .env ] || files+=(.env)
+    [ ! -f backend/.env ] || files+=(backend/.env)
+    awk -v key="$key" -v fallback="$fallback" '
+        BEGIN { value=fallback; quote=sprintf("%c",39) }
+        {
+            line=$0
+            sub(/^[ \t]*export[ \t]+/, "", line)
+            if (line ~ "^[ \\t]*" key "[ \\t]*=") {
+                sub("^[ \\t]*" key "[ \\t]*=[ \\t]*", "", line)
+                sub(/[ \t]+#.*/, "", line)
+                sub(/[ \t\r]+$/, "", line)
+                first=substr(line,1,1)
+                if ((first == "\"" || first == quote) && substr(line,length(line),1) == first)
+                    line=substr(line,2,length(line)-2)
+                value=line
+            }
+        }
+        END { print value }
+    ' "${files[@]}"
+}
+
+helper_mode() {
+    local enabled
+    enabled=$(helper_setting OPENAI_HELPER_ENABLED true | tr '[:upper:]' '[:lower:]')
+    case "$enabled" in
+        false|0|off|no) OPENAI_MODE="off"; return ;;
+        true|1|on|yes) ;;
+        *) die "неверное OPENAI_HELPER_ENABLED" "Исправить: ./run.sh settings" ;;
+    esac
+    OPENAI_MODE=$(helper_setting OPENAI_HELPER_AUTH_MODE api_key)
+    case "$OPENAI_MODE" in
+        api_key|chatgpt) ;;
+        *) die "неверное OPENAI_HELPER_AUTH_MODE" "Исправить: ./run.sh settings" ;;
+    esac
+}
+
+settings_python() {
+    local candidate
+    for candidate in backend/.venv/bin/python ../.venv/bin/python .venv/bin/python; do
+        if [ -x "$candidate" ]; then printf '%s\n' "$candidate"; return; fi
+    done
+    command -v python3 || return 1
+}
+
+openai_settings() {
+    local python
+    python=$(settings_python) || die "для мастера OpenAI нужен Python 3"
+    ensure_env
+    "$python" scripts/configure_openai.py
+}
+
 check() {
     bold "Проверка окружения"
     local ready=1
 
+    MODE=""
+    helper_mode
     detect_compose
-    if [ -n "$COMPOSE" ] && docker info >/dev/null 2>&1; then
+    if [ "$OPENAI_MODE" = "chatgpt" ]; then
+        info "ChatGPT: локальный backend, Codex использует текущий вход пользователя."
+        if ! command -v codex >/dev/null 2>&1; then
+            red "  ✗ Codex CLI не найден"
+            ready=0
+        elif ! codex login status 2>&1 | grep -qi 'logged in using chatgpt'; then
+            red "  ✗ нет подтверждённого входа Codex через ChatGPT: ./run.sh settings"
+            ready=0
+        fi
+    elif [ -n "$COMPOSE" ] && docker info >/dev/null 2>&1; then
         green "  ✓ Docker готов — запуск в контейнере"
         MODE="docker"
     elif [ -n "$COMPOSE" ]; then
@@ -74,7 +147,10 @@ check() {
     fi
 
     if [ -z "$MODE" ]; then
-        if command -v uv >/dev/null 2>&1 || [ -x .tools/bin/uv ]; then
+        if [ -x backend/.venv/bin/python ] && [ -x backend/.venv/bin/uvicorn ]; then
+            green "  ✓ готовое окружение backend/.venv — локальный запуск"
+            MODE="local"
+        elif command -v uv >/dev/null 2>&1 || [ -x .tools/bin/uv ]; then
             green "  ✓ uv найден — локальный запуск"
             MODE="local"
         else
@@ -111,6 +187,7 @@ ensure_env() {
 
     bold "Создаю .env"
     cp .env.example .env
+    chmod 600 .env
     cat >> .env <<'SETTINGS'
 
 # Настройки времени исходных измерений. ИССЛЕДОВАТЕЛЬСКОЕ ДОПУЩЕНИЕ:
@@ -200,6 +277,7 @@ step_training() {
 
 write_env() {
     cp .env.example .env
+    chmod 600 .env
     cat >> .env <<SETTINGS
 
 # Записано мастером ./run.sh setup
@@ -244,8 +322,14 @@ setup() {
 
 wait_healthy() {
     local url="http://127.0.0.1:$PORT/api/health"
+    local tracked_pid="${1:-}"
     printf '  ожидаю готовности'
     for _ in $(seq 1 60); do
+        if [ -n "$tracked_pid" ] && ! kill -0 "$tracked_pid" 2>/dev/null; then
+            printf '\n'
+            tail -40 .run/backend.log
+            die "локальный backend завершился" "Журнал: .run/backend.log"
+        fi
         if curl -fsS --max-time 2 "$url" >/dev/null 2>&1; then
             printf '\n'
             green "  ✓ сервис отвечает"
@@ -281,28 +365,112 @@ start_docker() {
 
 start_local() {
     bold "Локальный запуск (порт $PORT)"
-    local uv_bin="uv"
-    [ -x .tools/bin/uv ] && uv_bin=".tools/bin/uv"
-    info "устанавливаю зависимости…"
-    UV_CACHE_DIR="$PWD/.tools/uv-cache" UV_PYTHON_INSTALL_DIR="$PWD/.tools/python" \
-        "$uv_bin" sync --project backend --frozen >/dev/null
+    if [ ! -x backend/.venv/bin/uvicorn ]; then
+        local uv_bin="uv"
+        [ -x .tools/bin/uv ] && uv_bin=".tools/bin/uv"
+        info "устанавливаю зависимости…"
+        UV_CACHE_DIR="$PWD/.tools/uv-cache" UV_PYTHON_INSTALL_DIR="$PWD/.tools/python" \
+            "$uv_bin" sync --project backend --frozen >/dev/null
+    fi
     # Settings reads .env as dotenv; sourcing it as shell would corrupt JSON values.
     mkdir -p .run
-    backend/.venv/bin/uvicorn src.api:app --host 127.0.0.1 --port "$PORT" \
-        > .run/backend.log 2>&1 &
-    echo $! > .run/backend.pid
-    wait_healthy
+    if [ "$OPENAI_MODE" = "chatgpt" ]; then
+        info "История локальной проверки: .run/chatgpt/forecasts.duckdb (отдельно от Docker)."
+        info "Backend и сайт доступны только через 127.0.0.1."
+    fi
+    backend/.venv/bin/python - "$PORT" "$OPENAI_MODE" <<'PYTHON'
+import os
+import subprocess
+import sys
+from pathlib import Path
+
+root = Path.cwd()
+port, auth_mode = sys.argv[1:]
+environment = os.environ.copy()
+if auth_mode == "chatgpt":
+    state = root / ".run/chatgpt"
+    state.mkdir(parents=True, exist_ok=True)
+    environment["RENTBOX_DATABASE_PATH"] = str(state / "forecasts.duckdb")
+with (root / ".run/backend.log").open("w") as log:
+    process = subprocess.Popen(
+        [sys.executable, "-m", "uvicorn", "src.api:app", "--host", "127.0.0.1", "--port", port],
+        cwd=root, env=environment, stdin=subprocess.DEVNULL, stdout=log, stderr=log,
+        start_new_session=True,
+    )
+(root / ".run/backend.pid").write_text(str(process.pid) + "\n")
+(root / ".run/backend.port").write_text(port + "\n")
+PYTHON
+    wait_healthy "$(cat .run/backend.pid)"
+}
+
+local_pid() {
+    [ -f .run/backend.pid ] || return 0
+    local python
+    python=$(settings_python) || return 0
+    "$python" - "$PWD" <<'PYTHON'
+import os
+import subprocess
+import sys
+from pathlib import Path
+
+root = Path(sys.argv[1]).resolve()
+try:
+    pid = int((root / ".run/backend.pid").read_text().strip())
+    if pid <= 1:
+        raise ValueError("Invalid PID")
+    os.kill(pid, 0)
+    if sys.platform == "linux":
+        process = Path(f"/proc/{pid}")
+        args = (process / "cmdline").read_bytes().split(b"\0")
+        valid = b"src.api:app" in args and any(b"uvicorn" == arg or arg.endswith(b"/uvicorn") for arg in args)
+        cwd = (process / "cwd").resolve()
+    else:
+        args = subprocess.check_output(["ps", "-p", str(pid), "-o", "command="], text=True)
+        valid = "uvicorn" in args and "src.api:app" in args
+        fields = subprocess.check_output(["lsof", "-a", "-p", str(pid), "-d", "cwd", "-Fn"], text=True)
+        cwd = next(Path(line[1:]).resolve() for line in fields.splitlines() if line.startswith("n"))
+    if valid and cwd == root:
+        print(pid)
+except (OSError, ValueError, StopIteration, subprocess.SubprocessError):
+    pass
+PYTHON
+}
+
+stop_local() {
+    local pid stored=""
+    pid=$(local_pid)
+    if [ -z "$pid" ] && [ -f .run/backend.pid ]; then
+        stored=$(cat .run/backend.pid)
+        if [[ "$stored" =~ ^[1-9][0-9]*$ ]] && [ "$stored" -gt 1 ] && kill -0 "$stored" 2>/dev/null; then
+            die "не удалось подтвердить владельца PID $stored из .run/backend.pid" \
+                "Процесс не остановлен. Проверьте этот PID перед повторным запуском."
+        fi
+    fi
+    if [ -n "$pid" ]; then
+        info "останавливаю предыдущий локальный backend этого проекта (PID $pid)…"
+        kill "$pid" 2>/dev/null || true
+        for _ in $(seq 1 40); do
+            kill -0 "$pid" 2>/dev/null || break
+            sleep 0.25
+        done
+        if kill -0 "$pid" 2>/dev/null; then
+            die "локальный backend ещё завершает работу" "Повторите запуск после его остановки."
+        fi
+    fi
+    rm -f .run/backend.pid .run/backend.port
 }
 
 start() {
-    check
     ensure_env
+    check
     # Повторный запуск использует порт контейнера этого Compose-проекта.
     # Иначе каждый ./run.sh all пересоздавал его на следующем порту.
     local published=""
     if [ "$MODE" = "docker" ]; then
         published=$($COMPOSE port backend 8000 2>/dev/null || true)
         published="${published##*:}"
+    else
+        stop_local
     fi
     if [[ "$published" =~ ^[0-9]+$ ]] && { [ -z "${BACKEND_PORT:-}" ] || [ "$PORT" = "$published" ]; }; then
         PORT="$published"
@@ -510,6 +678,33 @@ all() {
     info "Остановить:     ./run.sh stop"
 }
 
+# Reconnect the dashboard after another launcher changed the backend port.
+# This command never starts, stops or recreates the backend.
+web() {
+    helper_mode
+    detect_compose
+    local published="" pid=""
+    if [ "$OPENAI_MODE" != "chatgpt" ] && [ -n "$COMPOSE" ]; then
+        published=$($COMPOSE port backend 8000 2>/dev/null || true)
+        published="${published##*:}"
+    fi
+    if [[ "$published" =~ ^[0-9]+$ ]] && curl -fsS --max-time 5 "http://127.0.0.1:$published/api/health" >/dev/null 2>&1; then
+        PORT="$published"
+    else
+        pid=$(local_pid)
+        if [ -z "$pid" ] || [ ! -f .run/backend.port ]; then
+            die "не найден готовый backend выбранного режима" "Поднять сервисы: ./run.sh all"
+        fi
+        PORT=$(cat .run/backend.port)
+        [[ "$PORT" =~ ^[0-9]+$ ]] || die "некорректный порт в .run/backend.port"
+        curl -fsS --max-time 5 "http://127.0.0.1:$PORT/api/health" >/dev/null 2>&1 \
+            || die "локальный backend на порту $PORT не отвечает" "Журнал: ./run.sh logs"
+    fi
+    info "Переподключаю дашборд к API на порту $PORT."
+    start_web
+    green "Дашборд: http://127.0.0.1:$WEB_PORT"
+}
+
 # Человекочитаемый вид результата. Сам CSV остаётся машинным: технические имена
 # колонок, время UTC и доли 0…1 — это контракт для проверяющих и скриптов.
 show_forecast() {
@@ -556,12 +751,7 @@ stop() {
     if [ -n "$COMPOSE" ] && docker info >/dev/null 2>&1; then
         $COMPOSE down 2>/dev/null || true
     fi
-    for name in backend; do
-        if [ -f ".run/$name.pid" ]; then
-            kill "$(cat ".run/$name.pid")" 2>/dev/null || true
-            rm -f ".run/$name.pid"
-        fi
-    done
+    stop_local
     green "Остановлено"
 }
 
@@ -590,6 +780,7 @@ menu() {
     printf '  \033[1m6\033[0m  Остановить                 все запущенные сервисы\n'
     printf '  \033[1m7\033[0m  Переобучить модель         найдёт NVIDIA, иначе CPU\n'
     printf '  \033[1m8\033[0m  Настроить                  пояс, порты, обучение\n'
+    printf '  \033[1m9\033[0m  Настройки OpenAI          аккаунт ChatGPT / API key / отключить\n'
     printf '  \033[1m0\033[0m  Выход\n'
     printf '\n'
     printf 'Выберите пункт [1]: '
@@ -605,6 +796,7 @@ menu() {
         6) stop ;;
         7) ./scripts/train.sh ;;
         8) setup ;;
+        9) openai_settings ;;
         0) exit 0 ;;
         *) red "Нет такого пункта: $answer"; exit 1 ;;
     esac
@@ -622,11 +814,13 @@ fi
 
 case "$1" in
     setup) setup ;;
+    settings|openai) openai_settings ;;
     start) start ;;
     all)   all ;;
+    web)   web ;;
     demo)  demo ;;
     check) check; green "Окружение готово, режим: $MODE" ;;
     stop)  stop ;;
     logs)  logs ;;
-    *)     die "неизвестная команда: $1" "Доступно: setup, start, all, demo, check, stop, logs" ;;
+    *)     die "неизвестная команда: $1" "Доступно: setup, settings, openai, start, all, web, demo, check, stop, logs" ;;
 esac

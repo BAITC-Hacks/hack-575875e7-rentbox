@@ -24,6 +24,11 @@ from backend.app.schemas.helper import (
     HelpStatus,
 )
 from backend.app.services.forecasts import ForecastService
+from backend.app.services.helper_codex import (
+    CodexHelpError,
+    chatgpt_configured,
+    generate_chatgpt,
+)
 
 MODEL = "gpt-6-astra"
 PROMPTS = Path(__file__).resolve().parents[1] / "prompts"
@@ -58,6 +63,7 @@ class HelperSettings(BaseSettings):
     api_key: SecretStr = SecretStr("")
     base_url: str = "https://api.openai.com/v1"
     helper_enabled: bool = True
+    helper_auth_mode: Literal["api_key", "chatgpt"] = "api_key"
     helper_reasoning_effort: Literal["low", "medium", "high"] = "low"
     helper_timeout_seconds: float = Field(default=40, ge=5, le=45)
 
@@ -78,6 +84,8 @@ class HelperSettings(BaseSettings):
 
     @property
     def configured(self) -> bool:
+        if self.helper_auth_mode == "chatgpt":
+            return chatgpt_configured()
         return bool(self.api_key.get_secret_value().strip())
 
 
@@ -85,6 +93,7 @@ def helper_status() -> HelpStatus:
     try:
         settings = HelperSettings()
         return HelpStatus(
+            auth_mode=settings.helper_auth_mode,
             enabled=settings.helper_enabled,
             configured=settings.configured,
             available=settings.helper_enabled and settings.configured,
@@ -266,6 +275,76 @@ def _request_slot() -> bool:
         return True
 
 
+def _generate_api(settings, payload, evidence, actions, schema) -> tuple[str, str]:
+    with httpx.Client(
+        timeout=httpx.Timeout(settings.helper_timeout_seconds, connect=5),
+        follow_redirects=False,
+    ) as client:
+        response = client.post(
+            settings.base_url + "/responses",
+            headers={"Authorization": "Bearer " + settings.api_key.get_secret_value()},
+            json={
+                "model": MODEL,
+                "store": False,
+                "max_output_tokens": 2400,
+                "reasoning": {"effort": settings.helper_reasoning_effort},
+                "instructions": SYSTEM_PROMPT,
+                "input": [
+                    {
+                        "role": "developer",
+                        "content": json.dumps(
+                            {
+                                "platform_evidence": evidence,
+                                "allowed_actions": {
+                                    k: v.model_dump() for k, v in actions.items()
+                                },
+                            },
+                            ensure_ascii=False,
+                            allow_nan=False,
+                        ),
+                    },
+                    {
+                        "role": "user",
+                        "content": json.dumps(
+                            {
+                                "question": payload.message,
+                                "ui_context": payload.context.model_dump(mode="json"),
+                                "conversation_history": [
+                                    m.model_dump() for m in payload.history
+                                ],
+                            },
+                            ensure_ascii=False,
+                            allow_nan=False,
+                        ),
+                    },
+                ],
+                "text": {
+                    "format": {
+                        "type": "json_schema",
+                        "name": "platform_help",
+                        "strict": True,
+                        "schema": schema,
+                    }
+                },
+            },
+        )
+        response.raise_for_status()
+        body = response.json()
+    if body.get("status") != "completed":
+        raise CodexHelpError("ASTRA не завершила ответ. Повторите вопрос.")
+    returned_model = body.get("model", "")
+    if returned_model != MODEL and not returned_model.startswith(MODEL + "-"):
+        raise CodexHelpError("Сервис вернул другую модель вместо ASTRA. Проверьте подключение.")
+    text = "".join(
+        content["text"]
+        for item in body["output"]
+        if item.get("type") == "message"
+        for content in item.get("content", [])
+        if content.get("type") == "output_text"
+    )
+    return text, returned_model
+
+
 def answer_help(payload: HelpRequest, service: ForecastService) -> HelpAnswer:
     evidence, actions = build_evidence(payload, service)
 
@@ -284,72 +363,24 @@ def answer_help(payload: HelpRequest, service: ForecastService) -> HelpAnswer:
         schema = HelpGeneration.model_json_schema()
         schema["properties"]["source_ids"]["items"]["enum"] = [e["id"] for e in evidence]
         schema["properties"]["action_ids"]["items"]["enum"] = list(actions)
-        with httpx.Client(
-            timeout=httpx.Timeout(settings.helper_timeout_seconds, connect=5),
-            follow_redirects=False,
-        ) as client:
-            response = client.post(
-                settings.base_url + "/responses",
-                headers={"Authorization": "Bearer " + settings.api_key.get_secret_value()},
-                json={
-                    "model": MODEL,
-                    "store": False,
-                    "max_output_tokens": 2400,
-                    "reasoning": {"effort": settings.helper_reasoning_effort},
-                    "instructions": SYSTEM_PROMPT,
-                    "input": [
-                        {
-                            "role": "developer",
-                            "content": json.dumps(
-                                {
-                                    "platform_evidence": evidence,
-                                    "allowed_actions": {
-                                        k: v.model_dump() for k, v in actions.items()
-                                    },
-                                },
-                                ensure_ascii=False,
-                                allow_nan=False,
-                            ),
-                        },
-                        {
-                            "role": "user",
-                            "content": json.dumps(
-                                {
-                                    "question": payload.message,
-                                    "ui_context": payload.context.model_dump(mode="json"),
-                                    "conversation_history": [
-                                        m.model_dump() for m in payload.history
-                                    ],
-                                },
-                                ensure_ascii=False,
-                                allow_nan=False,
-                            ),
-                        },
-                    ],
-                    "text": {
-                        "format": {
-                            "type": "json_schema",
-                            "name": "platform_help",
-                            "strict": True,
-                            "schema": schema,
-                        }
-                    },
+        if settings.helper_auth_mode == "chatgpt":
+            text, returned_model = generate_chatgpt(
+                instructions=SYSTEM_PROMPT,
+                evidence={
+                    "platform_evidence": evidence,
+                    "allowed_actions": {k: v.model_dump() for k, v in actions.items()},
                 },
+                question={
+                    "question": payload.message,
+                    "ui_context": payload.context.model_dump(mode="json"),
+                    "conversation_history": [m.model_dump() for m in payload.history],
+                },
+                schema=schema,
+                timeout=settings.helper_timeout_seconds,
+                reasoning=settings.helper_reasoning_effort,
             )
-            response.raise_for_status()
-            body = response.json()
-        if body.get("status") != "completed":
-            return fallback("ASTRA не завершила ответ. Повторите вопрос; пока доступна справка.")
-        returned_model = body.get("model", "")
-        if returned_model != MODEL and not returned_model.startswith(MODEL + "-"):
-            return fallback("Сервис вернул другую модель вместо ASTRA. Проверьте подключение.")
-        text = "".join(
-            content["text"]
-            for item in body["output"]
-            if item.get("type") == "message"
-            for content in item.get("content", [])
-            if content.get("type") == "output_text"
-        )
+        else:
+            text, returned_model = _generate_api(settings, payload, evidence, actions, schema)
         generated = HelpGeneration.model_validate_json(text)
         sources = {
             item["id"]: HelpSource(**{k: item[k] for k in ("id", "title", "view")})
@@ -368,6 +399,8 @@ def answer_help(payload: HelpRequest, service: ForecastService) -> HelpAnswer:
             actions=[actions[key] for key in dict.fromkeys(generated.action_ids)],
             prompt_version=PROMPT_VERSION,
         )
+    except CodexHelpError as error:
+        return fallback(str(error) + " Пока доступна справка по платформе.")
     except httpx.HTTPStatusError as error:
         status = error.response.status_code
         if status in (401, 403):

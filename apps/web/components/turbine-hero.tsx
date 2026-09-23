@@ -242,6 +242,8 @@ export function TurbineHero({
         wind={point?.wind ?? null}
         power={point?.forecast ?? null}
         temperature={point?.temperature ?? null}
+        liveSimulation={Boolean(point?.simulation)}
+        operatingState={point?.simulation?.state}
         operationalStop={Boolean(point?.simulation) && point?.forecast === 0}
         disabled={busy}
         onFocus={(next) => {

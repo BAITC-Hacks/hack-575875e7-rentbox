@@ -19,6 +19,7 @@ export type HelperRequest = {
 }
 export type HelperStatus = {
   provider: "openai"
+  auth_mode: "api_key" | "chatgpt"
   model: "gpt-6-astra"
   enabled: boolean
   configured: boolean

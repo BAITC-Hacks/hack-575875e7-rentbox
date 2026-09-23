@@ -10,6 +10,9 @@ COPY packages ./packages
 RUN npm ci --no-audit --no-fund
 
 COPY apps ./apps
+# rewrites() в next.config вычисляется во время сборки, поэтому адрес API
+# нужен уже здесь: внутри сети compose backend доступен по имени сервиса.
+ENV RENTBOX_API_URL=http://backend:8000/api
 RUN npm run build --workspace web
 
 FROM node:22-alpine

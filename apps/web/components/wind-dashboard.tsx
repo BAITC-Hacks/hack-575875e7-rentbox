@@ -1,5 +1,6 @@
 "use client"
 
+import { useSystemReducedMotion } from "@/components/motion-preference"
 import { LanguageSelector, useI18n } from "@/components/locale-provider"
 
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react"
@@ -853,7 +854,7 @@ function TurbinePanel({
       </div>
       <div className="wc-subtle-note">
         <Info size={13} />{" "}
-        {tr("Мощность нормализована относительно номинальной.")}
+        {tr("Мощность показана в шкале 0–1; база нормализации не подтверждена.")}
       </div>
     </Card>
   )
@@ -1158,6 +1159,7 @@ function HourlyTable({
   )
 }
 export function WindDashboard() {
+  const systemReducedMotion = useSystemReducedMotion()
   const { locale, tr, number, formatDate, formatTimestamp } = useI18n()
   const { highVisibility } = useAppearance()
 
@@ -1953,6 +1955,9 @@ export function WindDashboard() {
                   {turbineScene}
                 </div>
                 <ForecastTimeline
+                  key={`${simulation?.seed ?? "forecast"}-${highVisibility}-${systemReducedMotion}`}
+                  allowPlayback={Boolean(simulation)}
+                  playbackDisabled={highVisibility || systemReducedMotion}
                   data={data}
                   index={inspectedHour}
                   onSelect={selectHour}
@@ -2305,10 +2310,7 @@ export function WindDashboard() {
           </div>
         )}
         {!mobileMenu && (
-          <AssistantLauncher
-            open={dialog === "help"}
-            onOpen={() => setDialog("help")}
-          />
+          <AssistantLauncher open={dialog === "help"} onOpen={() => setDialog("help")} />
         )}
         <PlatformHelper
           open={dialog === "help"}

@@ -63,6 +63,7 @@ class HelpAnswer(Schema):
 
 class HelpStatus(Schema):
     provider: Literal["openai"] = "openai"
+    auth_mode: Literal["api_key", "chatgpt"] = "api_key"
     model: Literal["gpt-6-astra"] = "gpt-6-astra"
     enabled: bool
     configured: bool
