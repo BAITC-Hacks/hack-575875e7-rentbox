@@ -1,11 +1,17 @@
-# API для фронта — проект контракта v0
+# API для фронта — контракт v0
 
-**Статус:** контракт для параллельной разработки. Серверные маршруты ниже
-ещё не реализованы; примеры показывают формат, а не готовые прогнозы.
+**Статус:** маршруты реализованы в `backend/app/`, точка входа — `src.api:app`.
+Прогнозирование требует подключения реального Python-модуля агента и подтверждения
+настроек времени CSV. Примеры показывают формат, а не готовые прогнозы.
+Схемы: [OpenAPI](../backend/openapi.json). Подключение агента:
+[agent-integration.md](backend/agent-integration.md).
 
 Базовый путь: `/api`. При локальной разработке сервер планируется на порту 8000.
 Фронт проксирует `/api` на сервер. Опрос статуса раз в 1–2 секунды достаточен
 для первого рабочего сценария.
+
+Существующие тесты адаптированы, но ещё не запускались; полный сценарий
+с модулем агента и Docker-сборка пока не проверены.
 
 ## Общие соглашения
 
@@ -33,6 +39,28 @@
 | GET | `/agent/runs/{run_id}/forecast.csv` | Скачать тот же результат в CSV |
 | POST | `/agent/replays` | Последовательность ежедневных прогнозов |
 | GET | `/agent/replays/{replay_id}` | Прогресс последовательности и ID её запусков |
+
+## Готовность и данные
+
+`GET /api/health` возвращает `status: "ok"`, `agent_configured`,
+`time_configuration_ready`, `turbines_count`. Проверяет доступ к DuckDB.
+`status: "ok"` означает готовность API; возможность нового расчёта определяется
+отдельными признаками агента и времени.
+
+`GET /api/data/summary`:
+
+- `unit: "normalized_power"`;
+- `time_configuration`: `source_timezone`, `timestamp_meaning`, `confirmed`,
+  `missing_fields`;
+- `turbines`: `turbine_id`, `file`, `sha256`, `rows`, `start_local`, `end_local`,
+  `source_matches_audit`, `missing_percent`, `missing_10min_records`, `full_hours`,
+  `partial_hours`, `empty_hours`, `january_2026_complete`, `records_from_february_2026`;
+- `february_actuals_available`, `february_metrics` (пока `null`), `warnings`.
+
+`start_local`/`end_local` — исходные текстовые метки CSV, не UTC datetime.
+Пока пояс не подтверждён, их нельзя самостоятельно преобразовывать в UTC.
+Показатели берутся из отчёта аудита, SHA-256 сверяется с текущими CSV.
+При несовпадении новый расчёт отклоняется с `DATA_QUALITY_ERROR`.
 
 ## Турбины
 
@@ -72,6 +100,11 @@
 ```json
 {"run_id": "run_example", "status": "queued"}
 ```
+
+Заголовок `Location` указывает на маршрут статуса. Запуск хранится в DuckDB
+до отправки ответа; вычисления идут в рабочем потоке. Повторный POST создаёт
+новое задание проверки входов. Переиспользование результата определяется после
+работы агента по хешу входов, а не по одному совпадению тела HTTP-запроса.
 
 ## Статус и события
 
@@ -172,6 +205,15 @@ run_id,as_of,turbine_id,valid_time,lead_hour,predicted_power,weather_initializat
 Границы моментов решения включительны. Полные горизонты сохраняются даже если
 выходят за февраль; фильтрация оценочного периода выполняется отдельно.
 
+Шаг первой версии — строго 24 часа. Разность границ должна быть кратна шагу.
+По умолчанию разрешены до 62 запусков в replay и 128 одновременно принятых
+незавершённых запусков. Все дочерние `run_ids` доступны после принятия replay.
+Ошибка одного запуска не отменяет следующие; replay завершается `failed`,
+если хотя бы один дочерний запуск неуспешен. Счётчики отражают фактические статусы.
+
+После перезапуска API незавершённые задания получают `JOB_INTERRUPTED`;
+готовые результаты остаются доступны. Повторять запуск нужно новым POST.
+
 ## Связь с DuckDB
 
 Используем существующий `src/storage.py`, подробные сигнатуры — в `CHANGELOG.md`.
@@ -216,3 +258,16 @@ run_id,as_of,turbine_id,valid_time,lead_hour,predicted_power,weather_initializat
 Основные коды: `VALIDATION_ERROR`, `CONFIGURATION_REQUIRED`, `WEATHER_UNAVAILABLE`,
 `DATA_QUALITY_ERROR`, `RUN_NOT_FOUND`, `RESULT_NOT_READY`, `MODEL_ERROR`.
 В интерфейсе показываются сообщение и возможность повторения, если `retryable=true`.
+
+| HTTP | Ситуация |
+|---|---|
+| 404 | RUN_NOT_FOUND, REPLAY_NOT_FOUND |
+| 409 | CONFIGURATION_REQUIRED, RESULT_NOT_READY, изменённый CSV / DATA_QUALITY_ERROR |
+| 422 | VALIDATION_ERROR |
+| 429 | QUEUE_FULL |
+| 503 | AGENT_NOT_CONFIGURED, SERVER_STOPPING, недоступный аудит / DATA_QUALITY_ERROR |
+| 500 | INTERNAL_ERROR |
+
+Ошибки фонового выполнения читаются через GET статуса с HTTP 200 и
+`status: "failed"`. Дополнительные коды: `JOB_INTERRUPTED`, `AGENT_LIMIT_EXCEEDED`,
+`REPLAY_FAILED`. При ошибке расчёта маршрут результата возвращает 409.
