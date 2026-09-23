@@ -1,0 +1,1094 @@
+[
+  {
+    "name": "cloud-gpu_004",
+    "worker": "cloud-gpu",
+    "hostname": "brev-yf4lxgjo1",
+    "config": {
+      "family": "mlp",
+      "features": "point",
+      "hidden": [
+        128,
+        64,
+        32
+      ],
+      "loss_name": "mae",
+      "seed": 53,
+      "epochs": 250,
+      "learning_rate": 0.0007,
+      "weight_decay": 0.02,
+      "batch_size": 2048,
+      "patience": 35
+    },
+    "metrics": {
+      "n": 5732,
+      "mae": 0.1637568930950361,
+      "rmse": 0.2521606905145207,
+      "bias": -0.013808995544411947
+    },
+    "by_month": {
+      "2025-11": {
+        "n": 2832,
+        "mae": 0.1410077455791223,
+        "rmse": 0.21930695129316757,
+        "bias": -0.013508808564821347
+      },
+      "2025-12": {
+        "n": 2900,
+        "mae": 0.18597261232436987,
+        "rmse": 0.2805553195259476,
+        "bias": -0.014102143656894895
+      }
+    },
+    "fit": {
+      "device": "cuda",
+      "gpu": "NVIDIA RTX A6000",
+      "best_epoch": 14,
+      "epochs_run": 49,
+      "seed": 53,
+      "hidden": [
+        128,
+        64,
+        32
+      ],
+      "loss": "mae",
+      "learning_rate": 0.0007,
+      "weight_decay": 0.02,
+      "batch_size": 2048,
+      "seconds": 1.92,
+      "inference_backend": "numpy; no GPU or torch needed"
+    },
+    "seconds": 1.98,
+    "train_sha256": "0fc30b62295dfa345fff9eaf1581eab3189f3029b53291203ce963bd092bb1ad",
+    "validation_sha256": "a1e6fd800ebf5ad17b3d469f90186638d0d92fd61d4d4896610ee8ca0b4fae9c",
+    "prediction_path": "artifacts/search/cloud-gpu/cloud-gpu_004.predictions.npy"
+  },
+  {
+    "name": "rtx5090_0149",
+    "worker": "rtx5090-local",
+    "hostname": "DESKTOP-C97CP8C",
+    "config": {
+      "family": "mlp",
+      "features": "point",
+      "hidden": [
+        128,
+        64,
+        32
+      ],
+      "loss_name": "mae",
+      "learning_rate": 0.0007,
+      "weight_decay": 0.02,
+      "batch_size": 4096,
+      "seed": 202,
+      "epochs": 400,
+      "patience": 40
+    },
+    "metrics": {
+      "n": 5732,
+      "mae": 0.16397771325394891,
+      "rmse": 0.2537353412787094,
+      "bias": -0.007820417181944855
+    },
+    "by_month": {
+      "2025-11": {
+        "n": 2832,
+        "mae": 0.1409258153535059,
+        "rmse": 0.2198840128475518,
+        "bias": -0.01000668677225579
+      },
+      "2025-12": {
+        "n": 2900,
+        "mae": 0.18648908389327815,
+        "rmse": 0.2829104626117145,
+        "bias": -0.0056854118440963835
+      }
+    },
+    "fit": {
+      "device": "cuda",
+      "gpu": "NVIDIA GeForce RTX 5090 Laptop GPU",
+      "best_epoch": 53,
+      "epochs_run": 93,
+      "seed": 202,
+      "hidden": [
+        128,
+        64,
+        32
+      ],
+      "loss": "mae",
+      "learning_rate": 0.0007,
+      "weight_decay": 0.02,
+      "batch_size": 4096,
+      "seconds": 7.1,
+      "inference_backend": "numpy; no GPU or torch needed"
+    },
+    "seconds": 7.26,
+    "train_sha256": "0fc30b62295dfa345fff9eaf1581eab3189f3029b53291203ce963bd092bb1ad",
+    "validation_sha256": "a1e6fd800ebf5ad17b3d469f90186638d0d92fd61d4d4896610ee8ca0b4fae9c",
+    "prediction_path": "artifacts/rtx5090-local/rtx5090_0149.predictions.npy"
+  },
+  {
+    "name": "a6000_0023",
+    "worker": "a6000-wide",
+    "hostname": "brev-yf4lxgjo1",
+    "config": {
+      "family": "mlp",
+      "features": "point",
+      "hidden": [
+        512,
+        512,
+        256,
+        128
+      ],
+      "loss_name": "huber",
+      "learning_rate": 0.002,
+      "weight_decay": 0.005,
+      "batch_size": 4096,
+      "seed": 401,
+      "epochs": 400,
+      "patience": 40,
+      "cpu_threads": 2
+    },
+    "metrics": {
+      "n": 5732,
+      "mae": 0.16402714078937433,
+      "rmse": 0.2500358435520135,
+      "bias": -0.015322882998149788
+    },
+    "fit": {
+      "device": "cuda",
+      "gpu": "NVIDIA RTX A6000",
+      "best_epoch": 10,
+      "epochs_run": 50,
+      "seed": 401,
+      "hidden": [
+        512,
+        512,
+        256,
+        128
+      ],
+      "loss": "huber",
+      "learning_rate": 0.002,
+      "weight_decay": 0.005,
+      "batch_size": 4096,
+      "seconds": 2.35,
+      "inference_backend": "numpy; no GPU or torch needed"
+    },
+    "by_month": {
+      "2025-11": {
+        "n": 2832,
+        "mae": 0.13997059927119176,
+        "rmse": 0.21726727534937104,
+        "bias": -0.02392318710050521
+      },
+      "2025-12": {
+        "n": 2900,
+        "mae": 0.18751959788575123,
+        "rmse": 0.2783374160189071,
+        "bias": -0.006924241198884078
+      }
+    },
+    "seconds": 2.53,
+    "train_sha256": "0fc30b62295dfa345fff9eaf1581eab3189f3029b53291203ce963bd092bb1ad",
+    "validation_sha256": "a1e6fd800ebf5ad17b3d469f90186638d0d92fd61d4d4896610ee8ca0b4fae9c",
+    "prediction_path": "artifacts/a6000-wide/a6000_0023.predictions.npy"
+  },
+  {
+    "name": "rtx5090_0073",
+    "worker": "rtx5090-local",
+    "hostname": "DESKTOP-C97CP8C",
+    "config": {
+      "family": "mlp",
+      "features": "point",
+      "hidden": [
+        128,
+        64,
+        32
+      ],
+      "loss_name": "mae",
+      "learning_rate": 0.0007,
+      "weight_decay": 0.005,
+      "batch_size": 4096,
+      "seed": 202,
+      "epochs": 400,
+      "patience": 40
+    },
+    "metrics": {
+      "n": 5732,
+      "mae": 0.16406174198908524,
+      "rmse": 0.25371512639734856,
+      "bias": -0.010461407346072206
+    },
+    "by_month": {
+      "2025-11": {
+        "n": 2832,
+        "mae": 0.1402975620788563,
+        "rmse": 0.2191850918943547,
+        "bias": -0.011915871567951588
+      },
+      "2025-12": {
+        "n": 2900,
+        "mae": 0.18726869285314335,
+        "rmse": 0.28340383413739856,
+        "bias": -0.009041047802498961
+      }
+    },
+    "fit": {
+      "device": "cuda",
+      "gpu": "NVIDIA GeForce RTX 5090 Laptop GPU",
+      "best_epoch": 45,
+      "epochs_run": 85,
+      "seed": 202,
+      "hidden": [
+        128,
+        64,
+        32
+      ],
+      "loss": "mae",
+      "learning_rate": 0.0007,
+      "weight_decay": 0.005,
+      "batch_size": 4096,
+      "seconds": 7.36,
+      "inference_backend": "numpy; no GPU or torch needed"
+    },
+    "seconds": 7.51,
+    "train_sha256": "0fc30b62295dfa345fff9eaf1581eab3189f3029b53291203ce963bd092bb1ad",
+    "validation_sha256": "a1e6fd800ebf5ad17b3d469f90186638d0d92fd61d4d4896610ee8ca0b4fae9c",
+    "prediction_path": "artifacts/rtx5090-local/rtx5090_0073.predictions.npy"
+  },
+  {
+    "name": "rtx5090_0443",
+    "worker": "rtx5090-local",
+    "hostname": "DESKTOP-C97CP8C",
+    "config": {
+      "family": "mlp",
+      "features": "point",
+      "hidden": [
+        256,
+        128,
+        64
+      ],
+      "loss_name": "mae",
+      "learning_rate": 0.0003,
+      "weight_decay": 0.02,
+      "batch_size": 4096,
+      "seed": 303,
+      "epochs": 400,
+      "patience": 40
+    },
+    "metrics": {
+      "n": 5732,
+      "mae": 0.16426122198002008,
+      "rmse": 0.25308985808122436,
+      "bias": -0.00942629915182475
+    },
+    "by_month": {
+      "2025-11": {
+        "n": 2832,
+        "mae": 0.14006746533286576,
+        "rmse": 0.21776667912328,
+        "bias": -0.010300372482836287
+      },
+      "2025-12": {
+        "n": 2900,
+        "mae": 0.18788767674717216,
+        "rmse": 0.2833666013414153,
+        "bias": -0.008572721333402446
+      }
+    },
+    "fit": {
+      "device": "cuda",
+      "gpu": "NVIDIA GeForce RTX 5090 Laptop GPU",
+      "best_epoch": 35,
+      "epochs_run": 75,
+      "seed": 303,
+      "hidden": [
+        256,
+        128,
+        64
+      ],
+      "loss": "mae",
+      "learning_rate": 0.0003,
+      "weight_decay": 0.02,
+      "batch_size": 4096,
+      "seconds": 7.93,
+      "inference_backend": "numpy; no GPU or torch needed"
+    },
+    "seconds": 8.19,
+    "train_sha256": "0fc30b62295dfa345fff9eaf1581eab3189f3029b53291203ce963bd092bb1ad",
+    "validation_sha256": "a1e6fd800ebf5ad17b3d469f90186638d0d92fd61d4d4896610ee8ca0b4fae9c",
+    "prediction_path": "artifacts/rtx5090-local/rtx5090_0443.predictions.npy"
+  },
+  {
+    "name": "rtx5090_0143",
+    "worker": "rtx5090-local",
+    "hostname": "DESKTOP-C97CP8C",
+    "config": {
+      "family": "mlp",
+      "features": "point",
+      "hidden": [
+        128,
+        64,
+        32
+      ],
+      "loss_name": "mae",
+      "learning_rate": 0.002,
+      "weight_decay": 0.005,
+      "batch_size": 1024,
+      "seed": 101,
+      "epochs": 400,
+      "patience": 40
+    },
+    "metrics": {
+      "n": 5732,
+      "mae": 0.16433304609865154,
+      "rmse": 0.25201938918778355,
+      "bias": -0.005842907549741893
+    },
+    "by_month": {
+      "2025-11": {
+        "n": 2832,
+        "mae": 0.13941082058493057,
+        "rmse": 0.2169803058969075,
+        "bias": -0.0027521285654739276
+      },
+      "2025-12": {
+        "n": 2900,
+        "mae": 0.1886708883934301,
+        "rmse": 0.28206694045901987,
+        "bias": -0.008861213095758057
+      }
+    },
+    "fit": {
+      "device": "cuda",
+      "gpu": "NVIDIA GeForce RTX 5090 Laptop GPU",
+      "best_epoch": 9,
+      "epochs_run": 49,
+      "seed": 101,
+      "hidden": [
+        128,
+        64,
+        32
+      ],
+      "loss": "mae",
+      "learning_rate": 0.002,
+      "weight_decay": 0.005,
+      "batch_size": 1024,
+      "seconds": 17.02,
+      "inference_backend": "numpy; no GPU or torch needed"
+    },
+    "seconds": 17.16,
+    "train_sha256": "0fc30b62295dfa345fff9eaf1581eab3189f3029b53291203ce963bd092bb1ad",
+    "validation_sha256": "a1e6fd800ebf5ad17b3d469f90186638d0d92fd61d4d4896610ee8ca0b4fae9c",
+    "prediction_path": "artifacts/rtx5090-local/rtx5090_0143.predictions.npy"
+  },
+  {
+    "name": "cloud-gpu_010",
+    "worker": "cloud-gpu",
+    "hostname": "brev-yf4lxgjo1",
+    "config": {
+      "family": "mlp",
+      "features": "point",
+      "hidden": [
+        256,
+        128,
+        64
+      ],
+      "loss_name": "mae",
+      "seed": 53,
+      "epochs": 250,
+      "learning_rate": 0.0007,
+      "weight_decay": 0.02,
+      "batch_size": 2048,
+      "patience": 35
+    },
+    "metrics": {
+      "n": 5732,
+      "mae": 0.16440973000441328,
+      "rmse": 0.2527925194233529,
+      "bias": -0.019283051079531332
+    },
+    "by_month": {
+      "2025-11": {
+        "n": 2832,
+        "mae": 0.1401536642809268,
+        "rmse": 0.21937935053896704,
+        "bias": -0.01852791543304898
+      },
+      "2025-12": {
+        "n": 2900,
+        "mae": 0.1880970328074869,
+        "rmse": 0.28162187153336554,
+        "bias": -0.02002048009706168
+      }
+    },
+    "fit": {
+      "device": "cuda",
+      "gpu": "NVIDIA RTX A6000",
+      "best_epoch": 14,
+      "epochs_run": 49,
+      "seed": 53,
+      "hidden": [
+        256,
+        128,
+        64
+      ],
+      "loss": "mae",
+      "learning_rate": 0.0007,
+      "weight_decay": 0.02,
+      "batch_size": 2048,
+      "seconds": 1.87,
+      "inference_backend": "numpy; no GPU or torch needed"
+    },
+    "seconds": 1.99,
+    "train_sha256": "0fc30b62295dfa345fff9eaf1581eab3189f3029b53291203ce963bd092bb1ad",
+    "validation_sha256": "a1e6fd800ebf5ad17b3d469f90186638d0d92fd61d4d4896610ee8ca0b4fae9c",
+    "prediction_path": "artifacts/search/cloud-gpu/cloud-gpu_010.predictions.npy"
+  },
+  {
+    "name": "rtx5090_0046",
+    "worker": "rtx5090-local",
+    "hostname": "DESKTOP-C97CP8C",
+    "config": {
+      "family": "mlp",
+      "features": "point",
+      "hidden": [
+        1024,
+        512,
+        256
+      ],
+      "loss_name": "mae",
+      "learning_rate": 0.0003,
+      "weight_decay": 0.005,
+      "batch_size": 1024,
+      "seed": 101,
+      "epochs": 400,
+      "patience": 40
+    },
+    "metrics": {
+      "n": 5732,
+      "mae": 0.16448270868484335,
+      "rmse": 0.25105729730255405,
+      "bias": -0.005948435719526613
+    },
+    "by_month": {
+      "2025-11": {
+        "n": 2832,
+        "mae": 0.1389386576136071,
+        "rmse": 0.2168637890170006,
+        "bias": -0.0036837010171918583
+      },
+      "2025-12": {
+        "n": 2900,
+        "mae": 0.18942779579992652,
+        "rmse": 0.2804540262802914,
+        "bias": -0.008160066297806617
+      }
+    },
+    "fit": {
+      "device": "cuda",
+      "gpu": "NVIDIA GeForce RTX 5090 Laptop GPU",
+      "best_epoch": 9,
+      "epochs_run": 49,
+      "seed": 101,
+      "hidden": [
+        1024,
+        512,
+        256
+      ],
+      "loss": "mae",
+      "learning_rate": 0.0003,
+      "weight_decay": 0.005,
+      "batch_size": 1024,
+      "seconds": 10.74,
+      "inference_backend": "numpy; no GPU or torch needed"
+    },
+    "seconds": 11.08,
+    "train_sha256": "0fc30b62295dfa345fff9eaf1581eab3189f3029b53291203ce963bd092bb1ad",
+    "validation_sha256": "a1e6fd800ebf5ad17b3d469f90186638d0d92fd61d4d4896610ee8ca0b4fae9c",
+    "prediction_path": "artifacts/rtx5090-local/rtx5090_0046.predictions.npy"
+  },
+  {
+    "name": "cloud-gpu_002",
+    "worker": "cloud-gpu",
+    "hostname": "brev-yf4lxgjo1",
+    "config": {
+      "family": "mlp",
+      "features": "point",
+      "hidden": [
+        128,
+        64,
+        32
+      ],
+      "loss_name": "huber",
+      "seed": 53,
+      "epochs": 250,
+      "learning_rate": 0.0007,
+      "weight_decay": 0.02,
+      "batch_size": 2048,
+      "patience": 35
+    },
+    "metrics": {
+      "n": 5732,
+      "mae": 0.16455434551691517,
+      "rmse": 0.24750254539331698,
+      "bias": -0.01690238078252203
+    },
+    "by_month": {
+      "2025-11": {
+        "n": 2832,
+        "mae": 0.14275090605405064,
+        "rmse": 0.2166614547260255,
+        "bias": -0.0144234066142213
+      },
+      "2025-12": {
+        "n": 2900,
+        "mae": 0.1858465319165125,
+        "rmse": 0.2742939378146224,
+        "bias": -0.019323227280669503
+      }
+    },
+    "fit": {
+      "device": "cuda",
+      "gpu": "NVIDIA RTX A6000",
+      "best_epoch": 13,
+      "epochs_run": 48,
+      "seed": 53,
+      "hidden": [
+        128,
+        64,
+        32
+      ],
+      "loss": "huber",
+      "learning_rate": 0.0007,
+      "weight_decay": 0.02,
+      "batch_size": 2048,
+      "seconds": 1.79,
+      "inference_backend": "numpy; no GPU or torch needed"
+    },
+    "seconds": 1.87,
+    "train_sha256": "0fc30b62295dfa345fff9eaf1581eab3189f3029b53291203ce963bd092bb1ad",
+    "validation_sha256": "a1e6fd800ebf5ad17b3d469f90186638d0d92fd61d4d4896610ee8ca0b4fae9c",
+    "prediction_path": "artifacts/search/cloud-gpu/cloud-gpu_002.predictions.npy"
+  },
+  {
+    "name": "rtx5090_0521",
+    "worker": "rtx5090-local",
+    "hostname": "DESKTOP-C97CP8C",
+    "config": {
+      "family": "mlp",
+      "features": "point",
+      "hidden": [
+        1024,
+        512,
+        256
+      ],
+      "loss_name": "huber",
+      "learning_rate": 0.002,
+      "weight_decay": 0.02,
+      "batch_size": 1024,
+      "seed": 303,
+      "epochs": 400,
+      "patience": 40
+    },
+    "metrics": {
+      "n": 5732,
+      "mae": 0.16468348678474723,
+      "rmse": 0.25361307409943823,
+      "bias": -0.02118813896038623
+    },
+    "by_month": {
+      "2025-11": {
+        "n": 2832,
+        "mae": 0.14182189432730707,
+        "rmse": 0.22295045773740924,
+        "bias": -0.01768846601093663
+      },
+      "2025-12": {
+        "n": 2900,
+        "mae": 0.18700901431559913,
+        "rmse": 0.2803384273337096,
+        "bias": -0.024605750613090116
+      }
+    },
+    "fit": {
+      "device": "cuda",
+      "gpu": "NVIDIA GeForce RTX 5090 Laptop GPU",
+      "best_epoch": 5,
+      "epochs_run": 45,
+      "seed": 303,
+      "hidden": [
+        1024,
+        512,
+        256
+      ],
+      "loss": "huber",
+      "learning_rate": 0.002,
+      "weight_decay": 0.02,
+      "batch_size": 1024,
+      "seconds": 7.13,
+      "inference_backend": "numpy; no GPU or torch needed"
+    },
+    "seconds": 7.31,
+    "train_sha256": "0fc30b62295dfa345fff9eaf1581eab3189f3029b53291203ce963bd092bb1ad",
+    "validation_sha256": "a1e6fd800ebf5ad17b3d469f90186638d0d92fd61d4d4896610ee8ca0b4fae9c",
+    "prediction_path": "artifacts/rtx5090-local/rtx5090_0521.predictions.npy"
+  },
+  {
+    "name": "rtx5090_0009",
+    "worker": "rtx5090-local",
+    "hostname": "DESKTOP-C97CP8C",
+    "config": {
+      "family": "mlp",
+      "features": "point",
+      "hidden": [
+        256,
+        128,
+        64
+      ],
+      "loss_name": "mae",
+      "learning_rate": 0.0007,
+      "weight_decay": 0.005,
+      "batch_size": 4096,
+      "seed": 303,
+      "epochs": 400,
+      "patience": 40
+    },
+    "metrics": {
+      "n": 5732,
+      "mae": 0.16468958765074654,
+      "rmse": 0.25291104807770526,
+      "bias": -0.008185845996875149
+    },
+    "by_month": {
+      "2025-11": {
+        "n": 2832,
+        "mae": 0.14099538036331508,
+        "rmse": 0.2180415346327335,
+        "bias": -0.007838711324030585
+      },
+      "2025-12": {
+        "n": 2900,
+        "mae": 0.18782820662936925,
+        "rmse": 0.2828441632918238,
+        "bias": -0.00852484096014957
+      }
+    },
+    "fit": {
+      "device": "cuda",
+      "gpu": "NVIDIA GeForce RTX 5090 Laptop GPU",
+      "best_epoch": 18,
+      "epochs_run": 58,
+      "seed": 303,
+      "hidden": [
+        256,
+        128,
+        64
+      ],
+      "loss": "mae",
+      "learning_rate": 0.0007,
+      "weight_decay": 0.005,
+      "batch_size": 4096,
+      "seconds": 5.38,
+      "inference_backend": "numpy; no GPU or torch needed"
+    },
+    "seconds": 10.04,
+    "train_sha256": "0fc30b62295dfa345fff9eaf1581eab3189f3029b53291203ce963bd092bb1ad",
+    "validation_sha256": "a1e6fd800ebf5ad17b3d469f90186638d0d92fd61d4d4896610ee8ca0b4fae9c",
+    "prediction_path": "artifacts/rtx5090-local/rtx5090_0009.predictions.npy"
+  },
+  {
+    "name": "rtx5090_0185",
+    "worker": "rtx5090-local",
+    "hostname": "DESKTOP-C97CP8C",
+    "config": {
+      "family": "mlp",
+      "features": "point",
+      "hidden": [
+        128,
+        64,
+        32
+      ],
+      "loss_name": "mae",
+      "learning_rate": 0.0007,
+      "weight_decay": 0.005,
+      "batch_size": 1024,
+      "seed": 303,
+      "epochs": 400,
+      "patience": 40
+    },
+    "metrics": {
+      "n": 5732,
+      "mae": 0.1647027623925714,
+      "rmse": 0.25164084326191755,
+      "bias": -0.02258903735306566
+    },
+    "by_month": {
+      "2025-11": {
+        "n": 2832,
+        "mae": 0.13836926913970385,
+        "rmse": 0.21521210728088916,
+        "bias": -0.015086021223563693
+      },
+      "2025-12": {
+        "n": 2900,
+        "mae": 0.19041878063123374,
+        "rmse": 0.282721055569906,
+        "bias": -0.029916120690565505
+      }
+    },
+    "fit": {
+      "device": "cuda",
+      "gpu": "NVIDIA GeForce RTX 5090 Laptop GPU",
+      "best_epoch": 15,
+      "epochs_run": 55,
+      "seed": 303,
+      "hidden": [
+        128,
+        64,
+        32
+      ],
+      "loss": "mae",
+      "learning_rate": 0.0007,
+      "weight_decay": 0.005,
+      "batch_size": 1024,
+      "seconds": 15.39,
+      "inference_backend": "numpy; no GPU or torch needed"
+    },
+    "seconds": 15.53,
+    "train_sha256": "0fc30b62295dfa345fff9eaf1581eab3189f3029b53291203ce963bd092bb1ad",
+    "validation_sha256": "a1e6fd800ebf5ad17b3d469f90186638d0d92fd61d4d4896610ee8ca0b4fae9c",
+    "prediction_path": "artifacts/rtx5090-local/rtx5090_0185.predictions.npy"
+  },
+  {
+    "name": "rtx5090_0227",
+    "worker": "rtx5090-local",
+    "hostname": "DESKTOP-C97CP8C",
+    "config": {
+      "family": "mlp",
+      "features": "point",
+      "hidden": [
+        256,
+        128,
+        64
+      ],
+      "loss_name": "mae",
+      "learning_rate": 0.002,
+      "weight_decay": 0.02,
+      "batch_size": 4096,
+      "seed": 303,
+      "epochs": 400,
+      "patience": 40
+    },
+    "metrics": {
+      "n": 5732,
+      "mae": 0.16471424630081136,
+      "rmse": 0.25410270866830603,
+      "bias": -0.025177173396503896
+    },
+    "by_month": {
+      "2025-11": {
+        "n": 2832,
+        "mae": 0.1411551603588783,
+        "rmse": 0.21921923396119833,
+        "bias": -0.024671140721747642
+      },
+      "2025-12": {
+        "n": 2900,
+        "mae": 0.18772091229651983,
+        "rmse": 0.2840636256376628,
+        "bias": -0.025671340477507253
+      }
+    },
+    "fit": {
+      "device": "cuda",
+      "gpu": "NVIDIA GeForce RTX 5090 Laptop GPU",
+      "best_epoch": 8,
+      "epochs_run": 48,
+      "seed": 303,
+      "hidden": [
+        256,
+        128,
+        64
+      ],
+      "loss": "mae",
+      "learning_rate": 0.002,
+      "weight_decay": 0.02,
+      "batch_size": 4096,
+      "seconds": 3.5,
+      "inference_backend": "numpy; no GPU or torch needed"
+    },
+    "seconds": 3.71,
+    "train_sha256": "0fc30b62295dfa345fff9eaf1581eab3189f3029b53291203ce963bd092bb1ad",
+    "validation_sha256": "a1e6fd800ebf5ad17b3d469f90186638d0d92fd61d4d4896610ee8ca0b4fae9c",
+    "prediction_path": "artifacts/rtx5090-local/rtx5090_0227.predictions.npy"
+  },
+  {
+    "name": "rtx5090_0431",
+    "worker": "rtx5090-local",
+    "hostname": "DESKTOP-C97CP8C",
+    "config": {
+      "family": "mlp",
+      "features": "point",
+      "hidden": [
+        128,
+        64,
+        32
+      ],
+      "loss_name": "mae",
+      "learning_rate": 0.002,
+      "weight_decay": 0.02,
+      "batch_size": 1024,
+      "seed": 101,
+      "epochs": 400,
+      "patience": 40
+    },
+    "metrics": {
+      "n": 5732,
+      "mae": 0.16473521856904091,
+      "rmse": 0.25229244463100825,
+      "bias": -0.0012248720919673713
+    },
+    "by_month": {
+      "2025-11": {
+        "n": 2832,
+        "mae": 0.14106566093501738,
+        "rmse": 0.21955778448420069,
+        "bias": 0.0011529843510764818
+      },
+      "2025-12": {
+        "n": 2900,
+        "mae": 0.1878497658861287,
+        "rmse": 0.28059785422358574,
+        "bias": -0.0035469719011743217
+      }
+    },
+    "fit": {
+      "device": "cuda",
+      "gpu": "NVIDIA GeForce RTX 5090 Laptop GPU",
+      "best_epoch": 9,
+      "epochs_run": 49,
+      "seed": 101,
+      "hidden": [
+        128,
+        64,
+        32
+      ],
+      "loss": "mae",
+      "learning_rate": 0.002,
+      "weight_decay": 0.02,
+      "batch_size": 1024,
+      "seconds": 16.77,
+      "inference_backend": "numpy; no GPU or torch needed"
+    },
+    "seconds": 16.96,
+    "train_sha256": "0fc30b62295dfa345fff9eaf1581eab3189f3029b53291203ce963bd092bb1ad",
+    "validation_sha256": "a1e6fd800ebf5ad17b3d469f90186638d0d92fd61d4d4896610ee8ca0b4fae9c",
+    "prediction_path": "artifacts/rtx5090-local/rtx5090_0431.predictions.npy"
+  },
+  {
+    "name": "a6000_0072",
+    "worker": "a6000-wide",
+    "hostname": "brev-yf4lxgjo1",
+    "config": {
+      "family": "mlp",
+      "features": "point",
+      "hidden": [
+        512,
+        256,
+        128
+      ],
+      "loss_name": "mae",
+      "learning_rate": 0.0007,
+      "weight_decay": 0.02,
+      "batch_size": 1024,
+      "seed": 607,
+      "epochs": 400,
+      "patience": 40,
+      "cpu_threads": 2
+    },
+    "metrics": {
+      "n": 5732,
+      "mae": 0.16476997312710986,
+      "rmse": 0.2515936093149126,
+      "bias": -0.024091227704461527
+    },
+    "fit": {
+      "device": "cuda",
+      "gpu": "NVIDIA RTX A6000",
+      "best_epoch": 5,
+      "epochs_run": 45,
+      "seed": 607,
+      "hidden": [
+        512,
+        256,
+        128
+      ],
+      "loss": "mae",
+      "learning_rate": 0.0007,
+      "weight_decay": 0.02,
+      "batch_size": 1024,
+      "seconds": 3.48,
+      "inference_backend": "numpy; no GPU or torch needed"
+    },
+    "by_month": {
+      "2025-11": {
+        "n": 2832,
+        "mae": 0.1409266707794206,
+        "rmse": 0.21796979663493724,
+        "bias": -0.0240245488183985
+      },
+      "2025-12": {
+        "n": 2900,
+        "mae": 0.1880541911438878,
+        "rmse": 0.28056664603305087,
+        "bias": -0.024156343085609967
+      }
+    },
+    "seconds": 3.63,
+    "train_sha256": "0fc30b62295dfa345fff9eaf1581eab3189f3029b53291203ce963bd092bb1ad",
+    "validation_sha256": "a1e6fd800ebf5ad17b3d469f90186638d0d92fd61d4d4896610ee8ca0b4fae9c",
+    "prediction_path": "artifacts/a6000-wide/a6000_0072.predictions.npy"
+  },
+  {
+    "name": "rtx5090_0144",
+    "worker": "rtx5090-local",
+    "hostname": "DESKTOP-C97CP8C",
+    "config": {
+      "family": "mlp",
+      "features": "point",
+      "hidden": [
+        256,
+        128,
+        64
+      ],
+      "loss_name": "mae",
+      "learning_rate": 0.0007,
+      "weight_decay": 0.02,
+      "batch_size": 4096,
+      "seed": 303,
+      "epochs": 400,
+      "patience": 40
+    },
+    "metrics": {
+      "n": 5732,
+      "mae": 0.16478933914534005,
+      "rmse": 0.2535563974675618,
+      "bias": -0.02524563553617631
+    },
+    "by_month": {
+      "2025-11": {
+        "n": 2832,
+        "mae": 0.14137009303609813,
+        "rmse": 0.2195958764653571,
+        "bias": -0.023906145970749918
+      },
+      "2025-12": {
+        "n": 2900,
+        "mae": 0.18765944431133075,
+        "rmse": 0.28281189130809536,
+        "bias": -0.02655371638075822
+      }
+    },
+    "fit": {
+      "device": "cuda",
+      "gpu": "NVIDIA GeForce RTX 5090 Laptop GPU",
+      "best_epoch": 17,
+      "epochs_run": 57,
+      "seed": 303,
+      "hidden": [
+        256,
+        128,
+        64
+      ],
+      "loss": "mae",
+      "learning_rate": 0.0007,
+      "weight_decay": 0.02,
+      "batch_size": 4096,
+      "seconds": 5.75,
+      "inference_backend": "numpy; no GPU or torch needed"
+    },
+    "seconds": 5.87,
+    "train_sha256": "0fc30b62295dfa345fff9eaf1581eab3189f3029b53291203ce963bd092bb1ad",
+    "validation_sha256": "a1e6fd800ebf5ad17b3d469f90186638d0d92fd61d4d4896610ee8ca0b4fae9c",
+    "prediction_path": "artifacts/rtx5090-local/rtx5090_0144.predictions.npy"
+  },
+  {
+    "name": "local-cpu_018",
+    "worker": "local-cpu",
+    "hostname": "DESKTOP-C97CP8C",
+    "config": {
+      "family": "boost",
+      "features": "trajectory",
+      "loss": "absolute_error",
+      "max_leaf_nodes": 15,
+      "max_iter": 250,
+      "l2_regularization": 10,
+      "min_samples_leaf": 60,
+      "learning_rate": 0.05
+    },
+    "metrics": {
+      "n": 5732,
+      "mae": 0.17268106362431312,
+      "rmse": 0.25248836596082197,
+      "bias": 0.03209526711233119
+    },
+    "by_month": {
+      "2025-11": {
+        "n": 2832,
+        "mae": 0.14967554808309902,
+        "rmse": 0.223347801722599,
+        "bias": 0.021560002942312653
+      },
+      "2025-12": {
+        "n": 2900,
+        "mae": 0.1951471394907677,
+        "rmse": 0.2780132594176023,
+        "bias": 0.042383497501811376
+      }
+    },
+    "fit": {},
+    "seconds": 1.33,
+    "train_sha256": "0fc30b62295dfa345fff9eaf1581eab3189f3029b53291203ce963bd092bb1ad",
+    "validation_sha256": "a1e6fd800ebf5ad17b3d469f90186638d0d92fd61d4d4896610ee8ca0b4fae9c",
+    "prediction_path": "artifacts/search/local-cpu/local-cpu_018.predictions.npy"
+  },
+  {
+    "name": "local-cpu_002",
+    "worker": "local-cpu",
+    "hostname": "DESKTOP-C97CP8C",
+    "config": {
+      "family": "boost",
+      "features": "point",
+      "loss": "absolute_error",
+      "max_leaf_nodes": 15,
+      "max_iter": 250,
+      "l2_regularization": 10,
+      "min_samples_leaf": 60,
+      "learning_rate": 0.05
+    },
+    "metrics": {
+      "n": 5732,
+      "mae": 0.17289763183368517,
+      "rmse": 0.256874839827169,
+      "bias": 0.02653880258215161
+    },
+    "by_month": {
+      "2025-11": {
+        "n": 2832,
+        "mae": 0.1517541327294074,
+        "rmse": 0.22829133106327984,
+        "bias": 0.014455697316154975
+      },
+      "2025-12": {
+        "n": 2900,
+        "mae": 0.19354535233827647,
+        "rmse": 0.2820057800314053,
+        "bias": 0.038338579862600745
+      }
+    },
+    "fit": {},
+    "seconds": 0.53,
+    "train_sha256": "0fc30b62295dfa345fff9eaf1581eab3189f3029b53291203ce963bd092bb1ad",
+    "validation_sha256": "a1e6fd800ebf5ad17b3d469f90186638d0d92fd61d4d4896610ee8ca0b4fae9c",
+    "prediction_path": "artifacts/search/local-cpu/local-cpu_002.predictions.npy"
+  }
+]

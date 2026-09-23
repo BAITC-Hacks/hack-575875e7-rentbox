@@ -1,0 +1,792 @@
+{
+  "description": "Historical robustness check; no January/February targets. Shortlist was selected using Nov/Dec 2025, so this is not an independent test.",
+  "training_before": "2024-10-31",
+  "validation_months": [
+    "2024-11",
+    "2024-12"
+  ],
+  "candidate_count": 18,
+  "results": [
+    {
+      "name": "rtx5090_0144",
+      "metrics": {
+        "n": 5748,
+        "mae": 0.17746269770350845,
+        "rmse": 0.269647936056529,
+        "bias": -0.028024218246958655
+      },
+      "by_month": {
+        "2024-11": {
+          "n": 2832,
+          "mae": 0.19193705223475407,
+          "rmse": 0.2841347820416609,
+          "bias": -0.026439666968373285
+        },
+        "2024-12": {
+          "n": 2916,
+          "mae": 0.1634052998871547,
+          "rmse": 0.2547911834564856,
+          "bias": -0.029563124015461316
+        }
+      },
+      "training_before": "2024-10-31",
+      "training_rows": 19996,
+      "fit": {
+        "device": "cuda",
+        "gpu": "NVIDIA RTX A6000",
+        "best_epoch": 17,
+        "epochs_run": 17,
+        "seed": 303,
+        "hidden": [
+          256,
+          128,
+          64
+        ],
+        "loss": "mae",
+        "learning_rate": 0.0007,
+        "weight_decay": 0.02,
+        "batch_size": 4096,
+        "seconds": 0.13,
+        "inference_backend": "numpy; no GPU or torch needed"
+      },
+      "seconds": 0.24,
+      "note": "Historical robustness check of candidates shortlisted on Nov/Dec 2025; not an independent test."
+    },
+    {
+      "name": "cloud-gpu_002",
+      "metrics": {
+        "n": 5748,
+        "mae": 0.17756866416626016,
+        "rmse": 0.26382734951958153,
+        "bias": -0.031377018055304136
+      },
+      "by_month": {
+        "2024-11": {
+          "n": 2832,
+          "mae": 0.1907051261588133,
+          "rmse": 0.27737111105919104,
+          "bias": -0.026144039288427137
+        },
+        "2024-12": {
+          "n": 2916,
+          "mae": 0.16481061877431555,
+          "rmse": 0.24997231001195352,
+          "bias": -0.0364592525778678
+        }
+      },
+      "training_before": "2024-10-31",
+      "training_rows": 19996,
+      "fit": {
+        "device": "cuda",
+        "gpu": "NVIDIA RTX A6000",
+        "best_epoch": 13,
+        "epochs_run": 13,
+        "seed": 53,
+        "hidden": [
+          128,
+          64,
+          32
+        ],
+        "loss": "huber",
+        "learning_rate": 0.0007,
+        "weight_decay": 0.02,
+        "batch_size": 2048,
+        "seconds": 0.18,
+        "inference_backend": "numpy; no GPU or torch needed"
+      },
+      "seconds": 0.29,
+      "note": "Historical robustness check of candidates shortlisted on Nov/Dec 2025; not an independent test."
+    },
+    {
+      "name": "rtx5090_0227",
+      "metrics": {
+        "n": 5748,
+        "mae": 0.17771414093034768,
+        "rmse": 0.2725650910867567,
+        "bias": -0.03488548526938035
+      },
+      "by_month": {
+        "2024-11": {
+          "n": 2832,
+          "mae": 0.19305486363979735,
+          "rmse": 0.2877513886508423,
+          "bias": -0.027784554762529532
+        },
+        "2024-12": {
+          "n": 2916,
+          "mae": 0.162815332043804,
+          "rmse": 0.2569585864285891,
+          "bias": -0.041781862222535875
+        }
+      },
+      "training_before": "2024-10-31",
+      "training_rows": 19996,
+      "fit": {
+        "device": "cuda",
+        "gpu": "NVIDIA RTX A6000",
+        "best_epoch": 8,
+        "epochs_run": 8,
+        "seed": 303,
+        "hidden": [
+          256,
+          128,
+          64
+        ],
+        "loss": "mae",
+        "learning_rate": 0.002,
+        "weight_decay": 0.02,
+        "batch_size": 4096,
+        "seconds": 0.06,
+        "inference_backend": "numpy; no GPU or torch needed"
+      },
+      "seconds": 0.17,
+      "note": "Historical robustness check of candidates shortlisted on Nov/Dec 2025; not an independent test."
+    },
+    {
+      "name": "a6000_0072",
+      "metrics": {
+        "n": 5748,
+        "mae": 0.17794214015145912,
+        "rmse": 0.2683646591614694,
+        "bias": -0.027342516733388004
+      },
+      "by_month": {
+        "2024-11": {
+          "n": 2832,
+          "mae": 0.19064496261439845,
+          "rmse": 0.2819077953948511,
+          "bias": -0.027417291472572786
+        },
+        "2024-12": {
+          "n": 2916,
+          "mae": 0.16560524261543577,
+          "rmse": 0.2545227967893269,
+          "bias": -0.027269895999035714
+        }
+      },
+      "training_before": "2024-10-31",
+      "training_rows": 19996,
+      "fit": {
+        "device": "cuda",
+        "gpu": "NVIDIA RTX A6000",
+        "best_epoch": 5,
+        "epochs_run": 5,
+        "seed": 607,
+        "hidden": [
+          512,
+          256,
+          128
+        ],
+        "loss": "mae",
+        "learning_rate": 0.0007,
+        "weight_decay": 0.02,
+        "batch_size": 1024,
+        "seconds": 0.15,
+        "inference_backend": "numpy; no GPU or torch needed"
+      },
+      "seconds": 0.27,
+      "note": "Historical robustness check of candidates shortlisted on Nov/Dec 2025; not an independent test."
+    },
+    {
+      "name": "rtx5090_0443",
+      "metrics": {
+        "n": 5748,
+        "mae": 0.17801241320316608,
+        "rmse": 0.269523422301585,
+        "bias": -0.04190272660538445
+      },
+      "by_month": {
+        "2024-11": {
+          "n": 2832,
+          "mae": 0.1922539354216497,
+          "rmse": 0.2835850018386186,
+          "bias": -0.04085451184500209
+        },
+        "2024-12": {
+          "n": 2916,
+          "mae": 0.1641811405959145,
+          "rmse": 0.2551261306298115,
+          "bias": -0.042920745878842224
+        }
+      },
+      "training_before": "2024-10-31",
+      "training_rows": 19996,
+      "fit": {
+        "device": "cuda",
+        "gpu": "NVIDIA RTX A6000",
+        "best_epoch": 35,
+        "epochs_run": 35,
+        "seed": 303,
+        "hidden": [
+          256,
+          128,
+          64
+        ],
+        "loss": "mae",
+        "learning_rate": 0.0003,
+        "weight_decay": 0.02,
+        "batch_size": 4096,
+        "seconds": 0.25,
+        "inference_backend": "numpy; no GPU or torch needed"
+      },
+      "seconds": 0.37,
+      "note": "Historical robustness check of candidates shortlisted on Nov/Dec 2025; not an independent test."
+    },
+    {
+      "name": "cloud-gpu_004",
+      "metrics": {
+        "n": 5748,
+        "mae": 0.17815974481309585,
+        "rmse": 0.26995478747370155,
+        "bias": -0.03315729850224535
+      },
+      "by_month": {
+        "2024-11": {
+          "n": 2832,
+          "mae": 0.19187354272510768,
+          "rmse": 0.28433146987450025,
+          "bias": -0.02885832523902976
+        },
+        "2024-12": {
+          "n": 2916,
+          "mae": 0.16484099457756168,
+          "rmse": 0.25521822747572476,
+          "bias": -0.03733243302948355
+        }
+      },
+      "training_before": "2024-10-31",
+      "training_rows": 19996,
+      "fit": {
+        "device": "cuda",
+        "gpu": "NVIDIA RTX A6000",
+        "best_epoch": 14,
+        "epochs_run": 14,
+        "seed": 53,
+        "hidden": [
+          128,
+          64,
+          32
+        ],
+        "loss": "mae",
+        "learning_rate": 0.0007,
+        "weight_decay": 0.02,
+        "batch_size": 2048,
+        "seconds": 0.57,
+        "inference_backend": "numpy; no GPU or torch needed"
+      },
+      "seconds": 3.43,
+      "note": "Historical robustness check of candidates shortlisted on Nov/Dec 2025; not an independent test."
+    },
+    {
+      "name": "rtx5090_0009",
+      "metrics": {
+        "n": 5748,
+        "mae": 0.17822444156584047,
+        "rmse": 0.27087340419710076,
+        "bias": -0.04944734633628129
+      },
+      "by_month": {
+        "2024-11": {
+          "n": 2832,
+          "mae": 0.19307400658823431,
+          "rmse": 0.28528844180876584,
+          "bias": -0.04747416136104347
+        },
+        "2024-12": {
+          "n": 2916,
+          "mae": 0.16380264179100523,
+          "rmse": 0.2560981301485125,
+          "bias": -0.051363690592067815
+        }
+      },
+      "training_before": "2024-10-31",
+      "training_rows": 19996,
+      "fit": {
+        "device": "cuda",
+        "gpu": "NVIDIA RTX A6000",
+        "best_epoch": 18,
+        "epochs_run": 18,
+        "seed": 303,
+        "hidden": [
+          256,
+          128,
+          64
+        ],
+        "loss": "mae",
+        "learning_rate": 0.0007,
+        "weight_decay": 0.005,
+        "batch_size": 4096,
+        "seconds": 0.13,
+        "inference_backend": "numpy; no GPU or torch needed"
+      },
+      "seconds": 0.24,
+      "note": "Historical robustness check of candidates shortlisted on Nov/Dec 2025; not an independent test."
+    },
+    {
+      "name": "local-cpu_018",
+      "metrics": {
+        "n": 5748,
+        "mae": 0.17954300291267236,
+        "rmse": 0.2526504069213057,
+        "bias": -0.009118577350544282
+      },
+      "by_month": {
+        "2024-11": {
+          "n": 2832,
+          "mae": 0.18858338820907988,
+          "rmse": 0.26119451527748544,
+          "bias": -0.007778561824572291
+        },
+        "2024-12": {
+          "n": 2916,
+          "mae": 0.17076304023797204,
+          "rmse": 0.24406628672630848,
+          "bias": -0.010419991606220782
+        }
+      },
+      "training_before": "2024-10-31",
+      "training_rows": 19996,
+      "fit": {
+        "device": "cpu"
+      },
+      "seconds": 1.6,
+      "note": "Historical robustness check of candidates shortlisted on Nov/Dec 2025; not an independent test."
+    },
+    {
+      "name": "a6000_0023",
+      "metrics": {
+        "n": 5748,
+        "mae": 0.17996902375397447,
+        "rmse": 0.2685354993650631,
+        "bias": -0.018005621099583816
+      },
+      "by_month": {
+        "2024-11": {
+          "n": 2832,
+          "mae": 0.19429716051655485,
+          "rmse": 0.28294107948907693,
+          "bias": -0.01565938765314853
+        },
+        "2024-12": {
+          "n": 2916,
+          "mae": 0.1660536316717976,
+          "rmse": 0.25376332216791975,
+          "bias": -0.020284267574311086
+        }
+      },
+      "training_before": "2024-10-31",
+      "training_rows": 19996,
+      "fit": {
+        "device": "cuda",
+        "gpu": "NVIDIA RTX A6000",
+        "best_epoch": 10,
+        "epochs_run": 10,
+        "seed": 401,
+        "hidden": [
+          512,
+          512,
+          256,
+          128
+        ],
+        "loss": "huber",
+        "learning_rate": 0.002,
+        "weight_decay": 0.005,
+        "batch_size": 4096,
+        "seconds": 0.14,
+        "inference_backend": "numpy; no GPU or torch needed"
+      },
+      "seconds": 0.3,
+      "note": "Historical robustness check of candidates shortlisted on Nov/Dec 2025; not an independent test."
+    },
+    {
+      "name": "rtx5090_0185",
+      "metrics": {
+        "n": 5748,
+        "mae": 0.18014445150604236,
+        "rmse": 0.27112399016875005,
+        "bias": -0.05319293781554643
+      },
+      "by_month": {
+        "2024-11": {
+          "n": 2832,
+          "mae": 0.1935627643208569,
+          "rmse": 0.2852951191355957,
+          "bias": -0.05043901281698897
+        },
+        "2024-12": {
+          "n": 2916,
+          "mae": 0.16711267445132538,
+          "rmse": 0.2566130813308263,
+          "bias": -0.05586753164130596
+        }
+      },
+      "training_before": "2024-10-31",
+      "training_rows": 19996,
+      "fit": {
+        "device": "cuda",
+        "gpu": "NVIDIA RTX A6000",
+        "best_epoch": 15,
+        "epochs_run": 15,
+        "seed": 303,
+        "hidden": [
+          128,
+          64,
+          32
+        ],
+        "loss": "mae",
+        "learning_rate": 0.0007,
+        "weight_decay": 0.005,
+        "batch_size": 1024,
+        "seconds": 0.42,
+        "inference_backend": "numpy; no GPU or torch needed"
+      },
+      "seconds": 0.53,
+      "note": "Historical robustness check of candidates shortlisted on Nov/Dec 2025; not an independent test."
+    },
+    {
+      "name": "cloud-gpu_010",
+      "metrics": {
+        "n": 5748,
+        "mae": 0.18027732513397776,
+        "rmse": 0.27064818215661257,
+        "bias": -0.014609675488835034
+      },
+      "by_month": {
+        "2024-11": {
+          "n": 2832,
+          "mae": 0.19212914121696567,
+          "rmse": 0.2831626632010111,
+          "bias": -0.015697777642789092
+        },
+        "2024-12": {
+          "n": 2916,
+          "mae": 0.16876691939082902,
+          "rmse": 0.2579136128350224,
+          "bias": -0.013552917841373477
+        }
+      },
+      "training_before": "2024-10-31",
+      "training_rows": 19996,
+      "fit": {
+        "device": "cuda",
+        "gpu": "NVIDIA RTX A6000",
+        "best_epoch": 14,
+        "epochs_run": 14,
+        "seed": 53,
+        "hidden": [
+          256,
+          128,
+          64
+        ],
+        "loss": "mae",
+        "learning_rate": 0.0007,
+        "weight_decay": 0.02,
+        "batch_size": 2048,
+        "seconds": 0.21,
+        "inference_backend": "numpy; no GPU or torch needed"
+      },
+      "seconds": 0.32,
+      "note": "Historical robustness check of candidates shortlisted on Nov/Dec 2025; not an independent test."
+    },
+    {
+      "name": "rtx5090_0073",
+      "metrics": {
+        "n": 5748,
+        "mae": 0.18088980202152585,
+        "rmse": 0.2703444835668894,
+        "bias": -0.020313733862155063
+      },
+      "by_month": {
+        "2024-11": {
+          "n": 2832,
+          "mae": 0.1925061392431814,
+          "rmse": 0.28323699794795665,
+          "bias": -0.024827543289279833
+        },
+        "2024-12": {
+          "n": 2916,
+          "mae": 0.16960809179802502,
+          "rmse": 0.25720551476239106,
+          "bias": -0.015929951867087382
+        }
+      },
+      "training_before": "2024-10-31",
+      "training_rows": 19996,
+      "fit": {
+        "device": "cuda",
+        "gpu": "NVIDIA RTX A6000",
+        "best_epoch": 45,
+        "epochs_run": 45,
+        "seed": 202,
+        "hidden": [
+          128,
+          64,
+          32
+        ],
+        "loss": "mae",
+        "learning_rate": 0.0007,
+        "weight_decay": 0.005,
+        "batch_size": 4096,
+        "seconds": 0.33,
+        "inference_backend": "numpy; no GPU or torch needed"
+      },
+      "seconds": 0.43,
+      "note": "Historical robustness check of candidates shortlisted on Nov/Dec 2025; not an independent test."
+    },
+    {
+      "name": "rtx5090_0149",
+      "metrics": {
+        "n": 5748,
+        "mae": 0.18359222425300573,
+        "rmse": 0.2720736755838271,
+        "bias": -0.03133611382978084
+      },
+      "by_month": {
+        "2024-11": {
+          "n": 2832,
+          "mae": 0.19586354854059462,
+          "rmse": 0.28603205524311637,
+          "bias": -0.036792427781201315
+        },
+        "2024-12": {
+          "n": 2916,
+          "mae": 0.17167439490374242,
+          "rmse": 0.25779496466578705,
+          "bias": -0.026036977646508284
+        }
+      },
+      "training_before": "2024-10-31",
+      "training_rows": 19996,
+      "fit": {
+        "device": "cuda",
+        "gpu": "NVIDIA RTX A6000",
+        "best_epoch": 53,
+        "epochs_run": 53,
+        "seed": 202,
+        "hidden": [
+          128,
+          64,
+          32
+        ],
+        "loss": "mae",
+        "learning_rate": 0.0007,
+        "weight_decay": 0.02,
+        "batch_size": 4096,
+        "seconds": 0.38,
+        "inference_backend": "numpy; no GPU or torch needed"
+      },
+      "seconds": 0.48,
+      "note": "Historical robustness check of candidates shortlisted on Nov/Dec 2025; not an independent test."
+    },
+    {
+      "name": "rtx5090_0046",
+      "metrics": {
+        "n": 5748,
+        "mae": 0.18456791083969615,
+        "rmse": 0.26691276555978044,
+        "bias": 0.0063811107383895446
+      },
+      "by_month": {
+        "2024-11": {
+          "n": 2832,
+          "mae": 0.19445860151274713,
+          "rmse": 0.279541485648578,
+          "bias": -0.004522349688135917
+        },
+        "2024-12": {
+          "n": 2916,
+          "mae": 0.17496213718191822,
+          "rmse": 0.25404763606415665,
+          "bias": 0.016970479712299053
+        }
+      },
+      "training_before": "2024-10-31",
+      "training_rows": 19996,
+      "fit": {
+        "device": "cuda",
+        "gpu": "NVIDIA RTX A6000",
+        "best_epoch": 9,
+        "epochs_run": 9,
+        "seed": 101,
+        "hidden": [
+          1024,
+          512,
+          256
+        ],
+        "loss": "mae",
+        "learning_rate": 0.0003,
+        "weight_decay": 0.005,
+        "batch_size": 1024,
+        "seconds": 0.26,
+        "inference_backend": "numpy; no GPU or torch needed"
+      },
+      "seconds": 0.46,
+      "note": "Historical robustness check of candidates shortlisted on Nov/Dec 2025; not an independent test."
+    },
+    {
+      "name": "rtx5090_0143",
+      "metrics": {
+        "n": 5748,
+        "mae": 0.18603918563587835,
+        "rmse": 0.2708145282635966,
+        "bias": 0.004454953965737026
+      },
+      "by_month": {
+        "2024-11": {
+          "n": 2832,
+          "mae": 0.19631842679326686,
+          "rmse": 0.2851376959105717,
+          "bias": -0.013478093214935738
+        },
+        "2024-12": {
+          "n": 2916,
+          "mae": 0.176056054306069,
+          "rmse": 0.25613843630029137,
+          "bias": 0.0218714113099295
+        }
+      },
+      "training_before": "2024-10-31",
+      "training_rows": 19996,
+      "fit": {
+        "device": "cuda",
+        "gpu": "NVIDIA RTX A6000",
+        "best_epoch": 9,
+        "epochs_run": 9,
+        "seed": 101,
+        "hidden": [
+          128,
+          64,
+          32
+        ],
+        "loss": "mae",
+        "learning_rate": 0.002,
+        "weight_decay": 0.005,
+        "batch_size": 1024,
+        "seconds": 0.25,
+        "inference_backend": "numpy; no GPU or torch needed"
+      },
+      "seconds": 0.36,
+      "note": "Historical robustness check of candidates shortlisted on Nov/Dec 2025; not an independent test."
+    },
+    {
+      "name": "rtx5090_0431",
+      "metrics": {
+        "n": 5748,
+        "mae": 0.18664420559648243,
+        "rmse": 0.2729536667525131,
+        "bias": 0.006169795800662369
+      },
+      "by_month": {
+        "2024-11": {
+          "n": 2832,
+          "mae": 0.19691769303772608,
+          "rmse": 0.2871086798658899,
+          "bias": -0.012502719613562531
+        },
+        "2024-12": {
+          "n": 2916,
+          "mae": 0.17666666223790845,
+          "rmse": 0.25846544062933985,
+          "bias": 0.024304419824354037
+        }
+      },
+      "training_before": "2024-10-31",
+      "training_rows": 19996,
+      "fit": {
+        "device": "cuda",
+        "gpu": "NVIDIA RTX A6000",
+        "best_epoch": 9,
+        "epochs_run": 9,
+        "seed": 101,
+        "hidden": [
+          128,
+          64,
+          32
+        ],
+        "loss": "mae",
+        "learning_rate": 0.002,
+        "weight_decay": 0.02,
+        "batch_size": 1024,
+        "seconds": 0.25,
+        "inference_backend": "numpy; no GPU or torch needed"
+      },
+      "seconds": 0.36,
+      "note": "Historical robustness check of candidates shortlisted on Nov/Dec 2025; not an independent test."
+    },
+    {
+      "name": "local-cpu_002",
+      "metrics": {
+        "n": 5748,
+        "mae": 0.19047416195369615,
+        "rmse": 0.2622827014836053,
+        "bias": -0.027813824065214855
+      },
+      "by_month": {
+        "2024-11": {
+          "n": 2832,
+          "mae": 0.2022133105523645,
+          "rmse": 0.27708678509484913,
+          "bias": -0.025555493381478143
+        },
+        "2024-12": {
+          "n": 2916,
+          "mae": 0.17907317812947507,
+          "rmse": 0.24705740503026186,
+          "bias": -0.030007099955592885
+        }
+      },
+      "training_before": "2024-10-31",
+      "training_rows": 19996,
+      "fit": {
+        "device": "cpu"
+      },
+      "seconds": 0.93,
+      "note": "Historical robustness check of candidates shortlisted on Nov/Dec 2025; not an independent test."
+    },
+    {
+      "name": "rtx5090_0521",
+      "metrics": {
+        "n": 5748,
+        "mae": 0.20832770068906167,
+        "rmse": 0.2705940902584542,
+        "bias": 0.059933010875907404
+      },
+      "by_month": {
+        "2024-11": {
+          "n": 2832,
+          "mae": 0.20966206692446818,
+          "rmse": 0.27742993036613794,
+          "bias": 0.0455000137506323
+        },
+        "2024-12": {
+          "n": 2916,
+          "mae": 0.20703177298718548,
+          "rmse": 0.2637856562835003,
+          "bias": 0.07395024265189476
+        }
+      },
+      "training_before": "2024-10-31",
+      "training_rows": 19996,
+      "fit": {
+        "device": "cuda",
+        "gpu": "NVIDIA RTX A6000",
+        "best_epoch": 5,
+        "epochs_run": 5,
+        "seed": 303,
+        "hidden": [
+          1024,
+          512,
+          256
+        ],
+        "loss": "huber",
+        "learning_rate": 0.002,
+        "weight_decay": 0.02,
+        "batch_size": 1024,
+        "seconds": 0.14,
+        "inference_backend": "numpy; no GPU or torch needed"
+      },
+      "seconds": 0.32,
+      "note": "Historical robustness check of candidates shortlisted on Nov/Dec 2025; not an independent test."
+    }
+  ]
+}

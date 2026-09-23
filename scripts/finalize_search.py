@@ -2,10 +2,12 @@
 
 from __future__ import annotations
 
+import argparse
 import copy
 import hashlib
 import json
 from datetime import datetime, timezone
+from pathlib import Path
 
 import joblib
 import numpy as np
@@ -43,6 +45,10 @@ def fit_candidate(info: dict, training: pd.DataFrame, protocol: dict):
 
 
 def main() -> None:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--expanded", action="store_true")
+    parser.add_argument("--output", type=Path, default=ROOT / "artifacts/ensemble")
+    args = parser.parse_args()
     protocol = json.loads((SEARCH / "protocol.json").read_text())
     valid = pd.read_parquet(SEARCH / "validation.parquet")
     candidates = []
@@ -56,6 +62,19 @@ def main() -> None:
                 raise ValueError("Workers used different data")
             info["prediction_path"] = str(path.with_suffix(".predictions.npy"))
             candidates.append(info)
+    if args.expanded:
+        for folder, pattern, expected in [("rtx5090-local", "rtx5090_*.json", 600),
+                                          ("a6000-wide", "a6000_*.json", 480),
+                                          ("catboost-search", "catboost_???.json", 36)]:
+            files = sorted((ROOT / "artifacts" / folder).glob(pattern))
+            if len(files) != expected:
+                raise ValueError(f"Incomplete expanded worker {folder}: {len(files)}/{expected}")
+            for path in files:
+                info = json.loads(path.read_text())
+                if any(info[k] != protocol[k] for k in ["train_sha256", "validation_sha256"]):
+                    raise ValueError("Expanded worker used a different search pack")
+                info["prediction_path"] = str(path.with_suffix(".predictions.npy"))
+                candidates.append(info)
     candidates.sort(key=lambda r: r["metrics"]["mae"])
     shortlist = candidates[:8]
     ensembles = []
@@ -71,7 +90,8 @@ def main() -> None:
                  "chosen": chosen, "selection_months": protocol["selection_months"],
                  "january_used_for_search": False,
                  "note": "January was already reported for the first baseline experiment; it is now a monitoring month, not a newly untouched holdout."}
-    (SEARCH / "selection.json").write_text(json.dumps(selection, indent=2) + "\n")
+    selection_path = SEARCH / ("expanded-selection.json" if args.expanded else "selection.json")
+    selection_path.write_text(json.dumps(selection, indent=2) + "\n")
     print(json.dumps({"selection_frozen": chosen}), flush=True)
 
     offset = protocol["utc_offset_hours"]
@@ -91,7 +111,7 @@ def main() -> None:
     contextual = any(row["config"]["features"] == "trajectory" for row in members)
     full_columns = protocol["features"] if contextual else protocol["point_features"]
     x_holdout = holdout[["x_" + c for c in full_columns]].rename(columns=lambda c: c[2:])
-    output = ROOT / "artifacts/ensemble"
+    output = args.output
     output.mkdir(parents=True, exist_ok=True)
     with threadpool_limits(limits=8):
         validation_model = BlendRegressor([fit_candidate(info, before_january, protocol) for info in members])
@@ -142,7 +162,7 @@ def main() -> None:
         "# Прогноз мощности: RTX 5090 + A6000 + CPU", "",
         "**Предварительный результат:** UTC+5, начало интервала и выпуск 23:00 ещё требуют подтверждения организаторов.", "",
         "## Обучение", "",
-        "Сравнены 88 конфигураций: 40 моделей на CPU, 24 нейросети на RTX 5090 Laptop и 24 на A6000 в NVIDIA Brev.",
+        f"Сравнены {len(candidates)} конфигураций на CPU, RTX 5090 Laptop и A6000 в NVIDIA Brev.",
         "Поиск использовал обучение до 31 октября 2025 (не включая этот день) и валидацию ноября–декабря.",
         "Январские цели не передавались поисковым workers. После первого эксперимента январь уже является месяцем мониторинга разработки; это не новый нетронутый тест.",
         f"Выбран {chosen['name']}: " + ", ".join(chosen["members"]) + ".",
@@ -157,8 +177,8 @@ def main() -> None:
         "MAE измеряется в долях нормализованной мощности; это не MAPE и не «процент точности».",
         f"Среднее по турбине: MAE {metadata['january_baseline']['mae']:.5f}; снижение MAE {100 * (1-overall['mae']/metadata['january_baseline']['mae']):.1f}%.",
         "Дополнительные базовые модели: последний известный полный час — MAE 0.34268; последние доступные сутки — MAE 0.36480.",
-        "Первый бустинг из `artifacts/forecast/` давал MAE 0.19420. Новый ансамбль: MAE 0.16933.", "",
-        "## Использование", "", "```bash", "python -m scripts.predict --as-of 2026-01-31T18:00:00Z --horizon 48", "```", "",
+        f"Первый бустинг из `artifacts/forecast/` давал MAE 0.19420. Этот ансамбль: MAE {overall['mae']:.5f}.", "",
+        "## Использование", "", "```bash", f"python -m scripts.predict --as-of 2026-01-31T18:00:00Z --horizon 48 --model {output.relative_to(ROOT)}/model.joblib", "```", "",
         "Сохранённый ансамбль использует NumPy на CPU. PyTorch, GPU, личные ключи и сеть для расчёта по кэшу не нужны.",
         "`february_replay.csv`: 29 ежедневных выпусков × 48 часов × 2 турбины = 2784 строки. Мартовский хвост отмечен `in_february=false`.",
         "Февральских фактических значений нет; качество февраля не измерено.", "",
