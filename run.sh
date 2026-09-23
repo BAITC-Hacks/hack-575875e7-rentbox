@@ -124,6 +124,122 @@ SETTINGS
     info "Когда организаторы подтвердят время — поправьте .env и уберите allow_research."
 }
 
+# --- мастер первоначальной настройки ----------------------------------------
+
+# Записывает .env по шагам. На каждом шаге Enter принимает значение
+# по умолчанию, "s" пропускает остаток мастера и берёт дефолты для всего.
+SETUP_TZ="Etc/GMT-5"
+SETUP_MEANING="interval_start"
+SETUP_RESEARCH="true"
+SETUP_BACKEND_PORT="8000"
+SETUP_WEB_PORT="3000"
+SETUP_SKIPPED=0
+
+ask() {
+    # ask <подсказка> <значение по умолчанию> -> ответ в REPLY_VALUE
+    local prompt="$1" fallback="$2" answer
+    printf '  %s [%s]: ' "$prompt" "$fallback"
+    read -r answer
+    case "$answer" in
+        s|S|п|П) SETUP_SKIPPED=1; REPLY_VALUE="$fallback" ;;
+        "")      REPLY_VALUE="$fallback" ;;
+        *)       REPLY_VALUE="$answer" ;;
+    esac
+}
+
+step_time() {
+    [ "$SETUP_SKIPPED" -eq 1 ] && return 0
+    printf '\n'
+    bold "Шаг 1 из 3. Время в исходных данных"
+    info "Организаторы не сообщили, в каком поясе записаны CSV и что означает"
+    info "метка десятиминутного интервала. От этого зависит сопоставление с погодой."
+    printf '\n'
+    printf '    1  Исследовательские настройки: UTC+5, метка = начало интервала\n'
+    printf '       Так обучена текущая модель. Результаты помечаются как research.\n'
+    printf '    2  Подтверждённые организаторами — ввести свои значения\n'
+    printf '\n'
+    ask "Вариант" "1"
+    [ "$SETUP_SKIPPED" -eq 1 ] && return 0
+
+    if [ "$REPLY_VALUE" = "2" ]; then
+        ask "Часовой пояс IANA" "Etc/GMT-5";      SETUP_TZ="$REPLY_VALUE"
+        ask "Метка интервала (interval_start / interval_end)" "interval_start"
+        SETUP_MEANING="$REPLY_VALUE"
+        SETUP_RESEARCH="false"
+        info "Настройки помечены как подтверждённые."
+    else
+        info "Оставлены исследовательские значения."
+    fi
+}
+
+step_ports() {
+    [ "$SETUP_SKIPPED" -eq 1 ] && return 0
+    printf '\n'
+    bold "Шаг 2 из 3. Порты"
+    info "Занятый порт скрипт обойдёт сам, выбрав следующий свободный."
+    printf '\n'
+    ask "Порт API" "8000";      SETUP_BACKEND_PORT="$REPLY_VALUE"
+    [ "$SETUP_SKIPPED" -eq 1 ] && return 0
+    ask "Порт дашборда" "3000"; SETUP_WEB_PORT="$REPLY_VALUE"
+}
+
+step_training() {
+    [ "$SETUP_SKIPPED" -eq 1 ] && return 0
+    printf '\n'
+    bold "Шаг 3 из 3. Обучение (необязательно)"
+    info "Готовая модель уже в репозитории и считается на CPU."
+    info "Переобучение нужно, только если хотите повторить эксперимент."
+    printf '\n'
+    if [ -x scripts/train.sh ]; then
+        ./scripts/train.sh --check 2>/dev/null | sed 's/^/  /' || true
+    fi
+    printf '\n'
+    info "Запустить позже: ./scripts/train.sh либо пункт 7 в меню."
+    info "Облачная NVIDIA Brev: ./scripts/train.sh --cloud"
+}
+
+write_env() {
+    cp .env.example .env
+    cat >> .env <<SETTINGS
+
+# Записано мастером ./run.sh setup
+RENTBOX_SOURCE_TIMEZONE=$SETUP_TZ
+RENTBOX_TIMESTAMP_MEANING=$SETUP_MEANING
+RENTBOX_ALLOW_RESEARCH_TIME_SETTINGS=$SETUP_RESEARCH
+BACKEND_PORT=$SETUP_BACKEND_PORT
+WEB_PORT=$SETUP_WEB_PORT
+SETTINGS
+}
+
+setup() {
+    bold "Первоначальная настройка RentBox"
+    info "Enter — принять значение в скобках, s — пропустить и взять всё по умолчанию."
+    if [ -f .env ]; then
+        printf '\n'
+        info "Файл .env уже существует."
+        ask "Перезаписать? (y/n)" "n"
+        case "$REPLY_VALUE" in y|Y|д|Д) ;; *) info "Оставлен прежний .env."; return 0 ;; esac
+    fi
+
+    step_time
+    step_ports
+    step_training
+    write_env
+
+    printf '\n'
+    bold "Настройки сохранены в .env"
+    # printf выравнивает по байтам, а кириллица занимает по два — поэтому
+    # без табличной ширины, просто «ключ: значение».
+    info "Часовой пояс исходных данных: $SETUP_TZ"
+    info "Метка интервала: $SETUP_MEANING"
+    info "Режим research: $SETUP_RESEARCH"
+    info "Порт API: $SETUP_BACKEND_PORT"
+    info "Порт дашборда: $SETUP_WEB_PORT"
+    [ "$SETUP_SKIPPED" -eq 1 ] && info "" && info "Мастер пропущен, применены значения по умолчанию."
+    printf '\n'
+    info "Дальше: ./run.sh demo — посчитать прогноз"
+}
+
 # --- запуск -----------------------------------------------------------------
 
 wait_healthy() {
@@ -473,6 +589,7 @@ menu() {
     printf '  \033[1m5\033[0m  Журнал                     последние 50 строк\n'
     printf '  \033[1m6\033[0m  Остановить                 все запущенные сервисы\n'
     printf '  \033[1m7\033[0m  Переобучить модель         найдёт NVIDIA, иначе CPU\n'
+    printf '  \033[1m8\033[0m  Настроить                  пояс, порты, обучение\n'
     printf '  \033[1m0\033[0m  Выход\n'
     printf '\n'
     printf 'Выберите пункт [1]: '
@@ -487,6 +604,7 @@ menu() {
         5) logs ;;
         6) stop ;;
         7) ./scripts/train.sh ;;
+        8) setup ;;
         0) exit 0 ;;
         *) red "Нет такого пункта: $answer"; exit 1 ;;
     esac
@@ -503,11 +621,12 @@ if [ $# -eq 0 ]; then
 fi
 
 case "$1" in
+    setup) setup ;;
     start) start ;;
     all)   all ;;
     demo)  demo ;;
     check) check; green "Окружение готово, режим: $MODE" ;;
     stop)  stop ;;
     logs)  logs ;;
-    *)     die "неизвестная команда: $1" "Доступно: start, all, demo, check, stop, logs" ;;
+    *)     die "неизвестная команда: $1" "Доступно: setup, start, all, demo, check, stop, logs" ;;
 esac
