@@ -1,0 +1,4688 @@
+{
+  "candidate_count": 88,
+  "ranking": [
+    {
+      "name": "cloud-gpu_004",
+      "worker": "cloud-gpu",
+      "hostname": "brev-yf4lxgjo1",
+      "config": {
+        "family": "mlp",
+        "features": "point",
+        "hidden": [
+          128,
+          64,
+          32
+        ],
+        "loss_name": "mae",
+        "seed": 53,
+        "epochs": 250,
+        "learning_rate": 0.0007,
+        "weight_decay": 0.02,
+        "batch_size": 2048,
+        "patience": 35
+      },
+      "metrics": {
+        "n": 5732,
+        "mae": 0.1637568930950361,
+        "rmse": 0.2521606905145207,
+        "bias": -0.013808995544411947
+      },
+      "by_month": {
+        "2025-11": {
+          "n": 2832,
+          "mae": 0.1410077455791223,
+          "rmse": 0.21930695129316757,
+          "bias": -0.013508808564821347
+        },
+        "2025-12": {
+          "n": 2900,
+          "mae": 0.18597261232436987,
+          "rmse": 0.2805553195259476,
+          "bias": -0.014102143656894895
+        }
+      },
+      "fit": {
+        "device": "cuda",
+        "gpu": "NVIDIA RTX A6000",
+        "best_epoch": 14,
+        "epochs_run": 49,
+        "seed": 53,
+        "hidden": [
+          128,
+          64,
+          32
+        ],
+        "loss": "mae",
+        "learning_rate": 0.0007,
+        "weight_decay": 0.02,
+        "batch_size": 2048,
+        "seconds": 1.92,
+        "inference_backend": "numpy; no GPU or torch needed"
+      },
+      "seconds": 1.98,
+      "train_sha256": "0fc30b62295dfa345fff9eaf1581eab3189f3029b53291203ce963bd092bb1ad",
+      "validation_sha256": "a1e6fd800ebf5ad17b3d469f90186638d0d92fd61d4d4896610ee8ca0b4fae9c",
+      "prediction_path": "/home/flyperry/HackAlemAi/hack-rentbox/artifacts/search/cloud-gpu/cloud-gpu_004.predictions.npy"
+    },
+    {
+      "name": "cloud-gpu_010",
+      "worker": "cloud-gpu",
+      "hostname": "brev-yf4lxgjo1",
+      "config": {
+        "family": "mlp",
+        "features": "point",
+        "hidden": [
+          256,
+          128,
+          64
+        ],
+        "loss_name": "mae",
+        "seed": 53,
+        "epochs": 250,
+        "learning_rate": 0.0007,
+        "weight_decay": 0.02,
+        "batch_size": 2048,
+        "patience": 35
+      },
+      "metrics": {
+        "n": 5732,
+        "mae": 0.16440973000441328,
+        "rmse": 0.2527925194233529,
+        "bias": -0.019283051079531332
+      },
+      "by_month": {
+        "2025-11": {
+          "n": 2832,
+          "mae": 0.1401536642809268,
+          "rmse": 0.21937935053896704,
+          "bias": -0.01852791543304898
+        },
+        "2025-12": {
+          "n": 2900,
+          "mae": 0.1880970328074869,
+          "rmse": 0.28162187153336554,
+          "bias": -0.02002048009706168
+        }
+      },
+      "fit": {
+        "device": "cuda",
+        "gpu": "NVIDIA RTX A6000",
+        "best_epoch": 14,
+        "epochs_run": 49,
+        "seed": 53,
+        "hidden": [
+          256,
+          128,
+          64
+        ],
+        "loss": "mae",
+        "learning_rate": 0.0007,
+        "weight_decay": 0.02,
+        "batch_size": 2048,
+        "seconds": 1.87,
+        "inference_backend": "numpy; no GPU or torch needed"
+      },
+      "seconds": 1.99,
+      "train_sha256": "0fc30b62295dfa345fff9eaf1581eab3189f3029b53291203ce963bd092bb1ad",
+      "validation_sha256": "a1e6fd800ebf5ad17b3d469f90186638d0d92fd61d4d4896610ee8ca0b4fae9c",
+      "prediction_path": "/home/flyperry/HackAlemAi/hack-rentbox/artifacts/search/cloud-gpu/cloud-gpu_010.predictions.npy"
+    },
+    {
+      "name": "cloud-gpu_002",
+      "worker": "cloud-gpu",
+      "hostname": "brev-yf4lxgjo1",
+      "config": {
+        "family": "mlp",
+        "features": "point",
+        "hidden": [
+          128,
+          64,
+          32
+        ],
+        "loss_name": "huber",
+        "seed": 53,
+        "epochs": 250,
+        "learning_rate": 0.0007,
+        "weight_decay": 0.02,
+        "batch_size": 2048,
+        "patience": 35
+      },
+      "metrics": {
+        "n": 5732,
+        "mae": 0.16455434551691517,
+        "rmse": 0.24750254539331698,
+        "bias": -0.01690238078252203
+      },
+      "by_month": {
+        "2025-11": {
+          "n": 2832,
+          "mae": 0.14275090605405064,
+          "rmse": 0.2166614547260255,
+          "bias": -0.0144234066142213
+        },
+        "2025-12": {
+          "n": 2900,
+          "mae": 0.1858465319165125,
+          "rmse": 0.2742939378146224,
+          "bias": -0.019323227280669503
+        }
+      },
+      "fit": {
+        "device": "cuda",
+        "gpu": "NVIDIA RTX A6000",
+        "best_epoch": 13,
+        "epochs_run": 48,
+        "seed": 53,
+        "hidden": [
+          128,
+          64,
+          32
+        ],
+        "loss": "huber",
+        "learning_rate": 0.0007,
+        "weight_decay": 0.02,
+        "batch_size": 2048,
+        "seconds": 1.79,
+        "inference_backend": "numpy; no GPU or torch needed"
+      },
+      "seconds": 1.87,
+      "train_sha256": "0fc30b62295dfa345fff9eaf1581eab3189f3029b53291203ce963bd092bb1ad",
+      "validation_sha256": "a1e6fd800ebf5ad17b3d469f90186638d0d92fd61d4d4896610ee8ca0b4fae9c",
+      "prediction_path": "/home/flyperry/HackAlemAi/hack-rentbox/artifacts/search/cloud-gpu/cloud-gpu_002.predictions.npy"
+    },
+    {
+      "name": "cloud-gpu_005",
+      "worker": "cloud-gpu",
+      "hostname": "brev-yf4lxgjo1",
+      "config": {
+        "family": "mlp",
+        "features": "point",
+        "hidden": [
+          128,
+          64,
+          32
+        ],
+        "loss_name": "mae",
+        "seed": 83,
+        "epochs": 250,
+        "learning_rate": 0.0007,
+        "weight_decay": 0.02,
+        "batch_size": 2048,
+        "patience": 35
+      },
+      "metrics": {
+        "n": 5732,
+        "mae": 0.16483284810784238,
+        "rmse": 0.25292641065851423,
+        "bias": -0.017640130118114657
+      },
+      "by_month": {
+        "2025-11": {
+          "n": 2832,
+          "mae": 0.1404862773421693,
+          "rmse": 0.21854228940362602,
+          "bias": -0.018398514273192768
+        },
+        "2025-12": {
+          "n": 2900,
+          "mae": 0.18860853376590658,
+          "rmse": 0.2824936907135936,
+          "bias": -0.016899528763914238
+        }
+      },
+      "fit": {
+        "device": "cuda",
+        "gpu": "NVIDIA RTX A6000",
+        "best_epoch": 16,
+        "epochs_run": 51,
+        "seed": 83,
+        "hidden": [
+          128,
+          64,
+          32
+        ],
+        "loss": "mae",
+        "learning_rate": 0.0007,
+        "weight_decay": 0.02,
+        "batch_size": 2048,
+        "seconds": 1.91,
+        "inference_backend": "numpy; no GPU or torch needed"
+      },
+      "seconds": 1.98,
+      "train_sha256": "0fc30b62295dfa345fff9eaf1581eab3189f3029b53291203ce963bd092bb1ad",
+      "validation_sha256": "a1e6fd800ebf5ad17b3d469f90186638d0d92fd61d4d4896610ee8ca0b4fae9c",
+      "prediction_path": "/home/flyperry/HackAlemAi/hack-rentbox/artifacts/search/cloud-gpu/cloud-gpu_005.predictions.npy"
+    },
+    {
+      "name": "local-gpu_011",
+      "worker": "local-gpu",
+      "hostname": "DESKTOP-C97CP8C",
+      "config": {
+        "family": "mlp",
+        "features": "point",
+        "hidden": [
+          256,
+          128,
+          64
+        ],
+        "loss_name": "mae",
+        "seed": 29,
+        "epochs": 250,
+        "learning_rate": 0.0007,
+        "weight_decay": 0.02,
+        "batch_size": 2048,
+        "patience": 35
+      },
+      "metrics": {
+        "n": 5732,
+        "mae": 0.16536230048260803,
+        "rmse": 0.2538596607786425,
+        "bias": -0.016074686879496845
+      },
+      "by_month": {
+        "2025-11": {
+          "n": 2832,
+          "mae": 0.14002140369670985,
+          "rmse": 0.21780026629204022,
+          "bias": -0.016453948011073735
+        },
+        "2025-12": {
+          "n": 2900,
+          "mae": 0.19010899693007827,
+          "rmse": 0.2846993077431701,
+          "bias": -0.015704318767556937
+        }
+      },
+      "fit": {
+        "device": "cuda",
+        "gpu": "NVIDIA GeForce RTX 5090 Laptop GPU",
+        "best_epoch": 14,
+        "epochs_run": 49,
+        "seed": 29,
+        "hidden": [
+          256,
+          128,
+          64
+        ],
+        "loss": "mae",
+        "learning_rate": 0.0007,
+        "weight_decay": 0.02,
+        "batch_size": 2048,
+        "seconds": 1.66,
+        "inference_backend": "numpy; no GPU or torch needed"
+      },
+      "seconds": 1.71,
+      "train_sha256": "0fc30b62295dfa345fff9eaf1581eab3189f3029b53291203ce963bd092bb1ad",
+      "validation_sha256": "a1e6fd800ebf5ad17b3d469f90186638d0d92fd61d4d4896610ee8ca0b4fae9c",
+      "prediction_path": "/home/flyperry/HackAlemAi/hack-rentbox/artifacts/search/local-gpu/local-gpu_011.predictions.npy"
+    },
+    {
+      "name": "cloud-gpu_008",
+      "worker": "cloud-gpu",
+      "hostname": "brev-yf4lxgjo1",
+      "config": {
+        "family": "mlp",
+        "features": "point",
+        "hidden": [
+          256,
+          128,
+          64
+        ],
+        "loss_name": "huber",
+        "seed": 53,
+        "epochs": 250,
+        "learning_rate": 0.0007,
+        "weight_decay": 0.02,
+        "batch_size": 2048,
+        "patience": 35
+      },
+      "metrics": {
+        "n": 5732,
+        "mae": 0.16571923241652697,
+        "rmse": 0.25027309702698186,
+        "bias": -0.014614769896350676
+      },
+      "by_month": {
+        "2025-11": {
+          "n": 2832,
+          "mae": 0.1419589186035949,
+          "rmse": 0.21669719765270454,
+          "bias": -0.010527483181740292
+        },
+        "2025-12": {
+          "n": 2900,
+          "mae": 0.18892240783660405,
+          "rmse": 0.27919155866766865,
+          "bias": -0.018606216784549504
+        }
+      },
+      "fit": {
+        "device": "cuda",
+        "gpu": "NVIDIA RTX A6000",
+        "best_epoch": 14,
+        "epochs_run": 49,
+        "seed": 53,
+        "hidden": [
+          256,
+          128,
+          64
+        ],
+        "loss": "huber",
+        "learning_rate": 0.0007,
+        "weight_decay": 0.02,
+        "batch_size": 2048,
+        "seconds": 1.88,
+        "inference_backend": "numpy; no GPU or torch needed"
+      },
+      "seconds": 1.99,
+      "train_sha256": "0fc30b62295dfa345fff9eaf1581eab3189f3029b53291203ce963bd092bb1ad",
+      "validation_sha256": "a1e6fd800ebf5ad17b3d469f90186638d0d92fd61d4d4896610ee8ca0b4fae9c",
+      "prediction_path": "/home/flyperry/HackAlemAi/hack-rentbox/artifacts/search/cloud-gpu/cloud-gpu_008.predictions.npy"
+    },
+    {
+      "name": "local-gpu_004",
+      "worker": "local-gpu",
+      "hostname": "DESKTOP-C97CP8C",
+      "config": {
+        "family": "mlp",
+        "features": "point",
+        "hidden": [
+          128,
+          64,
+          32
+        ],
+        "loss_name": "mae",
+        "seed": 11,
+        "epochs": 250,
+        "learning_rate": 0.0007,
+        "weight_decay": 0.02,
+        "batch_size": 2048,
+        "patience": 35
+      },
+      "metrics": {
+        "n": 5732,
+        "mae": 0.16575285714367669,
+        "rmse": 0.2554485483387796,
+        "bias": -0.009109770322911662
+      },
+      "by_month": {
+        "2025-11": {
+          "n": 2832,
+          "mae": 0.13848480598043197,
+          "rmse": 0.21697052482371515,
+          "bias": -0.01020540077047003
+        },
+        "2025-12": {
+          "n": 2900,
+          "mae": 0.19238151952102456,
+          "rmse": 0.28810670958209217,
+          "bias": -0.008039830520330523
+        }
+      },
+      "fit": {
+        "device": "cuda",
+        "gpu": "NVIDIA GeForce RTX 5090 Laptop GPU",
+        "best_epoch": 27,
+        "epochs_run": 62,
+        "seed": 11,
+        "hidden": [
+          128,
+          64,
+          32
+        ],
+        "loss": "mae",
+        "learning_rate": 0.0007,
+        "weight_decay": 0.02,
+        "batch_size": 2048,
+        "seconds": 2.13,
+        "inference_backend": "numpy; no GPU or torch needed"
+      },
+      "seconds": 2.17,
+      "train_sha256": "0fc30b62295dfa345fff9eaf1581eab3189f3029b53291203ce963bd092bb1ad",
+      "validation_sha256": "a1e6fd800ebf5ad17b3d469f90186638d0d92fd61d4d4896610ee8ca0b4fae9c",
+      "prediction_path": "/home/flyperry/HackAlemAi/hack-rentbox/artifacts/search/local-gpu/local-gpu_004.predictions.npy"
+    },
+    {
+      "name": "cloud-gpu_003",
+      "worker": "cloud-gpu",
+      "hostname": "brev-yf4lxgjo1",
+      "config": {
+        "family": "mlp",
+        "features": "point",
+        "hidden": [
+          128,
+          64,
+          32
+        ],
+        "loss_name": "huber",
+        "seed": 83,
+        "epochs": 250,
+        "learning_rate": 0.0007,
+        "weight_decay": 0.02,
+        "batch_size": 2048,
+        "patience": 35
+      },
+      "metrics": {
+        "n": 5732,
+        "mae": 0.16602522208787993,
+        "rmse": 0.24957171082990115,
+        "bias": -0.0049086192966713675
+      },
+      "by_month": {
+        "2025-11": {
+          "n": 2832,
+          "mae": 0.1426433561562136,
+          "rmse": 0.21548537897214226,
+          "bias": -0.004284507206666566
+        },
+        "2025-12": {
+          "n": 2900,
+          "mae": 0.1888588235770106,
+          "rmse": 0.2788663209426939,
+          "bias": -0.005518097034220886
+        }
+      },
+      "fit": {
+        "device": "cuda",
+        "gpu": "NVIDIA RTX A6000",
+        "best_epoch": 16,
+        "epochs_run": 51,
+        "seed": 83,
+        "hidden": [
+          128,
+          64,
+          32
+        ],
+        "loss": "huber",
+        "learning_rate": 0.0007,
+        "weight_decay": 0.02,
+        "batch_size": 2048,
+        "seconds": 2.02,
+        "inference_backend": "numpy; no GPU or torch needed"
+      },
+      "seconds": 2.09,
+      "train_sha256": "0fc30b62295dfa345fff9eaf1581eab3189f3029b53291203ce963bd092bb1ad",
+      "validation_sha256": "a1e6fd800ebf5ad17b3d469f90186638d0d92fd61d4d4896610ee8ca0b4fae9c",
+      "prediction_path": "/home/flyperry/HackAlemAi/hack-rentbox/artifacts/search/cloud-gpu/cloud-gpu_003.predictions.npy"
+    },
+    {
+      "name": "local-gpu_010",
+      "worker": "local-gpu",
+      "hostname": "DESKTOP-C97CP8C",
+      "config": {
+        "family": "mlp",
+        "features": "point",
+        "hidden": [
+          256,
+          128,
+          64
+        ],
+        "loss_name": "mae",
+        "seed": 11,
+        "epochs": 250,
+        "learning_rate": 0.0007,
+        "weight_decay": 0.02,
+        "batch_size": 2048,
+        "patience": 35
+      },
+      "metrics": {
+        "n": 5732,
+        "mae": 0.1660327690126555,
+        "rmse": 0.2561869182870465,
+        "bias": -0.01950646549599753
+      },
+      "by_month": {
+        "2025-11": {
+          "n": 2832,
+          "mae": 0.1413115236986498,
+          "rmse": 0.22025704681264813,
+          "bias": -0.020326575404224896
+        },
+        "2025-12": {
+          "n": 2900,
+          "mae": 0.1901743437468845,
+          "rmse": 0.28696499188990515,
+          "bias": -0.018705585751135487
+        }
+      },
+      "fit": {
+        "device": "cuda",
+        "gpu": "NVIDIA GeForce RTX 5090 Laptop GPU",
+        "best_epoch": 10,
+        "epochs_run": 45,
+        "seed": 11,
+        "hidden": [
+          256,
+          128,
+          64
+        ],
+        "loss": "mae",
+        "learning_rate": 0.0007,
+        "weight_decay": 0.02,
+        "batch_size": 2048,
+        "seconds": 1.51,
+        "inference_backend": "numpy; no GPU or torch needed"
+      },
+      "seconds": 1.55,
+      "train_sha256": "0fc30b62295dfa345fff9eaf1581eab3189f3029b53291203ce963bd092bb1ad",
+      "validation_sha256": "a1e6fd800ebf5ad17b3d469f90186638d0d92fd61d4d4896610ee8ca0b4fae9c",
+      "prediction_path": "/home/flyperry/HackAlemAi/hack-rentbox/artifacts/search/local-gpu/local-gpu_010.predictions.npy"
+    },
+    {
+      "name": "local-gpu_008",
+      "worker": "local-gpu",
+      "hostname": "DESKTOP-C97CP8C",
+      "config": {
+        "family": "mlp",
+        "features": "point",
+        "hidden": [
+          256,
+          128,
+          64
+        ],
+        "loss_name": "huber",
+        "seed": 11,
+        "epochs": 250,
+        "learning_rate": 0.0007,
+        "weight_decay": 0.02,
+        "batch_size": 2048,
+        "patience": 35
+      },
+      "metrics": {
+        "n": 5732,
+        "mae": 0.1661120251038552,
+        "rmse": 0.2500018080070611,
+        "bias": -0.016715307317756042
+      },
+      "by_month": {
+        "2025-11": {
+          "n": 2832,
+          "mae": 0.14198169700095867,
+          "rmse": 0.2153042958260066,
+          "bias": -0.015560152711282724
+        },
+        "2025-12": {
+          "n": 2900,
+          "mae": 0.1896765386167528,
+          "rmse": 0.2797629293490984,
+          "bias": -0.017843375540353434
+        }
+      },
+      "fit": {
+        "device": "cuda",
+        "gpu": "NVIDIA GeForce RTX 5090 Laptop GPU",
+        "best_epoch": 10,
+        "epochs_run": 45,
+        "seed": 11,
+        "hidden": [
+          256,
+          128,
+          64
+        ],
+        "loss": "huber",
+        "learning_rate": 0.0007,
+        "weight_decay": 0.02,
+        "batch_size": 2048,
+        "seconds": 1.35,
+        "inference_backend": "numpy; no GPU or torch needed"
+      },
+      "seconds": 1.39,
+      "train_sha256": "0fc30b62295dfa345fff9eaf1581eab3189f3029b53291203ce963bd092bb1ad",
+      "validation_sha256": "a1e6fd800ebf5ad17b3d469f90186638d0d92fd61d4d4896610ee8ca0b4fae9c",
+      "prediction_path": "/home/flyperry/HackAlemAi/hack-rentbox/artifacts/search/local-gpu/local-gpu_008.predictions.npy"
+    },
+    {
+      "name": "local-gpu_009",
+      "worker": "local-gpu",
+      "hostname": "DESKTOP-C97CP8C",
+      "config": {
+        "family": "mlp",
+        "features": "point",
+        "hidden": [
+          256,
+          128,
+          64
+        ],
+        "loss_name": "huber",
+        "seed": 29,
+        "epochs": 250,
+        "learning_rate": 0.0007,
+        "weight_decay": 0.02,
+        "batch_size": 2048,
+        "patience": 35
+      },
+      "metrics": {
+        "n": 5732,
+        "mae": 0.16623120166835118,
+        "rmse": 0.25060489609547587,
+        "bias": -0.008123492107844263
+      },
+      "by_month": {
+        "2025-11": {
+          "n": 2832,
+          "mae": 0.1404621718439761,
+          "rmse": 0.21470238740705694,
+          "bias": -0.005782633072458969
+        },
+        "2025-12": {
+          "n": 2900,
+          "mae": 0.1913959921727064,
+          "rmse": 0.28127707496717835,
+          "bias": -0.010409462034813624
+        }
+      },
+      "fit": {
+        "device": "cuda",
+        "gpu": "NVIDIA GeForce RTX 5090 Laptop GPU",
+        "best_epoch": 16,
+        "epochs_run": 51,
+        "seed": 29,
+        "hidden": [
+          256,
+          128,
+          64
+        ],
+        "loss": "huber",
+        "learning_rate": 0.0007,
+        "weight_decay": 0.02,
+        "batch_size": 2048,
+        "seconds": 1.48,
+        "inference_backend": "numpy; no GPU or torch needed"
+      },
+      "seconds": 1.52,
+      "train_sha256": "0fc30b62295dfa345fff9eaf1581eab3189f3029b53291203ce963bd092bb1ad",
+      "validation_sha256": "a1e6fd800ebf5ad17b3d469f90186638d0d92fd61d4d4896610ee8ca0b4fae9c",
+      "prediction_path": "/home/flyperry/HackAlemAi/hack-rentbox/artifacts/search/local-gpu/local-gpu_009.predictions.npy"
+    },
+    {
+      "name": "cloud-gpu_009",
+      "worker": "cloud-gpu",
+      "hostname": "brev-yf4lxgjo1",
+      "config": {
+        "family": "mlp",
+        "features": "point",
+        "hidden": [
+          256,
+          128,
+          64
+        ],
+        "loss_name": "huber",
+        "seed": 83,
+        "epochs": 250,
+        "learning_rate": 0.0007,
+        "weight_decay": 0.02,
+        "batch_size": 2048,
+        "patience": 35
+      },
+      "metrics": {
+        "n": 5732,
+        "mae": 0.16633977299185904,
+        "rmse": 0.2503144614678723,
+        "bias": -0.009403987554716301
+      },
+      "by_month": {
+        "2025-11": {
+          "n": 2832,
+          "mae": 0.14030390941130574,
+          "rmse": 0.21516173202328648,
+          "bias": -0.005750635247208392
+        },
+        "2025-12": {
+          "n": 2900,
+          "mae": 0.19176514046086832,
+          "rmse": 0.2804218426459512,
+          "bias": -0.012971675049496442
+        }
+      },
+      "fit": {
+        "device": "cuda",
+        "gpu": "NVIDIA RTX A6000",
+        "best_epoch": 20,
+        "epochs_run": 55,
+        "seed": 83,
+        "hidden": [
+          256,
+          128,
+          64
+        ],
+        "loss": "huber",
+        "learning_rate": 0.0007,
+        "weight_decay": 0.02,
+        "batch_size": 2048,
+        "seconds": 2.08,
+        "inference_backend": "numpy; no GPU or torch needed"
+      },
+      "seconds": 2.19,
+      "train_sha256": "0fc30b62295dfa345fff9eaf1581eab3189f3029b53291203ce963bd092bb1ad",
+      "validation_sha256": "a1e6fd800ebf5ad17b3d469f90186638d0d92fd61d4d4896610ee8ca0b4fae9c",
+      "prediction_path": "/home/flyperry/HackAlemAi/hack-rentbox/artifacts/search/cloud-gpu/cloud-gpu_009.predictions.npy"
+    },
+    {
+      "name": "cloud-gpu_011",
+      "worker": "cloud-gpu",
+      "hostname": "brev-yf4lxgjo1",
+      "config": {
+        "family": "mlp",
+        "features": "point",
+        "hidden": [
+          256,
+          128,
+          64
+        ],
+        "loss_name": "mae",
+        "seed": 83,
+        "epochs": 250,
+        "learning_rate": 0.0007,
+        "weight_decay": 0.02,
+        "batch_size": 2048,
+        "patience": 35
+      },
+      "metrics": {
+        "n": 5732,
+        "mae": 0.1663490408985115,
+        "rmse": 0.2551296086607825,
+        "bias": -0.004323397678650803
+      },
+      "by_month": {
+        "2025-11": {
+          "n": 2832,
+          "mae": 0.14048329214692504,
+          "rmse": 0.21949799595601288,
+          "bias": 0.00014242534032955613
+        },
+        "2025-12": {
+          "n": 2900,
+          "mae": 0.19160828243799174,
+          "rmse": 0.28566818670171973,
+          "bias": -0.00868450484753093
+        }
+      },
+      "fit": {
+        "device": "cuda",
+        "gpu": "NVIDIA RTX A6000",
+        "best_epoch": 14,
+        "epochs_run": 49,
+        "seed": 83,
+        "hidden": [
+          256,
+          128,
+          64
+        ],
+        "loss": "mae",
+        "learning_rate": 0.0007,
+        "weight_decay": 0.02,
+        "batch_size": 2048,
+        "seconds": 2.19,
+        "inference_backend": "numpy; no GPU or torch needed"
+      },
+      "seconds": 2.28,
+      "train_sha256": "0fc30b62295dfa345fff9eaf1581eab3189f3029b53291203ce963bd092bb1ad",
+      "validation_sha256": "a1e6fd800ebf5ad17b3d469f90186638d0d92fd61d4d4896610ee8ca0b4fae9c",
+      "prediction_path": "/home/flyperry/HackAlemAi/hack-rentbox/artifacts/search/cloud-gpu/cloud-gpu_011.predictions.npy"
+    },
+    {
+      "name": "local-gpu_002",
+      "worker": "local-gpu",
+      "hostname": "DESKTOP-C97CP8C",
+      "config": {
+        "family": "mlp",
+        "features": "point",
+        "hidden": [
+          128,
+          64,
+          32
+        ],
+        "loss_name": "huber",
+        "seed": 11,
+        "epochs": 250,
+        "learning_rate": 0.0007,
+        "weight_decay": 0.02,
+        "batch_size": 2048,
+        "patience": 35
+      },
+      "metrics": {
+        "n": 5732,
+        "mae": 0.16694369099940543,
+        "rmse": 0.2530383069339279,
+        "bias": -0.0021194988770010027
+      },
+      "by_month": {
+        "2025-11": {
+          "n": 2832,
+          "mae": 0.13974427513174867,
+          "rmse": 0.21543157713939665,
+          "bias": -0.00264466884103121
+        },
+        "2025-12": {
+          "n": 2900,
+          "mae": 0.19350532746051022,
+          "rmse": 0.2850138633492672,
+          "bias": -0.0016066432431618449
+        }
+      },
+      "fit": {
+        "device": "cuda",
+        "gpu": "NVIDIA GeForce RTX 5090 Laptop GPU",
+        "best_epoch": 29,
+        "epochs_run": 64,
+        "seed": 11,
+        "hidden": [
+          128,
+          64,
+          32
+        ],
+        "loss": "huber",
+        "learning_rate": 0.0007,
+        "weight_decay": 0.02,
+        "batch_size": 2048,
+        "seconds": 1.89,
+        "inference_backend": "numpy; no GPU or torch needed"
+      },
+      "seconds": 1.92,
+      "train_sha256": "0fc30b62295dfa345fff9eaf1581eab3189f3029b53291203ce963bd092bb1ad",
+      "validation_sha256": "a1e6fd800ebf5ad17b3d469f90186638d0d92fd61d4d4896610ee8ca0b4fae9c",
+      "prediction_path": "/home/flyperry/HackAlemAi/hack-rentbox/artifacts/search/local-gpu/local-gpu_002.predictions.npy"
+    },
+    {
+      "name": "local-gpu_005",
+      "worker": "local-gpu",
+      "hostname": "DESKTOP-C97CP8C",
+      "config": {
+        "family": "mlp",
+        "features": "point",
+        "hidden": [
+          128,
+          64,
+          32
+        ],
+        "loss_name": "mae",
+        "seed": 29,
+        "epochs": 250,
+        "learning_rate": 0.0007,
+        "weight_decay": 0.02,
+        "batch_size": 2048,
+        "patience": 35
+      },
+      "metrics": {
+        "n": 5732,
+        "mae": 0.1673248545718701,
+        "rmse": 0.257417532575147,
+        "bias": -0.00318515379589495
+      },
+      "by_month": {
+        "2025-11": {
+          "n": 2832,
+          "mae": 0.14369185338110646,
+          "rmse": 0.22312542385440787,
+          "bias": -0.0037032519083673087
+        },
+        "2025-12": {
+          "n": 2900,
+          "mae": 0.19040370263126408,
+          "rmse": 0.2869777294522636,
+          "bias": -0.002679204190887456
+        }
+      },
+      "fit": {
+        "device": "cuda",
+        "gpu": "NVIDIA GeForce RTX 5090 Laptop GPU",
+        "best_epoch": 14,
+        "epochs_run": 49,
+        "seed": 29,
+        "hidden": [
+          128,
+          64,
+          32
+        ],
+        "loss": "mae",
+        "learning_rate": 0.0007,
+        "weight_decay": 0.02,
+        "batch_size": 2048,
+        "seconds": 1.58,
+        "inference_backend": "numpy; no GPU or torch needed"
+      },
+      "seconds": 1.62,
+      "train_sha256": "0fc30b62295dfa345fff9eaf1581eab3189f3029b53291203ce963bd092bb1ad",
+      "validation_sha256": "a1e6fd800ebf5ad17b3d469f90186638d0d92fd61d4d4896610ee8ca0b4fae9c",
+      "prediction_path": "/home/flyperry/HackAlemAi/hack-rentbox/artifacts/search/local-gpu/local-gpu_005.predictions.npy"
+    },
+    {
+      "name": "local-gpu_003",
+      "worker": "local-gpu",
+      "hostname": "DESKTOP-C97CP8C",
+      "config": {
+        "family": "mlp",
+        "features": "point",
+        "hidden": [
+          128,
+          64,
+          32
+        ],
+        "loss_name": "huber",
+        "seed": 29,
+        "epochs": 250,
+        "learning_rate": 0.0007,
+        "weight_decay": 0.02,
+        "batch_size": 2048,
+        "patience": 35
+      },
+      "metrics": {
+        "n": 5732,
+        "mae": 0.1678191490098574,
+        "rmse": 0.2525269391602967,
+        "bias": -0.002285097813310417
+      },
+      "by_month": {
+        "2025-11": {
+          "n": 2832,
+          "mae": 0.1448793736041748,
+          "rmse": 0.21893335652264737,
+          "bias": -0.0018034281079980063
+        },
+        "2025-12": {
+          "n": 2900,
+          "mae": 0.19022102623361364,
+          "rmse": 0.28148982337656614,
+          "bias": -0.0027554731944982595
+        }
+      },
+      "fit": {
+        "device": "cuda",
+        "gpu": "NVIDIA GeForce RTX 5090 Laptop GPU",
+        "best_epoch": 14,
+        "epochs_run": 49,
+        "seed": 29,
+        "hidden": [
+          128,
+          64,
+          32
+        ],
+        "loss": "huber",
+        "learning_rate": 0.0007,
+        "weight_decay": 0.02,
+        "batch_size": 2048,
+        "seconds": 1.51,
+        "inference_backend": "numpy; no GPU or torch needed"
+      },
+      "seconds": 1.55,
+      "train_sha256": "0fc30b62295dfa345fff9eaf1581eab3189f3029b53291203ce963bd092bb1ad",
+      "validation_sha256": "a1e6fd800ebf5ad17b3d469f90186638d0d92fd61d4d4896610ee8ca0b4fae9c",
+      "prediction_path": "/home/flyperry/HackAlemAi/hack-rentbox/artifacts/search/local-gpu/local-gpu_003.predictions.npy"
+    },
+    {
+      "name": "local-gpu_020",
+      "worker": "local-gpu",
+      "hostname": "DESKTOP-C97CP8C",
+      "config": {
+        "family": "mlp",
+        "features": "trajectory",
+        "hidden": [
+          256,
+          128,
+          64
+        ],
+        "loss_name": "huber",
+        "seed": 11,
+        "epochs": 250,
+        "learning_rate": 0.0007,
+        "weight_decay": 0.02,
+        "batch_size": 2048,
+        "patience": 35
+      },
+      "metrics": {
+        "n": 5732,
+        "mae": 0.16835384155077582,
+        "rmse": 0.2548856149217894,
+        "bias": 0.0014832244309923698
+      },
+      "by_month": {
+        "2025-11": {
+          "n": 2832,
+          "mae": 0.14446816155337727,
+          "rmse": 0.22253681941166745,
+          "bias": -0.011165789290576409
+        },
+        "2025-12": {
+          "n": 2900,
+          "mae": 0.19167944353444225,
+          "rmse": 0.2829285797997315,
+          "bias": 0.013835640589434704
+        }
+      },
+      "fit": {
+        "device": "cuda",
+        "gpu": "NVIDIA GeForce RTX 5090 Laptop GPU",
+        "best_epoch": 2,
+        "epochs_run": 37,
+        "seed": 11,
+        "hidden": [
+          256,
+          128,
+          64
+        ],
+        "loss": "huber",
+        "learning_rate": 0.0007,
+        "weight_decay": 0.02,
+        "batch_size": 2048,
+        "seconds": 1.26,
+        "inference_backend": "numpy; no GPU or torch needed"
+      },
+      "seconds": 1.33,
+      "train_sha256": "0fc30b62295dfa345fff9eaf1581eab3189f3029b53291203ce963bd092bb1ad",
+      "validation_sha256": "a1e6fd800ebf5ad17b3d469f90186638d0d92fd61d4d4896610ee8ca0b4fae9c",
+      "prediction_path": "/home/flyperry/HackAlemAi/hack-rentbox/artifacts/search/local-gpu/local-gpu_020.predictions.npy"
+    },
+    {
+      "name": "local-gpu_022",
+      "worker": "local-gpu",
+      "hostname": "DESKTOP-C97CP8C",
+      "config": {
+        "family": "mlp",
+        "features": "trajectory",
+        "hidden": [
+          256,
+          128,
+          64
+        ],
+        "loss_name": "mae",
+        "seed": 11,
+        "epochs": 250,
+        "learning_rate": 0.0007,
+        "weight_decay": 0.02,
+        "batch_size": 2048,
+        "patience": 35
+      },
+      "metrics": {
+        "n": 5732,
+        "mae": 0.16963233524538637,
+        "rmse": 0.2600119390556548,
+        "bias": -0.0057080363326680586
+      },
+      "by_month": {
+        "2025-11": {
+          "n": 2832,
+          "mae": 0.14604343548088347,
+          "rmse": 0.227460352744693,
+          "bias": -0.018968042365360604
+        },
+        "2025-12": {
+          "n": 2900,
+          "mae": 0.1926681159809285,
+          "rmse": 0.28827439649699904,
+          "bias": 0.007241045420637214
+        }
+      },
+      "fit": {
+        "device": "cuda",
+        "gpu": "NVIDIA GeForce RTX 5090 Laptop GPU",
+        "best_epoch": 2,
+        "epochs_run": 37,
+        "seed": 11,
+        "hidden": [
+          256,
+          128,
+          64
+        ],
+        "loss": "mae",
+        "learning_rate": 0.0007,
+        "weight_decay": 0.02,
+        "batch_size": 2048,
+        "seconds": 1.38,
+        "inference_backend": "numpy; no GPU or torch needed"
+      },
+      "seconds": 1.44,
+      "train_sha256": "0fc30b62295dfa345fff9eaf1581eab3189f3029b53291203ce963bd092bb1ad",
+      "validation_sha256": "a1e6fd800ebf5ad17b3d469f90186638d0d92fd61d4d4896610ee8ca0b4fae9c",
+      "prediction_path": "/home/flyperry/HackAlemAi/hack-rentbox/artifacts/search/local-gpu/local-gpu_022.predictions.npy"
+    },
+    {
+      "name": "cloud-gpu_020",
+      "worker": "cloud-gpu",
+      "hostname": "brev-yf4lxgjo1",
+      "config": {
+        "family": "mlp",
+        "features": "trajectory",
+        "hidden": [
+          256,
+          128,
+          64
+        ],
+        "loss_name": "huber",
+        "seed": 53,
+        "epochs": 250,
+        "learning_rate": 0.0007,
+        "weight_decay": 0.02,
+        "batch_size": 2048,
+        "patience": 35
+      },
+      "metrics": {
+        "n": 5732,
+        "mae": 0.17002886066098757,
+        "rmse": 0.25676440822366653,
+        "bias": 0.018861004001310192
+      },
+      "by_month": {
+        "2025-11": {
+          "n": 2832,
+          "mae": 0.14470506296406516,
+          "rmse": 0.22269652645161925,
+          "bias": 0.005400579774709729
+        },
+        "2025-12": {
+          "n": 2900,
+          "mae": 0.19475885896363734,
+          "rmse": 0.28614536604212976,
+          "bias": 0.032005804487424856
+        }
+      },
+      "fit": {
+        "device": "cuda",
+        "gpu": "NVIDIA RTX A6000",
+        "best_epoch": 2,
+        "epochs_run": 37,
+        "seed": 53,
+        "hidden": [
+          256,
+          128,
+          64
+        ],
+        "loss": "huber",
+        "learning_rate": 0.0007,
+        "weight_decay": 0.02,
+        "batch_size": 2048,
+        "seconds": 1.41,
+        "inference_backend": "numpy; no GPU or torch needed"
+      },
+      "seconds": 1.51,
+      "train_sha256": "0fc30b62295dfa345fff9eaf1581eab3189f3029b53291203ce963bd092bb1ad",
+      "validation_sha256": "a1e6fd800ebf5ad17b3d469f90186638d0d92fd61d4d4896610ee8ca0b4fae9c",
+      "prediction_path": "/home/flyperry/HackAlemAi/hack-rentbox/artifacts/search/cloud-gpu/cloud-gpu_020.predictions.npy"
+    },
+    {
+      "name": "cloud-gpu_023",
+      "worker": "cloud-gpu",
+      "hostname": "brev-yf4lxgjo1",
+      "config": {
+        "family": "mlp",
+        "features": "trajectory",
+        "hidden": [
+          256,
+          128,
+          64
+        ],
+        "loss_name": "mae",
+        "seed": 83,
+        "epochs": 250,
+        "learning_rate": 0.0007,
+        "weight_decay": 0.02,
+        "batch_size": 2048,
+        "patience": 35
+      },
+      "metrics": {
+        "n": 5732,
+        "mae": 0.1704942420611512,
+        "rmse": 0.2589554144524432,
+        "bias": 0.0007524710918953206
+      },
+      "by_month": {
+        "2025-11": {
+          "n": 2832,
+          "mae": 0.14125430378082515,
+          "rmse": 0.2191602424671146,
+          "bias": -0.010796060831858334
+        },
+        "2025-12": {
+          "n": 2900,
+          "mae": 0.19904855420249032,
+          "rmse": 0.2926404932368536,
+          "bias": 0.012030209853298888
+        }
+      },
+      "fit": {
+        "device": "cuda",
+        "gpu": "NVIDIA RTX A6000",
+        "best_epoch": 13,
+        "epochs_run": 48,
+        "seed": 83,
+        "hidden": [
+          256,
+          128,
+          64
+        ],
+        "loss": "mae",
+        "learning_rate": 0.0007,
+        "weight_decay": 0.02,
+        "batch_size": 2048,
+        "seconds": 1.85,
+        "inference_backend": "numpy; no GPU or torch needed"
+      },
+      "seconds": 1.95,
+      "train_sha256": "0fc30b62295dfa345fff9eaf1581eab3189f3029b53291203ce963bd092bb1ad",
+      "validation_sha256": "a1e6fd800ebf5ad17b3d469f90186638d0d92fd61d4d4896610ee8ca0b4fae9c",
+      "prediction_path": "/home/flyperry/HackAlemAi/hack-rentbox/artifacts/search/cloud-gpu/cloud-gpu_023.predictions.npy"
+    },
+    {
+      "name": "local-gpu_014",
+      "worker": "local-gpu",
+      "hostname": "DESKTOP-C97CP8C",
+      "config": {
+        "family": "mlp",
+        "features": "trajectory",
+        "hidden": [
+          128,
+          64,
+          32
+        ],
+        "loss_name": "huber",
+        "seed": 11,
+        "epochs": 250,
+        "learning_rate": 0.0007,
+        "weight_decay": 0.02,
+        "batch_size": 2048,
+        "patience": 35
+      },
+      "metrics": {
+        "n": 5732,
+        "mae": 0.17088887542482506,
+        "rmse": 0.2580496445460804,
+        "bias": 0.022243980898957936
+      },
+      "by_month": {
+        "2025-11": {
+          "n": 2832,
+          "mae": 0.14890212756896432,
+          "rmse": 0.22780880681988108,
+          "bias": 0.01130158914048786
+        },
+        "2025-12": {
+          "n": 2900,
+          "mae": 0.19236007195165192,
+          "rmse": 0.2844958094453087,
+          "bias": 0.032929792436884577
+        }
+      },
+      "fit": {
+        "device": "cuda",
+        "gpu": "NVIDIA GeForce RTX 5090 Laptop GPU",
+        "best_epoch": 3,
+        "epochs_run": 38,
+        "seed": 11,
+        "hidden": [
+          128,
+          64,
+          32
+        ],
+        "loss": "huber",
+        "learning_rate": 0.0007,
+        "weight_decay": 0.02,
+        "batch_size": 2048,
+        "seconds": 1.3,
+        "inference_backend": "numpy; no GPU or torch needed"
+      },
+      "seconds": 1.37,
+      "train_sha256": "0fc30b62295dfa345fff9eaf1581eab3189f3029b53291203ce963bd092bb1ad",
+      "validation_sha256": "a1e6fd800ebf5ad17b3d469f90186638d0d92fd61d4d4896610ee8ca0b4fae9c",
+      "prediction_path": "/home/flyperry/HackAlemAi/hack-rentbox/artifacts/search/local-gpu/local-gpu_014.predictions.npy"
+    },
+    {
+      "name": "cloud-gpu_022",
+      "worker": "cloud-gpu",
+      "hostname": "brev-yf4lxgjo1",
+      "config": {
+        "family": "mlp",
+        "features": "trajectory",
+        "hidden": [
+          256,
+          128,
+          64
+        ],
+        "loss_name": "mae",
+        "seed": 53,
+        "epochs": 250,
+        "learning_rate": 0.0007,
+        "weight_decay": 0.02,
+        "batch_size": 2048,
+        "patience": 35
+      },
+      "metrics": {
+        "n": 5732,
+        "mae": 0.17132332024730515,
+        "rmse": 0.2618652287335416,
+        "bias": 0.01732384745836673
+      },
+      "by_month": {
+        "2025-11": {
+          "n": 2832,
+          "mae": 0.14528019174712878,
+          "rmse": 0.22625157914618116,
+          "bias": 0.0023286491812894365
+        },
+        "2025-12": {
+          "n": 2900,
+          "mae": 0.19675578228609805,
+          "rmse": 0.2924882955497527,
+          "bias": 0.0319674341896367
+        }
+      },
+      "fit": {
+        "device": "cuda",
+        "gpu": "NVIDIA RTX A6000",
+        "best_epoch": 2,
+        "epochs_run": 37,
+        "seed": 53,
+        "hidden": [
+          256,
+          128,
+          64
+        ],
+        "loss": "mae",
+        "learning_rate": 0.0007,
+        "weight_decay": 0.02,
+        "batch_size": 2048,
+        "seconds": 1.42,
+        "inference_backend": "numpy; no GPU or torch needed"
+      },
+      "seconds": 1.52,
+      "train_sha256": "0fc30b62295dfa345fff9eaf1581eab3189f3029b53291203ce963bd092bb1ad",
+      "validation_sha256": "a1e6fd800ebf5ad17b3d469f90186638d0d92fd61d4d4896610ee8ca0b4fae9c",
+      "prediction_path": "/home/flyperry/HackAlemAi/hack-rentbox/artifacts/search/cloud-gpu/cloud-gpu_022.predictions.npy"
+    },
+    {
+      "name": "local-gpu_016",
+      "worker": "local-gpu",
+      "hostname": "DESKTOP-C97CP8C",
+      "config": {
+        "family": "mlp",
+        "features": "trajectory",
+        "hidden": [
+          128,
+          64,
+          32
+        ],
+        "loss_name": "mae",
+        "seed": 11,
+        "epochs": 250,
+        "learning_rate": 0.0007,
+        "weight_decay": 0.02,
+        "batch_size": 2048,
+        "patience": 35
+      },
+      "metrics": {
+        "n": 5732,
+        "mae": 0.17140680111352363,
+        "rmse": 0.2576131774436114,
+        "bias": 0.003025810763941611
+      },
+      "by_month": {
+        "2025-11": {
+          "n": 2832,
+          "mae": 0.14469652422454693,
+          "rmse": 0.22197290145559848,
+          "bias": 0.005441399068601116
+        },
+        "2025-12": {
+          "n": 2900,
+          "mae": 0.19749076806165536,
+          "rmse": 0.2881949650298655,
+          "bias": 0.0006668638402189403
+        }
+      },
+      "fit": {
+        "device": "cuda",
+        "gpu": "NVIDIA GeForce RTX 5090 Laptop GPU",
+        "best_epoch": 14,
+        "epochs_run": 49,
+        "seed": 11,
+        "hidden": [
+          128,
+          64,
+          32
+        ],
+        "loss": "mae",
+        "learning_rate": 0.0007,
+        "weight_decay": 0.02,
+        "batch_size": 2048,
+        "seconds": 1.66,
+        "inference_backend": "numpy; no GPU or torch needed"
+      },
+      "seconds": 1.71,
+      "train_sha256": "0fc30b62295dfa345fff9eaf1581eab3189f3029b53291203ce963bd092bb1ad",
+      "validation_sha256": "a1e6fd800ebf5ad17b3d469f90186638d0d92fd61d4d4896610ee8ca0b4fae9c",
+      "prediction_path": "/home/flyperry/HackAlemAi/hack-rentbox/artifacts/search/local-gpu/local-gpu_016.predictions.npy"
+    },
+    {
+      "name": "cloud-gpu_007",
+      "worker": "cloud-gpu",
+      "hostname": "brev-yf4lxgjo1",
+      "config": {
+        "family": "mlp",
+        "features": "point",
+        "hidden": [
+          256,
+          128,
+          64
+        ],
+        "loss_name": "mse",
+        "seed": 83,
+        "epochs": 250,
+        "learning_rate": 0.0007,
+        "weight_decay": 0.02,
+        "batch_size": 2048,
+        "patience": 35
+      },
+      "metrics": {
+        "n": 5732,
+        "mae": 0.17157712624238244,
+        "rmse": 0.23823219032055037,
+        "bias": 0.00635094856900545
+      },
+      "by_month": {
+        "2025-11": {
+          "n": 2832,
+          "mae": 0.14704227505130746,
+          "rmse": 0.2054756310791318,
+          "bias": 0.009724349524692519
+        },
+        "2025-12": {
+          "n": 2900,
+          "mae": 0.19553667747449427,
+          "rmse": 0.2663608694846902,
+          "bias": 0.003056648049520702
+        }
+      },
+      "fit": {
+        "device": "cuda",
+        "gpu": "NVIDIA RTX A6000",
+        "best_epoch": 11,
+        "epochs_run": 46,
+        "seed": 83,
+        "hidden": [
+          256,
+          128,
+          64
+        ],
+        "loss": "mse",
+        "learning_rate": 0.0007,
+        "weight_decay": 0.02,
+        "batch_size": 2048,
+        "seconds": 1.73,
+        "inference_backend": "numpy; no GPU or torch needed"
+      },
+      "seconds": 1.8,
+      "train_sha256": "0fc30b62295dfa345fff9eaf1581eab3189f3029b53291203ce963bd092bb1ad",
+      "validation_sha256": "a1e6fd800ebf5ad17b3d469f90186638d0d92fd61d4d4896610ee8ca0b4fae9c",
+      "prediction_path": "/home/flyperry/HackAlemAi/hack-rentbox/artifacts/search/cloud-gpu/cloud-gpu_007.predictions.npy"
+    },
+    {
+      "name": "cloud-gpu_015",
+      "worker": "cloud-gpu",
+      "hostname": "brev-yf4lxgjo1",
+      "config": {
+        "family": "mlp",
+        "features": "trajectory",
+        "hidden": [
+          128,
+          64,
+          32
+        ],
+        "loss_name": "huber",
+        "seed": 83,
+        "epochs": 250,
+        "learning_rate": 0.0007,
+        "weight_decay": 0.02,
+        "batch_size": 2048,
+        "patience": 35
+      },
+      "metrics": {
+        "n": 5732,
+        "mae": 0.17158833960776146,
+        "rmse": 0.25736431916776276,
+        "bias": 0.026776438076699004
+      },
+      "by_month": {
+        "2025-11": {
+          "n": 2832,
+          "mae": 0.14628007818992983,
+          "rmse": 0.22298407303843565,
+          "bias": 0.010755670100333008
+        },
+        "2025-12": {
+          "n": 2900,
+          "mae": 0.19630316593027836,
+          "rmse": 0.28699068325602334,
+          "bias": 0.042421546666032976
+        }
+      },
+      "fit": {
+        "device": "cuda",
+        "gpu": "NVIDIA RTX A6000",
+        "best_epoch": 3,
+        "epochs_run": 38,
+        "seed": 83,
+        "hidden": [
+          128,
+          64,
+          32
+        ],
+        "loss": "huber",
+        "learning_rate": 0.0007,
+        "weight_decay": 0.02,
+        "batch_size": 2048,
+        "seconds": 1.42,
+        "inference_backend": "numpy; no GPU or torch needed"
+      },
+      "seconds": 1.53,
+      "train_sha256": "0fc30b62295dfa345fff9eaf1581eab3189f3029b53291203ce963bd092bb1ad",
+      "validation_sha256": "a1e6fd800ebf5ad17b3d469f90186638d0d92fd61d4d4896610ee8ca0b4fae9c",
+      "prediction_path": "/home/flyperry/HackAlemAi/hack-rentbox/artifacts/search/cloud-gpu/cloud-gpu_015.predictions.npy"
+    },
+    {
+      "name": "local-gpu_006",
+      "worker": "local-gpu",
+      "hostname": "DESKTOP-C97CP8C",
+      "config": {
+        "family": "mlp",
+        "features": "point",
+        "hidden": [
+          256,
+          128,
+          64
+        ],
+        "loss_name": "mse",
+        "seed": 11,
+        "epochs": 250,
+        "learning_rate": 0.0007,
+        "weight_decay": 0.02,
+        "batch_size": 2048,
+        "patience": 35
+      },
+      "metrics": {
+        "n": 5732,
+        "mae": 0.17197680614434596,
+        "rmse": 0.24006193384182625,
+        "bias": 0.01624380648167335
+      },
+      "by_month": {
+        "2025-11": {
+          "n": 2832,
+          "mae": 0.1503724943129644,
+          "rmse": 0.20863389020992296,
+          "bias": 0.015272111633859173
+        },
+        "2025-12": {
+          "n": 2900,
+          "mae": 0.19307453411209516,
+          "rmse": 0.2672091036246589,
+          "bias": 0.017192716760642237
+        }
+      },
+      "fit": {
+        "device": "cuda",
+        "gpu": "NVIDIA GeForce RTX 5090 Laptop GPU",
+        "best_epoch": 7,
+        "epochs_run": 42,
+        "seed": 11,
+        "hidden": [
+          256,
+          128,
+          64
+        ],
+        "loss": "mse",
+        "learning_rate": 0.0007,
+        "weight_decay": 0.02,
+        "batch_size": 2048,
+        "seconds": 1.23,
+        "inference_backend": "numpy; no GPU or torch needed"
+      },
+      "seconds": 1.27,
+      "train_sha256": "0fc30b62295dfa345fff9eaf1581eab3189f3029b53291203ce963bd092bb1ad",
+      "validation_sha256": "a1e6fd800ebf5ad17b3d469f90186638d0d92fd61d4d4896610ee8ca0b4fae9c",
+      "prediction_path": "/home/flyperry/HackAlemAi/hack-rentbox/artifacts/search/local-gpu/local-gpu_006.predictions.npy"
+    },
+    {
+      "name": "cloud-gpu_021",
+      "worker": "cloud-gpu",
+      "hostname": "brev-yf4lxgjo1",
+      "config": {
+        "family": "mlp",
+        "features": "trajectory",
+        "hidden": [
+          256,
+          128,
+          64
+        ],
+        "loss_name": "huber",
+        "seed": 83,
+        "epochs": 250,
+        "learning_rate": 0.0007,
+        "weight_decay": 0.02,
+        "batch_size": 2048,
+        "patience": 35
+      },
+      "metrics": {
+        "n": 5732,
+        "mae": 0.17206473031529915,
+        "rmse": 0.25575311846995763,
+        "bias": 0.03006591498103079
+      },
+      "by_month": {
+        "2025-11": {
+          "n": 2832,
+          "mae": 0.1478479007977673,
+          "rmse": 0.22324703518345054,
+          "bias": 0.01640824081258684
+        },
+        "2025-12": {
+          "n": 2900,
+          "mae": 0.1957137169337992,
+          "rmse": 0.2839277672553716,
+          "bias": 0.04340334023793882
+        }
+      },
+      "fit": {
+        "device": "cuda",
+        "gpu": "NVIDIA RTX A6000",
+        "best_epoch": 3,
+        "epochs_run": 38,
+        "seed": 83,
+        "hidden": [
+          256,
+          128,
+          64
+        ],
+        "loss": "huber",
+        "learning_rate": 0.0007,
+        "weight_decay": 0.02,
+        "batch_size": 2048,
+        "seconds": 1.44,
+        "inference_backend": "numpy; no GPU or torch needed"
+      },
+      "seconds": 1.54,
+      "train_sha256": "0fc30b62295dfa345fff9eaf1581eab3189f3029b53291203ce963bd092bb1ad",
+      "validation_sha256": "a1e6fd800ebf5ad17b3d469f90186638d0d92fd61d4d4896610ee8ca0b4fae9c",
+      "prediction_path": "/home/flyperry/HackAlemAi/hack-rentbox/artifacts/search/cloud-gpu/cloud-gpu_021.predictions.npy"
+    },
+    {
+      "name": "cloud-gpu_017",
+      "worker": "cloud-gpu",
+      "hostname": "brev-yf4lxgjo1",
+      "config": {
+        "family": "mlp",
+        "features": "trajectory",
+        "hidden": [
+          128,
+          64,
+          32
+        ],
+        "loss_name": "mae",
+        "seed": 83,
+        "epochs": 250,
+        "learning_rate": 0.0007,
+        "weight_decay": 0.02,
+        "batch_size": 2048,
+        "patience": 35
+      },
+      "metrics": {
+        "n": 5732,
+        "mae": 0.17221401420746907,
+        "rmse": 0.2624774785224528,
+        "bias": 0.020897645380282007
+      },
+      "by_month": {
+        "2025-11": {
+          "n": 2832,
+          "mae": 0.14665150515189138,
+          "rmse": 0.22768450091022988,
+          "bias": 0.0036417584651925504
+        },
+        "2025-12": {
+          "n": 2900,
+          "mae": 0.19717712649898497,
+          "rmse": 0.29248714509280205,
+          "bias": 0.03774891149874178
+        }
+      },
+      "fit": {
+        "device": "cuda",
+        "gpu": "NVIDIA RTX A6000",
+        "best_epoch": 3,
+        "epochs_run": 38,
+        "seed": 83,
+        "hidden": [
+          128,
+          64,
+          32
+        ],
+        "loss": "mae",
+        "learning_rate": 0.0007,
+        "weight_decay": 0.02,
+        "batch_size": 2048,
+        "seconds": 1.59,
+        "inference_backend": "numpy; no GPU or torch needed"
+      },
+      "seconds": 1.7,
+      "train_sha256": "0fc30b62295dfa345fff9eaf1581eab3189f3029b53291203ce963bd092bb1ad",
+      "validation_sha256": "a1e6fd800ebf5ad17b3d469f90186638d0d92fd61d4d4896610ee8ca0b4fae9c",
+      "prediction_path": "/home/flyperry/HackAlemAi/hack-rentbox/artifacts/search/cloud-gpu/cloud-gpu_017.predictions.npy"
+    },
+    {
+      "name": "local-gpu_023",
+      "worker": "local-gpu",
+      "hostname": "DESKTOP-C97CP8C",
+      "config": {
+        "family": "mlp",
+        "features": "trajectory",
+        "hidden": [
+          256,
+          128,
+          64
+        ],
+        "loss_name": "mae",
+        "seed": 29,
+        "epochs": 250,
+        "learning_rate": 0.0007,
+        "weight_decay": 0.02,
+        "batch_size": 2048,
+        "patience": 35
+      },
+      "metrics": {
+        "n": 5732,
+        "mae": 0.17259035673817638,
+        "rmse": 0.2588609282614735,
+        "bias": 0.01659076846319083
+      },
+      "by_month": {
+        "2025-11": {
+          "n": 2832,
+          "mae": 0.14661044850361973,
+          "rmse": 0.22452556323515216,
+          "bias": 0.004691856193768165
+        },
+        "2025-12": {
+          "n": 2900,
+          "mae": 0.19796108091757794,
+          "rmse": 0.2884736641009838,
+          "bias": 0.028210671755261516
+        }
+      },
+      "fit": {
+        "device": "cuda",
+        "gpu": "NVIDIA GeForce RTX 5090 Laptop GPU",
+        "best_epoch": 6,
+        "epochs_run": 41,
+        "seed": 29,
+        "hidden": [
+          256,
+          128,
+          64
+        ],
+        "loss": "mae",
+        "learning_rate": 0.0007,
+        "weight_decay": 0.02,
+        "batch_size": 2048,
+        "seconds": 1.59,
+        "inference_backend": "numpy; no GPU or torch needed"
+      },
+      "seconds": 1.66,
+      "train_sha256": "0fc30b62295dfa345fff9eaf1581eab3189f3029b53291203ce963bd092bb1ad",
+      "validation_sha256": "a1e6fd800ebf5ad17b3d469f90186638d0d92fd61d4d4896610ee8ca0b4fae9c",
+      "prediction_path": "/home/flyperry/HackAlemAi/hack-rentbox/artifacts/search/local-gpu/local-gpu_023.predictions.npy"
+    },
+    {
+      "name": "cloud-gpu_016",
+      "worker": "cloud-gpu",
+      "hostname": "brev-yf4lxgjo1",
+      "config": {
+        "family": "mlp",
+        "features": "trajectory",
+        "hidden": [
+          128,
+          64,
+          32
+        ],
+        "loss_name": "mae",
+        "seed": 53,
+        "epochs": 250,
+        "learning_rate": 0.0007,
+        "weight_decay": 0.02,
+        "batch_size": 2048,
+        "patience": 35
+      },
+      "metrics": {
+        "n": 5732,
+        "mae": 0.17262636983872165,
+        "rmse": 0.26047578466128857,
+        "bias": 0.027449094923127016
+      },
+      "by_month": {
+        "2025-11": {
+          "n": 2832,
+          "mae": 0.1484111576973079,
+          "rmse": 0.2289085098254502,
+          "bias": 0.013668555466465
+        },
+        "2025-12": {
+          "n": 2900,
+          "mae": 0.19627377700578508,
+          "rmse": 0.2879825021781991,
+          "bias": 0.0409065044890811
+        }
+      },
+      "fit": {
+        "device": "cuda",
+        "gpu": "NVIDIA RTX A6000",
+        "best_epoch": 4,
+        "epochs_run": 39,
+        "seed": 53,
+        "hidden": [
+          128,
+          64,
+          32
+        ],
+        "loss": "mae",
+        "learning_rate": 0.0007,
+        "weight_decay": 0.02,
+        "batch_size": 2048,
+        "seconds": 1.51,
+        "inference_backend": "numpy; no GPU or torch needed"
+      },
+      "seconds": 1.62,
+      "train_sha256": "0fc30b62295dfa345fff9eaf1581eab3189f3029b53291203ce963bd092bb1ad",
+      "validation_sha256": "a1e6fd800ebf5ad17b3d469f90186638d0d92fd61d4d4896610ee8ca0b4fae9c",
+      "prediction_path": "/home/flyperry/HackAlemAi/hack-rentbox/artifacts/search/cloud-gpu/cloud-gpu_016.predictions.npy"
+    },
+    {
+      "name": "cloud-gpu_014",
+      "worker": "cloud-gpu",
+      "hostname": "brev-yf4lxgjo1",
+      "config": {
+        "family": "mlp",
+        "features": "trajectory",
+        "hidden": [
+          128,
+          64,
+          32
+        ],
+        "loss_name": "huber",
+        "seed": 53,
+        "epochs": 250,
+        "learning_rate": 0.0007,
+        "weight_decay": 0.02,
+        "batch_size": 2048,
+        "patience": 35
+      },
+      "metrics": {
+        "n": 5732,
+        "mae": 0.17267237819094108,
+        "rmse": 0.2550300240699327,
+        "bias": 0.030203634172707893
+      },
+      "by_month": {
+        "2025-11": {
+          "n": 2832,
+          "mae": 0.14871003594530988,
+          "rmse": 0.22388218065272816,
+          "bias": 0.018633174460658385
+        },
+        "2025-12": {
+          "n": 2900,
+          "mae": 0.19607284482529536,
+          "rmse": 0.28214821579816607,
+          "bias": 0.04150278655357831
+        }
+      },
+      "fit": {
+        "device": "cuda",
+        "gpu": "NVIDIA RTX A6000",
+        "best_epoch": 4,
+        "epochs_run": 39,
+        "seed": 53,
+        "hidden": [
+          128,
+          64,
+          32
+        ],
+        "loss": "huber",
+        "learning_rate": 0.0007,
+        "weight_decay": 0.02,
+        "batch_size": 2048,
+        "seconds": 1.47,
+        "inference_backend": "numpy; no GPU or torch needed"
+      },
+      "seconds": 1.61,
+      "train_sha256": "0fc30b62295dfa345fff9eaf1581eab3189f3029b53291203ce963bd092bb1ad",
+      "validation_sha256": "a1e6fd800ebf5ad17b3d469f90186638d0d92fd61d4d4896610ee8ca0b4fae9c",
+      "prediction_path": "/home/flyperry/HackAlemAi/hack-rentbox/artifacts/search/cloud-gpu/cloud-gpu_014.predictions.npy"
+    },
+    {
+      "name": "local-cpu_018",
+      "worker": "local-cpu",
+      "hostname": "DESKTOP-C97CP8C",
+      "config": {
+        "family": "boost",
+        "features": "trajectory",
+        "loss": "absolute_error",
+        "max_leaf_nodes": 15,
+        "max_iter": 250,
+        "l2_regularization": 10,
+        "min_samples_leaf": 60,
+        "learning_rate": 0.05
+      },
+      "metrics": {
+        "n": 5732,
+        "mae": 0.17268106362431312,
+        "rmse": 0.25248836596082197,
+        "bias": 0.03209526711233119
+      },
+      "by_month": {
+        "2025-11": {
+          "n": 2832,
+          "mae": 0.14967554808309902,
+          "rmse": 0.223347801722599,
+          "bias": 0.021560002942312653
+        },
+        "2025-12": {
+          "n": 2900,
+          "mae": 0.1951471394907677,
+          "rmse": 0.2780132594176023,
+          "bias": 0.042383497501811376
+        }
+      },
+      "fit": {},
+      "seconds": 1.33,
+      "train_sha256": "0fc30b62295dfa345fff9eaf1581eab3189f3029b53291203ce963bd092bb1ad",
+      "validation_sha256": "a1e6fd800ebf5ad17b3d469f90186638d0d92fd61d4d4896610ee8ca0b4fae9c",
+      "prediction_path": "/home/flyperry/HackAlemAi/hack-rentbox/artifacts/search/local-cpu/local-cpu_018.predictions.npy"
+    },
+    {
+      "name": "local-gpu_015",
+      "worker": "local-gpu",
+      "hostname": "DESKTOP-C97CP8C",
+      "config": {
+        "family": "mlp",
+        "features": "trajectory",
+        "hidden": [
+          128,
+          64,
+          32
+        ],
+        "loss_name": "huber",
+        "seed": 29,
+        "epochs": 250,
+        "learning_rate": 0.0007,
+        "weight_decay": 0.02,
+        "batch_size": 2048,
+        "patience": 35
+      },
+      "metrics": {
+        "n": 5732,
+        "mae": 0.17269219518049678,
+        "rmse": 0.25664117583824514,
+        "bias": 0.0028489696559160283
+      },
+      "by_month": {
+        "2025-11": {
+          "n": 2832,
+          "mae": 0.14366351211258943,
+          "rmse": 0.2187720523771578,
+          "bias": -0.0054180620835169654
+        },
+        "2025-12": {
+          "n": 2900,
+          "mae": 0.20104020567991523,
+          "rmse": 0.2888702559144018,
+          "bias": 0.010922153754562321
+        }
+      },
+      "fit": {
+        "device": "cuda",
+        "gpu": "NVIDIA GeForce RTX 5090 Laptop GPU",
+        "best_epoch": 15,
+        "epochs_run": 50,
+        "seed": 29,
+        "hidden": [
+          128,
+          64,
+          32
+        ],
+        "loss": "huber",
+        "learning_rate": 0.0007,
+        "weight_decay": 0.02,
+        "batch_size": 2048,
+        "seconds": 1.7,
+        "inference_backend": "numpy; no GPU or torch needed"
+      },
+      "seconds": 1.77,
+      "train_sha256": "0fc30b62295dfa345fff9eaf1581eab3189f3029b53291203ce963bd092bb1ad",
+      "validation_sha256": "a1e6fd800ebf5ad17b3d469f90186638d0d92fd61d4d4896610ee8ca0b4fae9c",
+      "prediction_path": "/home/flyperry/HackAlemAi/hack-rentbox/artifacts/search/local-gpu/local-gpu_015.predictions.npy"
+    },
+    {
+      "name": "cloud-gpu_013",
+      "worker": "cloud-gpu",
+      "hostname": "brev-yf4lxgjo1",
+      "config": {
+        "family": "mlp",
+        "features": "trajectory",
+        "hidden": [
+          128,
+          64,
+          32
+        ],
+        "loss_name": "mse",
+        "seed": 83,
+        "epochs": 250,
+        "learning_rate": 0.0007,
+        "weight_decay": 0.02,
+        "batch_size": 2048,
+        "patience": 35
+      },
+      "metrics": {
+        "n": 5732,
+        "mae": 0.17288438800545583,
+        "rmse": 0.24775480253002585,
+        "bias": 0.01689459049965035
+      },
+      "by_month": {
+        "2025-11": {
+          "n": 2832,
+          "mae": 0.14499587912045386,
+          "rmse": 0.20778241129159303,
+          "bias": 0.022620250014768018
+        },
+        "2025-12": {
+          "n": 2900,
+          "mae": 0.2001189594407405,
+          "rmse": 0.28136166463421386,
+          "bias": 0.011303187828335452
+        }
+      },
+      "fit": {
+        "device": "cuda",
+        "gpu": "NVIDIA RTX A6000",
+        "best_epoch": 16,
+        "epochs_run": 51,
+        "seed": 83,
+        "hidden": [
+          128,
+          64,
+          32
+        ],
+        "loss": "mse",
+        "learning_rate": 0.0007,
+        "weight_decay": 0.02,
+        "batch_size": 2048,
+        "seconds": 1.89,
+        "inference_backend": "numpy; no GPU or torch needed"
+      },
+      "seconds": 2.03,
+      "train_sha256": "0fc30b62295dfa345fff9eaf1581eab3189f3029b53291203ce963bd092bb1ad",
+      "validation_sha256": "a1e6fd800ebf5ad17b3d469f90186638d0d92fd61d4d4896610ee8ca0b4fae9c",
+      "prediction_path": "/home/flyperry/HackAlemAi/hack-rentbox/artifacts/search/cloud-gpu/cloud-gpu_013.predictions.npy"
+    },
+    {
+      "name": "local-cpu_002",
+      "worker": "local-cpu",
+      "hostname": "DESKTOP-C97CP8C",
+      "config": {
+        "family": "boost",
+        "features": "point",
+        "loss": "absolute_error",
+        "max_leaf_nodes": 15,
+        "max_iter": 250,
+        "l2_regularization": 10,
+        "min_samples_leaf": 60,
+        "learning_rate": 0.05
+      },
+      "metrics": {
+        "n": 5732,
+        "mae": 0.17289763183368517,
+        "rmse": 0.256874839827169,
+        "bias": 0.02653880258215161
+      },
+      "by_month": {
+        "2025-11": {
+          "n": 2832,
+          "mae": 0.1517541327294074,
+          "rmse": 0.22829133106327984,
+          "bias": 0.014455697316154975
+        },
+        "2025-12": {
+          "n": 2900,
+          "mae": 0.19354535233827647,
+          "rmse": 0.2820057800314053,
+          "bias": 0.038338579862600745
+        }
+      },
+      "fit": {},
+      "seconds": 0.53,
+      "train_sha256": "0fc30b62295dfa345fff9eaf1581eab3189f3029b53291203ce963bd092bb1ad",
+      "validation_sha256": "a1e6fd800ebf5ad17b3d469f90186638d0d92fd61d4d4896610ee8ca0b4fae9c",
+      "prediction_path": "/home/flyperry/HackAlemAi/hack-rentbox/artifacts/search/local-cpu/local-cpu_002.predictions.npy"
+    },
+    {
+      "name": "cloud-gpu_001",
+      "worker": "cloud-gpu",
+      "hostname": "brev-yf4lxgjo1",
+      "config": {
+        "family": "mlp",
+        "features": "point",
+        "hidden": [
+          128,
+          64,
+          32
+        ],
+        "loss_name": "mse",
+        "seed": 83,
+        "epochs": 250,
+        "learning_rate": 0.0007,
+        "weight_decay": 0.02,
+        "batch_size": 2048,
+        "patience": 35
+      },
+      "metrics": {
+        "n": 5732,
+        "mae": 0.17333369374902588,
+        "rmse": 0.2388427199967098,
+        "bias": 0.011875161627295839
+      },
+      "by_month": {
+        "2025-11": {
+          "n": 2832,
+          "mae": 0.15228190093214417,
+          "rmse": 0.20874167138662966,
+          "bias": 0.010937072472118912
+        },
+        "2025-12": {
+          "n": 2900,
+          "mae": 0.1938918583205462,
+          "rmse": 0.26495790502581956,
+          "bias": 0.01279125420917897
+        }
+      },
+      "fit": {
+        "device": "cuda",
+        "gpu": "NVIDIA RTX A6000",
+        "best_epoch": 11,
+        "epochs_run": 46,
+        "seed": 83,
+        "hidden": [
+          128,
+          64,
+          32
+        ],
+        "loss": "mse",
+        "learning_rate": 0.0007,
+        "weight_decay": 0.02,
+        "batch_size": 2048,
+        "seconds": 1.69,
+        "inference_backend": "numpy; no GPU or torch needed"
+      },
+      "seconds": 1.76,
+      "train_sha256": "0fc30b62295dfa345fff9eaf1581eab3189f3029b53291203ce963bd092bb1ad",
+      "validation_sha256": "a1e6fd800ebf5ad17b3d469f90186638d0d92fd61d4d4896610ee8ca0b4fae9c",
+      "prediction_path": "/home/flyperry/HackAlemAi/hack-rentbox/artifacts/search/cloud-gpu/cloud-gpu_001.predictions.npy"
+    },
+    {
+      "name": "local-cpu_003",
+      "worker": "local-cpu",
+      "hostname": "DESKTOP-C97CP8C",
+      "config": {
+        "family": "boost",
+        "features": "point",
+        "loss": "absolute_error",
+        "max_leaf_nodes": 15,
+        "max_iter": 500,
+        "l2_regularization": 10,
+        "min_samples_leaf": 60,
+        "learning_rate": 0.05
+      },
+      "metrics": {
+        "n": 5732,
+        "mae": 0.1733597562991362,
+        "rmse": 0.2551078726463776,
+        "bias": 0.027722461448725172
+      },
+      "by_month": {
+        "2025-11": {
+          "n": 2832,
+          "mae": 0.152602921928646,
+          "rmse": 0.22716076771013546,
+          "bias": 0.014850344589680984
+        },
+        "2025-12": {
+          "n": 2900,
+          "mae": 0.19362987869128387,
+          "rmse": 0.2797177199163321,
+          "bias": 0.040292749360729706
+        }
+      },
+      "fit": {},
+      "seconds": 0.94,
+      "train_sha256": "0fc30b62295dfa345fff9eaf1581eab3189f3029b53291203ce963bd092bb1ad",
+      "validation_sha256": "a1e6fd800ebf5ad17b3d469f90186638d0d92fd61d4d4896610ee8ca0b4fae9c",
+      "prediction_path": "/home/flyperry/HackAlemAi/hack-rentbox/artifacts/search/local-cpu/local-cpu_003.predictions.npy"
+    },
+    {
+      "name": "local-gpu_021",
+      "worker": "local-gpu",
+      "hostname": "DESKTOP-C97CP8C",
+      "config": {
+        "family": "mlp",
+        "features": "trajectory",
+        "hidden": [
+          256,
+          128,
+          64
+        ],
+        "loss_name": "huber",
+        "seed": 29,
+        "epochs": 250,
+        "learning_rate": 0.0007,
+        "weight_decay": 0.02,
+        "batch_size": 2048,
+        "patience": 35
+      },
+      "metrics": {
+        "n": 5732,
+        "mae": 0.1733597869101533,
+        "rmse": 0.2557473749549634,
+        "bias": 0.03501979968654199
+      },
+      "by_month": {
+        "2025-11": {
+          "n": 2832,
+          "mae": 0.1503070841724204,
+          "rmse": 0.2251667382515691,
+          "bias": 0.021657360303908475
+        },
+        "2025-12": {
+          "n": 2900,
+          "mae": 0.1958719435147256,
+          "rmse": 0.2824332377081216,
+          "bias": 0.04806891290434134
+        }
+      },
+      "fit": {
+        "device": "cuda",
+        "gpu": "NVIDIA GeForce RTX 5090 Laptop GPU",
+        "best_epoch": 3,
+        "epochs_run": 38,
+        "seed": 29,
+        "hidden": [
+          256,
+          128,
+          64
+        ],
+        "loss": "huber",
+        "learning_rate": 0.0007,
+        "weight_decay": 0.02,
+        "batch_size": 2048,
+        "seconds": 1.37,
+        "inference_backend": "numpy; no GPU or torch needed"
+      },
+      "seconds": 1.43,
+      "train_sha256": "0fc30b62295dfa345fff9eaf1581eab3189f3029b53291203ce963bd092bb1ad",
+      "validation_sha256": "a1e6fd800ebf5ad17b3d469f90186638d0d92fd61d4d4896610ee8ca0b4fae9c",
+      "prediction_path": "/home/flyperry/HackAlemAi/hack-rentbox/artifacts/search/local-gpu/local-gpu_021.predictions.npy"
+    },
+    {
+      "name": "local-cpu_019",
+      "worker": "local-cpu",
+      "hostname": "DESKTOP-C97CP8C",
+      "config": {
+        "family": "boost",
+        "features": "trajectory",
+        "loss": "absolute_error",
+        "max_leaf_nodes": 15,
+        "max_iter": 500,
+        "l2_regularization": 10,
+        "min_samples_leaf": 60,
+        "learning_rate": 0.05
+      },
+      "metrics": {
+        "n": 5732,
+        "mae": 0.17341910389287782,
+        "rmse": 0.2523036856509446,
+        "bias": 0.03522350885024424
+      },
+      "by_month": {
+        "2025-11": {
+          "n": 2832,
+          "mae": 0.15162598203967978,
+          "rmse": 0.22478084761885844,
+          "bias": 0.025309259746458923
+        },
+        "2025-12": {
+          "n": 2900,
+          "mae": 0.19470121461296647,
+          "rmse": 0.27655013537715717,
+          "bias": 0.044905285906078715
+        }
+      },
+      "fit": {},
+      "seconds": 2.51,
+      "train_sha256": "0fc30b62295dfa345fff9eaf1581eab3189f3029b53291203ce963bd092bb1ad",
+      "validation_sha256": "a1e6fd800ebf5ad17b3d469f90186638d0d92fd61d4d4896610ee8ca0b4fae9c",
+      "prediction_path": "/home/flyperry/HackAlemAi/hack-rentbox/artifacts/search/local-cpu/local-cpu_019.predictions.npy"
+    },
+    {
+      "name": "local-gpu_017",
+      "worker": "local-gpu",
+      "hostname": "DESKTOP-C97CP8C",
+      "config": {
+        "family": "mlp",
+        "features": "trajectory",
+        "hidden": [
+          128,
+          64,
+          32
+        ],
+        "loss_name": "mae",
+        "seed": 29,
+        "epochs": 250,
+        "learning_rate": 0.0007,
+        "weight_decay": 0.02,
+        "batch_size": 2048,
+        "patience": 35
+      },
+      "metrics": {
+        "n": 5732,
+        "mae": 0.17350888467369932,
+        "rmse": 0.26146103316928837,
+        "bias": 0.024090583599070178
+      },
+      "by_month": {
+        "2025-11": {
+          "n": 2832,
+          "mae": 0.14862960475531917,
+          "rmse": 0.22909984746578863,
+          "bias": 0.009891627523672099
+        },
+        "2025-12": {
+          "n": 2900,
+          "mae": 0.19780478837330362,
+          "rmse": 0.2895941283145578,
+          "bias": 0.03795659863545892
+        }
+      },
+      "fit": {
+        "device": "cuda",
+        "gpu": "NVIDIA GeForce RTX 5090 Laptop GPU",
+        "best_epoch": 5,
+        "epochs_run": 40,
+        "seed": 29,
+        "hidden": [
+          128,
+          64,
+          32
+        ],
+        "loss": "mae",
+        "learning_rate": 0.0007,
+        "weight_decay": 0.02,
+        "batch_size": 2048,
+        "seconds": 1.4,
+        "inference_backend": "numpy; no GPU or torch needed"
+      },
+      "seconds": 1.46,
+      "train_sha256": "0fc30b62295dfa345fff9eaf1581eab3189f3029b53291203ce963bd092bb1ad",
+      "validation_sha256": "a1e6fd800ebf5ad17b3d469f90186638d0d92fd61d4d4896610ee8ca0b4fae9c",
+      "prediction_path": "/home/flyperry/HackAlemAi/hack-rentbox/artifacts/search/local-gpu/local-gpu_017.predictions.npy"
+    },
+    {
+      "name": "cloud-gpu_000",
+      "worker": "cloud-gpu",
+      "hostname": "brev-yf4lxgjo1",
+      "config": {
+        "family": "mlp",
+        "features": "point",
+        "hidden": [
+          128,
+          64,
+          32
+        ],
+        "loss_name": "mse",
+        "seed": 53,
+        "epochs": 250,
+        "learning_rate": 0.0007,
+        "weight_decay": 0.02,
+        "batch_size": 2048,
+        "patience": 35
+      },
+      "metrics": {
+        "n": 5732,
+        "mae": 0.1736817725911861,
+        "rmse": 0.23789168237762243,
+        "bias": 0.012011321030598755
+      },
+      "by_month": {
+        "2025-11": {
+          "n": 2832,
+          "mae": 0.15410787680552895,
+          "rmse": 0.20966817536103505,
+          "bias": 0.013962344002687218
+        },
+        "2025-12": {
+          "n": 2900,
+          "mae": 0.1927966942687658,
+          "rmse": 0.26254136728805244,
+          "bias": 0.010106046183373057
+        }
+      },
+      "fit": {
+        "device": "cuda",
+        "gpu": "NVIDIA RTX A6000",
+        "best_epoch": 10,
+        "epochs_run": 45,
+        "seed": 53,
+        "hidden": [
+          128,
+          64,
+          32
+        ],
+        "loss": "mse",
+        "learning_rate": 0.0007,
+        "weight_decay": 0.02,
+        "batch_size": 2048,
+        "seconds": 2.19,
+        "inference_backend": "numpy; no GPU or torch needed"
+      },
+      "seconds": 8.18,
+      "train_sha256": "0fc30b62295dfa345fff9eaf1581eab3189f3029b53291203ce963bd092bb1ad",
+      "validation_sha256": "a1e6fd800ebf5ad17b3d469f90186638d0d92fd61d4d4896610ee8ca0b4fae9c",
+      "prediction_path": "/home/flyperry/HackAlemAi/hack-rentbox/artifacts/search/cloud-gpu/cloud-gpu_000.predictions.npy"
+    },
+    {
+      "name": "cloud-gpu_006",
+      "worker": "cloud-gpu",
+      "hostname": "brev-yf4lxgjo1",
+      "config": {
+        "family": "mlp",
+        "features": "point",
+        "hidden": [
+          256,
+          128,
+          64
+        ],
+        "loss_name": "mse",
+        "seed": 53,
+        "epochs": 250,
+        "learning_rate": 0.0007,
+        "weight_decay": 0.02,
+        "batch_size": 2048,
+        "patience": 35
+      },
+      "metrics": {
+        "n": 5732,
+        "mae": 0.17386557383833234,
+        "rmse": 0.2391927885799132,
+        "bias": 0.01294517338733447
+      },
+      "by_month": {
+        "2025-11": {
+          "n": 2832,
+          "mae": 0.15423265039815573,
+          "rmse": 0.21053510774201067,
+          "bias": 0.014456740779742577
+        },
+        "2025-12": {
+          "n": 2900,
+          "mae": 0.19303813907370482,
+          "rmse": 0.2641952753723588,
+          "bias": 0.011469049644127668
+        }
+      },
+      "fit": {
+        "device": "cuda",
+        "gpu": "NVIDIA RTX A6000",
+        "best_epoch": 6,
+        "epochs_run": 41,
+        "seed": 53,
+        "hidden": [
+          256,
+          128,
+          64
+        ],
+        "loss": "mse",
+        "learning_rate": 0.0007,
+        "weight_decay": 0.02,
+        "batch_size": 2048,
+        "seconds": 1.57,
+        "inference_backend": "numpy; no GPU or torch needed"
+      },
+      "seconds": 1.65,
+      "train_sha256": "0fc30b62295dfa345fff9eaf1581eab3189f3029b53291203ce963bd092bb1ad",
+      "validation_sha256": "a1e6fd800ebf5ad17b3d469f90186638d0d92fd61d4d4896610ee8ca0b4fae9c",
+      "prediction_path": "/home/flyperry/HackAlemAi/hack-rentbox/artifacts/search/cloud-gpu/cloud-gpu_006.predictions.npy"
+    },
+    {
+      "name": "local-cpu_001",
+      "worker": "local-cpu",
+      "hostname": "DESKTOP-C97CP8C",
+      "config": {
+        "family": "boost",
+        "features": "point",
+        "loss": "absolute_error",
+        "max_leaf_nodes": 7,
+        "max_iter": 500,
+        "l2_regularization": 10,
+        "min_samples_leaf": 60,
+        "learning_rate": 0.05
+      },
+      "metrics": {
+        "n": 5732,
+        "mae": 0.17390891847651496,
+        "rmse": 0.2581861524331914,
+        "bias": 0.02422884673426513
+      },
+      "by_month": {
+        "2025-11": {
+          "n": 2832,
+          "mae": 0.15266676188283285,
+          "rmse": 0.22819193379175526,
+          "bias": 0.0112179980610164
+        },
+        "2025-12": {
+          "n": 2900,
+          "mae": 0.19465298312248314,
+          "rmse": 0.28444075670961194,
+          "bias": 0.0369346134386239
+        }
+      },
+      "fit": {},
+      "seconds": 0.75,
+      "train_sha256": "0fc30b62295dfa345fff9eaf1581eab3189f3029b53291203ce963bd092bb1ad",
+      "validation_sha256": "a1e6fd800ebf5ad17b3d469f90186638d0d92fd61d4d4896610ee8ca0b4fae9c",
+      "prediction_path": "/home/flyperry/HackAlemAi/hack-rentbox/artifacts/search/local-cpu/local-cpu_001.predictions.npy"
+    },
+    {
+      "name": "cloud-gpu_019",
+      "worker": "cloud-gpu",
+      "hostname": "brev-yf4lxgjo1",
+      "config": {
+        "family": "mlp",
+        "features": "trajectory",
+        "hidden": [
+          256,
+          128,
+          64
+        ],
+        "loss_name": "mse",
+        "seed": 83,
+        "epochs": 250,
+        "learning_rate": 0.0007,
+        "weight_decay": 0.02,
+        "batch_size": 2048,
+        "patience": 35
+      },
+      "metrics": {
+        "n": 5732,
+        "mae": 0.17440409191988734,
+        "rmse": 0.24571393031807867,
+        "bias": 0.020943696299764097
+      },
+      "by_month": {
+        "2025-11": {
+          "n": 2832,
+          "mae": 0.151592583365242,
+          "rmse": 0.21663596472849259,
+          "bias": 0.008330071427142023
+        },
+        "2025-12": {
+          "n": 2900,
+          "mae": 0.19668070992911338,
+          "rmse": 0.2711167400093138,
+          "bias": 0.03326155341675228
+        }
+      },
+      "fit": {
+        "device": "cuda",
+        "gpu": "NVIDIA RTX A6000",
+        "best_epoch": 2,
+        "epochs_run": 37,
+        "seed": 83,
+        "hidden": [
+          256,
+          128,
+          64
+        ],
+        "loss": "mse",
+        "learning_rate": 0.0007,
+        "weight_decay": 0.02,
+        "batch_size": 2048,
+        "seconds": 1.41,
+        "inference_backend": "numpy; no GPU or torch needed"
+      },
+      "seconds": 1.51,
+      "train_sha256": "0fc30b62295dfa345fff9eaf1581eab3189f3029b53291203ce963bd092bb1ad",
+      "validation_sha256": "a1e6fd800ebf5ad17b3d469f90186638d0d92fd61d4d4896610ee8ca0b4fae9c",
+      "prediction_path": "/home/flyperry/HackAlemAi/hack-rentbox/artifacts/search/cloud-gpu/cloud-gpu_019.predictions.npy"
+    },
+    {
+      "name": "local-gpu_000",
+      "worker": "local-gpu",
+      "hostname": "DESKTOP-C97CP8C",
+      "config": {
+        "family": "mlp",
+        "features": "point",
+        "hidden": [
+          128,
+          64,
+          32
+        ],
+        "loss_name": "mse",
+        "seed": 11,
+        "epochs": 250,
+        "learning_rate": 0.0007,
+        "weight_decay": 0.02,
+        "batch_size": 2048,
+        "patience": 35
+      },
+      "metrics": {
+        "n": 5732,
+        "mae": 0.17459556001424614,
+        "rmse": 0.24103979381744572,
+        "bias": 0.008736512648865886
+      },
+      "by_month": {
+        "2025-11": {
+          "n": 2832,
+          "mae": 0.15274712218315448,
+          "rmse": 0.2095446586972207,
+          "bias": 0.0083290008573728
+        },
+        "2025-12": {
+          "n": 2900,
+          "mae": 0.19593168964791913,
+          "rmse": 0.26825107794574493,
+          "bias": 0.009134468991454998
+        }
+      },
+      "fit": {
+        "device": "cuda",
+        "gpu": "NVIDIA GeForce RTX 5090 Laptop GPU",
+        "best_epoch": 13,
+        "epochs_run": 48,
+        "seed": 11,
+        "hidden": [
+          128,
+          64,
+          32
+        ],
+        "loss": "mse",
+        "learning_rate": 0.0007,
+        "weight_decay": 0.02,
+        "batch_size": 2048,
+        "seconds": 1.79,
+        "inference_backend": "numpy; no GPU or torch needed"
+      },
+      "seconds": 6.46,
+      "train_sha256": "0fc30b62295dfa345fff9eaf1581eab3189f3029b53291203ce963bd092bb1ad",
+      "validation_sha256": "a1e6fd800ebf5ad17b3d469f90186638d0d92fd61d4d4896610ee8ca0b4fae9c",
+      "prediction_path": "/home/flyperry/HackAlemAi/hack-rentbox/artifacts/search/local-gpu/local-gpu_000.predictions.npy"
+    },
+    {
+      "name": "local-cpu_000",
+      "worker": "local-cpu",
+      "hostname": "DESKTOP-C97CP8C",
+      "config": {
+        "family": "boost",
+        "features": "point",
+        "loss": "absolute_error",
+        "max_leaf_nodes": 7,
+        "max_iter": 250,
+        "l2_regularization": 10,
+        "min_samples_leaf": 60,
+        "learning_rate": 0.05
+      },
+      "metrics": {
+        "n": 5732,
+        "mae": 0.17464521649254916,
+        "rmse": 0.26044245851432524,
+        "bias": 0.024015940813370867
+      },
+      "by_month": {
+        "2025-11": {
+          "n": 2832,
+          "mae": 0.15264686192114987,
+          "rmse": 0.22923835218240632,
+          "bias": 0.010821204842472508
+        },
+        "2025-12": {
+          "n": 2900,
+          "mae": 0.19612774757744666,
+          "rmse": 0.28766653508215945,
+          "bias": 0.036901282975296434
+        }
+      },
+      "fit": {},
+      "seconds": 0.42,
+      "train_sha256": "0fc30b62295dfa345fff9eaf1581eab3189f3029b53291203ce963bd092bb1ad",
+      "validation_sha256": "a1e6fd800ebf5ad17b3d469f90186638d0d92fd61d4d4896610ee8ca0b4fae9c",
+      "prediction_path": "/home/flyperry/HackAlemAi/hack-rentbox/artifacts/search/local-cpu/local-cpu_000.predictions.npy"
+    },
+    {
+      "name": "local-cpu_004",
+      "worker": "local-cpu",
+      "hostname": "DESKTOP-C97CP8C",
+      "config": {
+        "family": "boost",
+        "features": "point",
+        "loss": "absolute_error",
+        "max_leaf_nodes": 31,
+        "max_iter": 250,
+        "l2_regularization": 10,
+        "min_samples_leaf": 60,
+        "learning_rate": 0.05
+      },
+      "metrics": {
+        "n": 5732,
+        "mae": 0.17467281668870782,
+        "rmse": 0.25706445874207245,
+        "bias": 0.03415472766118354
+      },
+      "by_month": {
+        "2025-11": {
+          "n": 2832,
+          "mae": 0.1547892571313974,
+          "rmse": 0.22953892635655232,
+          "bias": 0.026735518489762005
+        },
+        "2025-12": {
+          "n": 2900,
+          "mae": 0.1940901410563985,
+          "rmse": 0.281357577777377,
+          "bias": 0.04139996916927519
+        }
+      },
+      "fit": {},
+      "seconds": 0.75,
+      "train_sha256": "0fc30b62295dfa345fff9eaf1581eab3189f3029b53291203ce963bd092bb1ad",
+      "validation_sha256": "a1e6fd800ebf5ad17b3d469f90186638d0d92fd61d4d4896610ee8ca0b4fae9c",
+      "prediction_path": "/home/flyperry/HackAlemAi/hack-rentbox/artifacts/search/local-cpu/local-cpu_004.predictions.npy"
+    },
+    {
+      "name": "local-cpu_005",
+      "worker": "local-cpu",
+      "hostname": "DESKTOP-C97CP8C",
+      "config": {
+        "family": "boost",
+        "features": "point",
+        "loss": "absolute_error",
+        "max_leaf_nodes": 31,
+        "max_iter": 500,
+        "l2_regularization": 10,
+        "min_samples_leaf": 60,
+        "learning_rate": 0.05
+      },
+      "metrics": {
+        "n": 5732,
+        "mae": 0.1746728389602024,
+        "rmse": 0.2543386526325047,
+        "bias": 0.031120312242273043
+      },
+      "by_month": {
+        "2025-11": {
+          "n": 2832,
+          "mae": 0.1548359162769919,
+          "rmse": 0.22775300704662085,
+          "bias": 0.022848776779288604
+        },
+        "2025-12": {
+          "n": 2900,
+          "mae": 0.1940446200080824,
+          "rmse": 0.2778566865987757,
+          "bias": 0.03919789445991855
+        }
+      },
+      "fit": {},
+      "seconds": 1.37,
+      "train_sha256": "0fc30b62295dfa345fff9eaf1581eab3189f3029b53291203ce963bd092bb1ad",
+      "validation_sha256": "a1e6fd800ebf5ad17b3d469f90186638d0d92fd61d4d4896610ee8ca0b4fae9c",
+      "prediction_path": "/home/flyperry/HackAlemAi/hack-rentbox/artifacts/search/local-cpu/local-cpu_005.predictions.npy"
+    },
+    {
+      "name": "local-gpu_007",
+      "worker": "local-gpu",
+      "hostname": "DESKTOP-C97CP8C",
+      "config": {
+        "family": "mlp",
+        "features": "point",
+        "hidden": [
+          256,
+          128,
+          64
+        ],
+        "loss_name": "mse",
+        "seed": 29,
+        "epochs": 250,
+        "learning_rate": 0.0007,
+        "weight_decay": 0.02,
+        "batch_size": 2048,
+        "patience": 35
+      },
+      "metrics": {
+        "n": 5732,
+        "mae": 0.1747026815807443,
+        "rmse": 0.2403044655988365,
+        "bias": 0.004437356378573773
+      },
+      "by_month": {
+        "2025-11": {
+          "n": 2832,
+          "mae": 0.1538866397423368,
+          "rmse": 0.21015525996511253,
+          "bias": 0.005307814550915779
+        },
+        "2025-12": {
+          "n": 2900,
+          "mae": 0.19503062312776842,
+          "rmse": 0.2664747417300521,
+          "bias": 0.003587308949583228
+        }
+      },
+      "fit": {
+        "device": "cuda",
+        "gpu": "NVIDIA GeForce RTX 5090 Laptop GPU",
+        "best_epoch": 8,
+        "epochs_run": 43,
+        "seed": 29,
+        "hidden": [
+          256,
+          128,
+          64
+        ],
+        "loss": "mse",
+        "learning_rate": 0.0007,
+        "weight_decay": 0.02,
+        "batch_size": 2048,
+        "seconds": 1.24,
+        "inference_backend": "numpy; no GPU or torch needed"
+      },
+      "seconds": 1.28,
+      "train_sha256": "0fc30b62295dfa345fff9eaf1581eab3189f3029b53291203ce963bd092bb1ad",
+      "validation_sha256": "a1e6fd800ebf5ad17b3d469f90186638d0d92fd61d4d4896610ee8ca0b4fae9c",
+      "prediction_path": "/home/flyperry/HackAlemAi/hack-rentbox/artifacts/search/local-gpu/local-gpu_007.predictions.npy"
+    },
+    {
+      "name": "local-gpu_019",
+      "worker": "local-gpu",
+      "hostname": "DESKTOP-C97CP8C",
+      "config": {
+        "family": "mlp",
+        "features": "trajectory",
+        "hidden": [
+          256,
+          128,
+          64
+        ],
+        "loss_name": "mse",
+        "seed": 29,
+        "epochs": 250,
+        "learning_rate": 0.0007,
+        "weight_decay": 0.02,
+        "batch_size": 2048,
+        "patience": 35
+      },
+      "metrics": {
+        "n": 5732,
+        "mae": 0.1751159227543358,
+        "rmse": 0.24537465380783757,
+        "bias": 0.03425518557098509
+      },
+      "by_month": {
+        "2025-11": {
+          "n": 2832,
+          "mae": 0.15119853049183873,
+          "rmse": 0.2151027546053911,
+          "bias": 0.017352045452807156
+        },
+        "2025-12": {
+          "n": 2900,
+          "mae": 0.19847249340516054,
+          "rmse": 0.27170091751773917,
+          "bias": 0.050761976196736794
+        }
+      },
+      "fit": {
+        "device": "cuda",
+        "gpu": "NVIDIA GeForce RTX 5090 Laptop GPU",
+        "best_epoch": 2,
+        "epochs_run": 37,
+        "seed": 29,
+        "hidden": [
+          256,
+          128,
+          64
+        ],
+        "loss": "mse",
+        "learning_rate": 0.0007,
+        "weight_decay": 0.02,
+        "batch_size": 2048,
+        "seconds": 1.35,
+        "inference_backend": "numpy; no GPU or torch needed"
+      },
+      "seconds": 1.42,
+      "train_sha256": "0fc30b62295dfa345fff9eaf1581eab3189f3029b53291203ce963bd092bb1ad",
+      "validation_sha256": "a1e6fd800ebf5ad17b3d469f90186638d0d92fd61d4d4896610ee8ca0b4fae9c",
+      "prediction_path": "/home/flyperry/HackAlemAi/hack-rentbox/artifacts/search/local-gpu/local-gpu_019.predictions.npy"
+    },
+    {
+      "name": "local-gpu_018",
+      "worker": "local-gpu",
+      "hostname": "DESKTOP-C97CP8C",
+      "config": {
+        "family": "mlp",
+        "features": "trajectory",
+        "hidden": [
+          256,
+          128,
+          64
+        ],
+        "loss_name": "mse",
+        "seed": 11,
+        "epochs": 250,
+        "learning_rate": 0.0007,
+        "weight_decay": 0.02,
+        "batch_size": 2048,
+        "patience": 35
+      },
+      "metrics": {
+        "n": 5732,
+        "mae": 0.17518841496471832,
+        "rmse": 0.24464055159267384,
+        "bias": 0.036474379529969854
+      },
+      "by_month": {
+        "2025-11": {
+          "n": 2832,
+          "mae": 0.15156619651319383,
+          "rmse": 0.21277426699738375,
+          "bias": 0.022277873376403672
+        },
+        "2025-12": {
+          "n": 2900,
+          "mae": 0.19825673312151743,
+          "rmse": 0.27218252259122905,
+          "bias": 0.050338002090969655
+        }
+      },
+      "fit": {
+        "device": "cuda",
+        "gpu": "NVIDIA GeForce RTX 5090 Laptop GPU",
+        "best_epoch": 2,
+        "epochs_run": 37,
+        "seed": 11,
+        "hidden": [
+          256,
+          128,
+          64
+        ],
+        "loss": "mse",
+        "learning_rate": 0.0007,
+        "weight_decay": 0.02,
+        "batch_size": 2048,
+        "seconds": 1.29,
+        "inference_backend": "numpy; no GPU or torch needed"
+      },
+      "seconds": 1.34,
+      "train_sha256": "0fc30b62295dfa345fff9eaf1581eab3189f3029b53291203ce963bd092bb1ad",
+      "validation_sha256": "a1e6fd800ebf5ad17b3d469f90186638d0d92fd61d4d4896610ee8ca0b4fae9c",
+      "prediction_path": "/home/flyperry/HackAlemAi/hack-rentbox/artifacts/search/local-gpu/local-gpu_018.predictions.npy"
+    },
+    {
+      "name": "cloud-gpu_018",
+      "worker": "cloud-gpu",
+      "hostname": "brev-yf4lxgjo1",
+      "config": {
+        "family": "mlp",
+        "features": "trajectory",
+        "hidden": [
+          256,
+          128,
+          64
+        ],
+        "loss_name": "mse",
+        "seed": 53,
+        "epochs": 250,
+        "learning_rate": 0.0007,
+        "weight_decay": 0.02,
+        "batch_size": 2048,
+        "patience": 35
+      },
+      "metrics": {
+        "n": 5732,
+        "mae": 0.1754526363500719,
+        "rmse": 0.24510623776028453,
+        "bias": 0.03517096947964388
+      },
+      "by_month": {
+        "2025-11": {
+          "n": 2832,
+          "mae": 0.15100383439274914,
+          "rmse": 0.21369519827142702,
+          "bias": 0.021477568559804597
+        },
+        "2025-12": {
+          "n": 2900,
+          "mae": 0.19932815605460225,
+          "rmse": 0.2723060311982657,
+          "bias": 0.04854328375722486
+        }
+      },
+      "fit": {
+        "device": "cuda",
+        "gpu": "NVIDIA RTX A6000",
+        "best_epoch": 2,
+        "epochs_run": 37,
+        "seed": 53,
+        "hidden": [
+          256,
+          128,
+          64
+        ],
+        "loss": "mse",
+        "learning_rate": 0.0007,
+        "weight_decay": 0.02,
+        "batch_size": 2048,
+        "seconds": 1.44,
+        "inference_backend": "numpy; no GPU or torch needed"
+      },
+      "seconds": 1.59,
+      "train_sha256": "0fc30b62295dfa345fff9eaf1581eab3189f3029b53291203ce963bd092bb1ad",
+      "validation_sha256": "a1e6fd800ebf5ad17b3d469f90186638d0d92fd61d4d4896610ee8ca0b4fae9c",
+      "prediction_path": "/home/flyperry/HackAlemAi/hack-rentbox/artifacts/search/cloud-gpu/cloud-gpu_018.predictions.npy"
+    },
+    {
+      "name": "local-cpu_006",
+      "worker": "local-cpu",
+      "hostname": "DESKTOP-C97CP8C",
+      "config": {
+        "family": "boost",
+        "features": "point",
+        "loss": "absolute_error",
+        "max_leaf_nodes": 63,
+        "max_iter": 250,
+        "l2_regularization": 10,
+        "min_samples_leaf": 60,
+        "learning_rate": 0.05
+      },
+      "metrics": {
+        "n": 5732,
+        "mae": 0.1756094675227699,
+        "rmse": 0.25389395312031104,
+        "bias": 0.0378738464777016
+      },
+      "by_month": {
+        "2025-11": {
+          "n": 2832,
+          "mae": 0.15378676842452402,
+          "rmse": 0.22439778086278633,
+          "bias": 0.02666920716226709
+        },
+        "2025-12": {
+          "n": 2900,
+          "mae": 0.19692046195250526,
+          "rmse": 0.279712552090862,
+          "bias": 0.04881575631953282
+        }
+      },
+      "fit": {},
+      "seconds": 2.32,
+      "train_sha256": "0fc30b62295dfa345fff9eaf1581eab3189f3029b53291203ce963bd092bb1ad",
+      "validation_sha256": "a1e6fd800ebf5ad17b3d469f90186638d0d92fd61d4d4896610ee8ca0b4fae9c",
+      "prediction_path": "/home/flyperry/HackAlemAi/hack-rentbox/artifacts/search/local-cpu/local-cpu_006.predictions.npy"
+    },
+    {
+      "name": "local-cpu_017",
+      "worker": "local-cpu",
+      "hostname": "DESKTOP-C97CP8C",
+      "config": {
+        "family": "boost",
+        "features": "trajectory",
+        "loss": "absolute_error",
+        "max_leaf_nodes": 7,
+        "max_iter": 500,
+        "l2_regularization": 10,
+        "min_samples_leaf": 60,
+        "learning_rate": 0.05
+      },
+      "metrics": {
+        "n": 5732,
+        "mae": 0.17591976285583016,
+        "rmse": 0.25588775442411926,
+        "bias": 0.03427619223128821
+      },
+      "by_month": {
+        "2025-11": {
+          "n": 2832,
+          "mae": 0.15230851486586292,
+          "rmse": 0.22559293318149068,
+          "bias": 0.023662151156547462
+        },
+        "2025-12": {
+          "n": 2900,
+          "mae": 0.19897736778948094,
+          "rmse": 0.2823524198009767,
+          "bias": 0.04464135234289712
+        }
+      },
+      "fit": {},
+      "seconds": 1.83,
+      "train_sha256": "0fc30b62295dfa345fff9eaf1581eab3189f3029b53291203ce963bd092bb1ad",
+      "validation_sha256": "a1e6fd800ebf5ad17b3d469f90186638d0d92fd61d4d4896610ee8ca0b4fae9c",
+      "prediction_path": "/home/flyperry/HackAlemAi/hack-rentbox/artifacts/search/local-cpu/local-cpu_017.predictions.npy"
+    },
+    {
+      "name": "local-cpu_007",
+      "worker": "local-cpu",
+      "hostname": "DESKTOP-C97CP8C",
+      "config": {
+        "family": "boost",
+        "features": "point",
+        "loss": "absolute_error",
+        "max_leaf_nodes": 63,
+        "max_iter": 500,
+        "l2_regularization": 10,
+        "min_samples_leaf": 60,
+        "learning_rate": 0.05
+      },
+      "metrics": {
+        "n": 5732,
+        "mae": 0.17606817818409543,
+        "rmse": 0.2527770659151274,
+        "bias": 0.0365434843442166
+      },
+      "by_month": {
+        "2025-11": {
+          "n": 2832,
+          "mae": 0.1540876233882955,
+          "rmse": 0.2236744551029018,
+          "bias": 0.02422293321100598
+        },
+        "2025-12": {
+          "n": 2900,
+          "mae": 0.19753332686744207,
+          "rmse": 0.27827521420505963,
+          "bias": 0.048575139795682974
+        }
+      },
+      "fit": {},
+      "seconds": 4.38,
+      "train_sha256": "0fc30b62295dfa345fff9eaf1581eab3189f3029b53291203ce963bd092bb1ad",
+      "validation_sha256": "a1e6fd800ebf5ad17b3d469f90186638d0d92fd61d4d4896610ee8ca0b4fae9c",
+      "prediction_path": "/home/flyperry/HackAlemAi/hack-rentbox/artifacts/search/local-cpu/local-cpu_007.predictions.npy"
+    },
+    {
+      "name": "local-cpu_020",
+      "worker": "local-cpu",
+      "hostname": "DESKTOP-C97CP8C",
+      "config": {
+        "family": "boost",
+        "features": "trajectory",
+        "loss": "absolute_error",
+        "max_leaf_nodes": 31,
+        "max_iter": 250,
+        "l2_regularization": 10,
+        "min_samples_leaf": 60,
+        "learning_rate": 0.05
+      },
+      "metrics": {
+        "n": 5732,
+        "mae": 0.176136632205313,
+        "rmse": 0.255354612624643,
+        "bias": 0.04284144009921674
+      },
+      "by_month": {
+        "2025-11": {
+          "n": 2832,
+          "mae": 0.15402140958281454,
+          "rmse": 0.2272551177914939,
+          "bias": 0.03510070652608547
+        },
+        "2025-12": {
+          "n": 2900,
+          "mae": 0.19773329098700804,
+          "rmse": 0.28008763565068434,
+          "bias": 0.05040066681615044
+        }
+      },
+      "fit": {},
+      "seconds": 2.0,
+      "train_sha256": "0fc30b62295dfa345fff9eaf1581eab3189f3029b53291203ce963bd092bb1ad",
+      "validation_sha256": "a1e6fd800ebf5ad17b3d469f90186638d0d92fd61d4d4896610ee8ca0b4fae9c",
+      "prediction_path": "/home/flyperry/HackAlemAi/hack-rentbox/artifacts/search/local-cpu/local-cpu_020.predictions.npy"
+    },
+    {
+      "name": "local-cpu_016",
+      "worker": "local-cpu",
+      "hostname": "DESKTOP-C97CP8C",
+      "config": {
+        "family": "boost",
+        "features": "trajectory",
+        "loss": "absolute_error",
+        "max_leaf_nodes": 7,
+        "max_iter": 250,
+        "l2_regularization": 10,
+        "min_samples_leaf": 60,
+        "learning_rate": 0.05
+      },
+      "metrics": {
+        "n": 5732,
+        "mae": 0.17672092098745215,
+        "rmse": 0.2569904331184944,
+        "bias": 0.03180055171320385
+      },
+      "by_month": {
+        "2025-11": {
+          "n": 2832,
+          "mae": 0.1525274591341294,
+          "rmse": 0.22564983934675734,
+          "bias": 0.02033291203894848
+        },
+        "2025-12": {
+          "n": 2900,
+          "mae": 0.2003470878731797,
+          "rmse": 0.28428090219734814,
+          "bias": 0.042999295008890485
+        }
+      },
+      "fit": {},
+      "seconds": 0.93,
+      "train_sha256": "0fc30b62295dfa345fff9eaf1581eab3189f3029b53291203ce963bd092bb1ad",
+      "validation_sha256": "a1e6fd800ebf5ad17b3d469f90186638d0d92fd61d4d4896610ee8ca0b4fae9c",
+      "prediction_path": "/home/flyperry/HackAlemAi/hack-rentbox/artifacts/search/local-cpu/local-cpu_016.predictions.npy"
+    },
+    {
+      "name": "local-gpu_012",
+      "worker": "local-gpu",
+      "hostname": "DESKTOP-C97CP8C",
+      "config": {
+        "family": "mlp",
+        "features": "trajectory",
+        "hidden": [
+          128,
+          64,
+          32
+        ],
+        "loss_name": "mse",
+        "seed": 11,
+        "epochs": 250,
+        "learning_rate": 0.0007,
+        "weight_decay": 0.02,
+        "batch_size": 2048,
+        "patience": 35
+      },
+      "metrics": {
+        "n": 5732,
+        "mae": 0.17695655289227172,
+        "rmse": 0.24562544096594455,
+        "bias": 0.042238517332060396
+      },
+      "by_month": {
+        "2025-11": {
+          "n": 2832,
+          "mae": 0.15460949703962446,
+          "rmse": 0.2150338322243913,
+          "bias": 0.031936335449699815
+        },
+        "2025-12": {
+          "n": 2900,
+          "mae": 0.19877960881458104,
+          "rmse": 0.27220162594476743,
+          "bias": 0.052299130811662174
+        }
+      },
+      "fit": {
+        "device": "cuda",
+        "gpu": "NVIDIA GeForce RTX 5090 Laptop GPU",
+        "best_epoch": 3,
+        "epochs_run": 38,
+        "seed": 11,
+        "hidden": [
+          128,
+          64,
+          32
+        ],
+        "loss": "mse",
+        "learning_rate": 0.0007,
+        "weight_decay": 0.02,
+        "batch_size": 2048,
+        "seconds": 1.24,
+        "inference_backend": "numpy; no GPU or torch needed"
+      },
+      "seconds": 1.31,
+      "train_sha256": "0fc30b62295dfa345fff9eaf1581eab3189f3029b53291203ce963bd092bb1ad",
+      "validation_sha256": "a1e6fd800ebf5ad17b3d469f90186638d0d92fd61d4d4896610ee8ca0b4fae9c",
+      "prediction_path": "/home/flyperry/HackAlemAi/hack-rentbox/artifacts/search/local-gpu/local-gpu_012.predictions.npy"
+    },
+    {
+      "name": "local-cpu_022",
+      "worker": "local-cpu",
+      "hostname": "DESKTOP-C97CP8C",
+      "config": {
+        "family": "boost",
+        "features": "trajectory",
+        "loss": "absolute_error",
+        "max_leaf_nodes": 63,
+        "max_iter": 250,
+        "l2_regularization": 10,
+        "min_samples_leaf": 60,
+        "learning_rate": 0.05
+      },
+      "metrics": {
+        "n": 5732,
+        "mae": 0.17714456319660904,
+        "rmse": 0.2534935117404133,
+        "bias": 0.04580941485941899
+      },
+      "by_month": {
+        "2025-11": {
+          "n": 2832,
+          "mae": 0.15534819861217358,
+          "rmse": 0.22540387262075287,
+          "bias": 0.03602447622903853
+        },
+        "2025-12": {
+          "n": 2900,
+          "mae": 0.19842984061147842,
+          "rmse": 0.2782006249219726,
+          "bias": 0.05536491354950086
+        }
+      },
+      "fit": {},
+      "seconds": 2.82,
+      "train_sha256": "0fc30b62295dfa345fff9eaf1581eab3189f3029b53291203ce963bd092bb1ad",
+      "validation_sha256": "a1e6fd800ebf5ad17b3d469f90186638d0d92fd61d4d4896610ee8ca0b4fae9c",
+      "prediction_path": "/home/flyperry/HackAlemAi/hack-rentbox/artifacts/search/local-cpu/local-cpu_022.predictions.npy"
+    },
+    {
+      "name": "local-gpu_001",
+      "worker": "local-gpu",
+      "hostname": "DESKTOP-C97CP8C",
+      "config": {
+        "family": "mlp",
+        "features": "point",
+        "hidden": [
+          128,
+          64,
+          32
+        ],
+        "loss_name": "mse",
+        "seed": 29,
+        "epochs": 250,
+        "learning_rate": 0.0007,
+        "weight_decay": 0.02,
+        "batch_size": 2048,
+        "patience": 35
+      },
+      "metrics": {
+        "n": 5732,
+        "mae": 0.1773910630785473,
+        "rmse": 0.24209254671583383,
+        "bias": 0.005919306960908357
+      },
+      "by_month": {
+        "2025-11": {
+          "n": 2832,
+          "mae": 0.15492540611239172,
+          "rmse": 0.21107385689853145,
+          "bias": 0.012390735518343387
+        },
+        "2025-12": {
+          "n": 2900,
+          "mae": 0.1993299391227378,
+          "rmse": 0.26895320334789913,
+          "bias": -0.00040037775449025884
+        }
+      },
+      "fit": {
+        "device": "cuda",
+        "gpu": "NVIDIA GeForce RTX 5090 Laptop GPU",
+        "best_epoch": 16,
+        "epochs_run": 51,
+        "seed": 29,
+        "hidden": [
+          128,
+          64,
+          32
+        ],
+        "loss": "mse",
+        "learning_rate": 0.0007,
+        "weight_decay": 0.02,
+        "batch_size": 2048,
+        "seconds": 1.41,
+        "inference_backend": "numpy; no GPU or torch needed"
+      },
+      "seconds": 1.44,
+      "train_sha256": "0fc30b62295dfa345fff9eaf1581eab3189f3029b53291203ce963bd092bb1ad",
+      "validation_sha256": "a1e6fd800ebf5ad17b3d469f90186638d0d92fd61d4d4896610ee8ca0b4fae9c",
+      "prediction_path": "/home/flyperry/HackAlemAi/hack-rentbox/artifacts/search/local-gpu/local-gpu_001.predictions.npy"
+    },
+    {
+      "name": "local-cpu_021",
+      "worker": "local-cpu",
+      "hostname": "DESKTOP-C97CP8C",
+      "config": {
+        "family": "boost",
+        "features": "trajectory",
+        "loss": "absolute_error",
+        "max_leaf_nodes": 31,
+        "max_iter": 500,
+        "l2_regularization": 10,
+        "min_samples_leaf": 60,
+        "learning_rate": 0.05
+      },
+      "metrics": {
+        "n": 5732,
+        "mae": 0.17807843923625416,
+        "rmse": 0.2537741851322585,
+        "bias": 0.0491788659814458
+      },
+      "by_month": {
+        "2025-11": {
+          "n": 2832,
+          "mae": 0.158006256935849,
+          "rmse": 0.22804304426774918,
+          "bias": 0.04451710710554063
+        },
+        "2025-12": {
+          "n": 2900,
+          "mae": 0.1976799634689257,
+          "rmse": 0.2766014085039571,
+          "bias": 0.05373131464922632
+        }
+      },
+      "fit": {},
+      "seconds": 3.45,
+      "train_sha256": "0fc30b62295dfa345fff9eaf1581eab3189f3029b53291203ce963bd092bb1ad",
+      "validation_sha256": "a1e6fd800ebf5ad17b3d469f90186638d0d92fd61d4d4896610ee8ca0b4fae9c",
+      "prediction_path": "/home/flyperry/HackAlemAi/hack-rentbox/artifacts/search/local-cpu/local-cpu_021.predictions.npy"
+    },
+    {
+      "name": "local-gpu_013",
+      "worker": "local-gpu",
+      "hostname": "DESKTOP-C97CP8C",
+      "config": {
+        "family": "mlp",
+        "features": "trajectory",
+        "hidden": [
+          128,
+          64,
+          32
+        ],
+        "loss_name": "mse",
+        "seed": 29,
+        "epochs": 250,
+        "learning_rate": 0.0007,
+        "weight_decay": 0.02,
+        "batch_size": 2048,
+        "patience": 35
+      },
+      "metrics": {
+        "n": 5732,
+        "mae": 0.17852416291948173,
+        "rmse": 0.2456210490040268,
+        "bias": 0.03865900113689925
+      },
+      "by_month": {
+        "2025-11": {
+          "n": 2832,
+          "mae": 0.15381461246611755,
+          "rmse": 0.21376331998154155,
+          "bias": 0.027405901789610852
+        },
+        "2025-12": {
+          "n": 2900,
+          "mae": 0.20265431701738773,
+          "rmse": 0.2731693216366948,
+          "bias": 0.04964823470638916
+        }
+      },
+      "fit": {
+        "device": "cuda",
+        "gpu": "NVIDIA GeForce RTX 5090 Laptop GPU",
+        "best_epoch": 4,
+        "epochs_run": 39,
+        "seed": 29,
+        "hidden": [
+          128,
+          64,
+          32
+        ],
+        "loss": "mse",
+        "learning_rate": 0.0007,
+        "weight_decay": 0.02,
+        "batch_size": 2048,
+        "seconds": 1.43,
+        "inference_backend": "numpy; no GPU or torch needed"
+      },
+      "seconds": 1.49,
+      "train_sha256": "0fc30b62295dfa345fff9eaf1581eab3189f3029b53291203ce963bd092bb1ad",
+      "validation_sha256": "a1e6fd800ebf5ad17b3d469f90186638d0d92fd61d4d4896610ee8ca0b4fae9c",
+      "prediction_path": "/home/flyperry/HackAlemAi/hack-rentbox/artifacts/search/local-gpu/local-gpu_013.predictions.npy"
+    },
+    {
+      "name": "cloud-gpu_012",
+      "worker": "cloud-gpu",
+      "hostname": "brev-yf4lxgjo1",
+      "config": {
+        "family": "mlp",
+        "features": "trajectory",
+        "hidden": [
+          128,
+          64,
+          32
+        ],
+        "loss_name": "mse",
+        "seed": 53,
+        "epochs": 250,
+        "learning_rate": 0.0007,
+        "weight_decay": 0.02,
+        "batch_size": 2048,
+        "patience": 35
+      },
+      "metrics": {
+        "n": 5732,
+        "mae": 0.17907791140154145,
+        "rmse": 0.2455605298880717,
+        "bias": 0.03865377624990356
+      },
+      "by_month": {
+        "2025-11": {
+          "n": 2832,
+          "mae": 0.15321252361950227,
+          "rmse": 0.21279890946050362,
+          "bias": 0.030446004830809444
+        },
+        "2025-12": {
+          "n": 2900,
+          "mae": 0.2043368004355879,
+          "rmse": 0.27379638141966006,
+          "bias": 0.046669089580549945
+        }
+      },
+      "fit": {
+        "device": "cuda",
+        "gpu": "NVIDIA RTX A6000",
+        "best_epoch": 6,
+        "epochs_run": 41,
+        "seed": 53,
+        "hidden": [
+          128,
+          64,
+          32
+        ],
+        "loss": "mse",
+        "learning_rate": 0.0007,
+        "weight_decay": 0.02,
+        "batch_size": 2048,
+        "seconds": 1.64,
+        "inference_backend": "numpy; no GPU or torch needed"
+      },
+      "seconds": 1.75,
+      "train_sha256": "0fc30b62295dfa345fff9eaf1581eab3189f3029b53291203ce963bd092bb1ad",
+      "validation_sha256": "a1e6fd800ebf5ad17b3d469f90186638d0d92fd61d4d4896610ee8ca0b4fae9c",
+      "prediction_path": "/home/flyperry/HackAlemAi/hack-rentbox/artifacts/search/cloud-gpu/cloud-gpu_012.predictions.npy"
+    },
+    {
+      "name": "local-cpu_023",
+      "worker": "local-cpu",
+      "hostname": "DESKTOP-C97CP8C",
+      "config": {
+        "family": "boost",
+        "features": "trajectory",
+        "loss": "absolute_error",
+        "max_leaf_nodes": 63,
+        "max_iter": 500,
+        "l2_regularization": 10,
+        "min_samples_leaf": 60,
+        "learning_rate": 0.05
+      },
+      "metrics": {
+        "n": 5732,
+        "mae": 0.1809211048005348,
+        "rmse": 0.2537345964429739,
+        "bias": 0.056463726627320805
+      },
+      "by_month": {
+        "2025-11": {
+          "n": 2832,
+          "mae": 0.15984133622563404,
+          "rmse": 0.22498317282196031,
+          "bias": 0.049205175251517116
+        },
+        "2025-12": {
+          "n": 2900,
+          "mae": 0.20150658914678274,
+          "rmse": 0.27896653029405283,
+          "bias": 0.06355207748810565
+        }
+      },
+      "fit": {},
+      "seconds": 4.83,
+      "train_sha256": "0fc30b62295dfa345fff9eaf1581eab3189f3029b53291203ce963bd092bb1ad",
+      "validation_sha256": "a1e6fd800ebf5ad17b3d469f90186638d0d92fd61d4d4896610ee8ca0b4fae9c",
+      "prediction_path": "/home/flyperry/HackAlemAi/hack-rentbox/artifacts/search/local-cpu/local-cpu_023.predictions.npy"
+    },
+    {
+      "name": "local-cpu_035",
+      "worker": "local-cpu",
+      "hostname": "DESKTOP-C97CP8C",
+      "config": {
+        "family": "extra_trees",
+        "features": "point",
+        "max_depth": 20,
+        "min_samples_leaf": 30,
+        "n_estimators": 300
+      },
+      "metrics": {
+        "n": 5732,
+        "mae": 0.183524952932625,
+        "rmse": 0.24369079651847858,
+        "bias": 0.037311114985407304
+      },
+      "by_month": {
+        "2025-11": {
+          "n": 2832,
+          "mae": 0.16403079329154974,
+          "rmse": 0.21621549355997582,
+          "bias": 0.030773906779799864
+        },
+        "2025-12": {
+          "n": 2900,
+          "mae": 0.20256200814073705,
+          "rmse": 0.26781518819972866,
+          "bias": 0.04369503692964189
+        }
+      },
+      "fit": {},
+      "seconds": 2.64,
+      "train_sha256": "0fc30b62295dfa345fff9eaf1581eab3189f3029b53291203ce963bd092bb1ad",
+      "validation_sha256": "a1e6fd800ebf5ad17b3d469f90186638d0d92fd61d4d4896610ee8ca0b4fae9c",
+      "prediction_path": "/home/flyperry/HackAlemAi/hack-rentbox/artifacts/search/local-cpu/local-cpu_035.predictions.npy"
+    },
+    {
+      "name": "local-cpu_033",
+      "worker": "local-cpu",
+      "hostname": "DESKTOP-C97CP8C",
+      "config": {
+        "family": "extra_trees",
+        "features": "point",
+        "max_depth": 12,
+        "min_samples_leaf": 30,
+        "n_estimators": 300
+      },
+      "metrics": {
+        "n": 5732,
+        "mae": 0.18408776291375484,
+        "rmse": 0.2443000178010488,
+        "bias": 0.03868554098411248
+      },
+      "by_month": {
+        "2025-11": {
+          "n": 2832,
+          "mae": 0.1643997303300504,
+          "rmse": 0.21688225130447844,
+          "bias": 0.03175044781853764
+        },
+        "2025-12": {
+          "n": 2900,
+          "mae": 0.2033141450782552,
+          "rmse": 0.2683851573432685,
+          "bias": 0.045458018172011776
+        }
+      },
+      "fit": {},
+      "seconds": 2.45,
+      "train_sha256": "0fc30b62295dfa345fff9eaf1581eab3189f3029b53291203ce963bd092bb1ad",
+      "validation_sha256": "a1e6fd800ebf5ad17b3d469f90186638d0d92fd61d4d4896610ee8ca0b4fae9c",
+      "prediction_path": "/home/flyperry/HackAlemAi/hack-rentbox/artifacts/search/local-cpu/local-cpu_033.predictions.npy"
+    },
+    {
+      "name": "local-cpu_032",
+      "worker": "local-cpu",
+      "hostname": "DESKTOP-C97CP8C",
+      "config": {
+        "family": "extra_trees",
+        "features": "point",
+        "max_depth": 12,
+        "min_samples_leaf": 8,
+        "n_estimators": 300
+      },
+      "metrics": {
+        "n": 5732,
+        "mae": 0.18502112485805308,
+        "rmse": 0.24386581363952659,
+        "bias": 0.036457891981449046
+      },
+      "by_month": {
+        "2025-11": {
+          "n": 2832,
+          "mae": 0.16407190894104257,
+          "rmse": 0.21552737616676318,
+          "bias": 0.029636019664182504
+        },
+        "2025-12": {
+          "n": 2900,
+          "mae": 0.2054791177811475,
+          "rmse": 0.26867035417940915,
+          "bias": 0.043119803154724516
+        }
+      },
+      "fit": {},
+      "seconds": 2.75,
+      "train_sha256": "0fc30b62295dfa345fff9eaf1581eab3189f3029b53291203ce963bd092bb1ad",
+      "validation_sha256": "a1e6fd800ebf5ad17b3d469f90186638d0d92fd61d4d4896610ee8ca0b4fae9c",
+      "prediction_path": "/home/flyperry/HackAlemAi/hack-rentbox/artifacts/search/local-cpu/local-cpu_032.predictions.npy"
+    },
+    {
+      "name": "local-cpu_034",
+      "worker": "local-cpu",
+      "hostname": "DESKTOP-C97CP8C",
+      "config": {
+        "family": "extra_trees",
+        "features": "point",
+        "max_depth": 20,
+        "min_samples_leaf": 8,
+        "n_estimators": 300
+      },
+      "metrics": {
+        "n": 5732,
+        "mae": 0.18595436488442169,
+        "rmse": 0.24521086433080658,
+        "bias": 0.03645889981578793
+      },
+      "by_month": {
+        "2025-11": {
+          "n": 2832,
+          "mae": 0.16534049673954007,
+          "rmse": 0.21747510371046133,
+          "bias": 0.03149133940836592
+        },
+        "2025-12": {
+          "n": 2900,
+          "mae": 0.20608487336245773,
+          "rmse": 0.2695559399281689,
+          "bias": 0.041309979496415225
+        }
+      },
+      "fit": {},
+      "seconds": 3.83,
+      "train_sha256": "0fc30b62295dfa345fff9eaf1581eab3189f3029b53291203ce963bd092bb1ad",
+      "validation_sha256": "a1e6fd800ebf5ad17b3d469f90186638d0d92fd61d4d4896610ee8ca0b4fae9c",
+      "prediction_path": "/home/flyperry/HackAlemAi/hack-rentbox/artifacts/search/local-cpu/local-cpu_034.predictions.npy"
+    },
+    {
+      "name": "local-cpu_039",
+      "worker": "local-cpu",
+      "hostname": "DESKTOP-C97CP8C",
+      "config": {
+        "family": "extra_trees",
+        "features": "trajectory",
+        "max_depth": 20,
+        "min_samples_leaf": 30,
+        "n_estimators": 300
+      },
+      "metrics": {
+        "n": 5732,
+        "mae": 0.18671826059324415,
+        "rmse": 0.24458336612991186,
+        "bias": 0.05041059345786621
+      },
+      "by_month": {
+        "2025-11": {
+          "n": 2832,
+          "mae": 0.16445936832328517,
+          "rmse": 0.21597827259507144,
+          "bias": 0.04618955782880614
+        },
+        "2025-12": {
+          "n": 2900,
+          "mae": 0.20845522021687304,
+          "rmse": 0.26960436675049587,
+          "bias": 0.05453265307907245
+        }
+      },
+      "fit": {},
+      "seconds": 7.65,
+      "train_sha256": "0fc30b62295dfa345fff9eaf1581eab3189f3029b53291203ce963bd092bb1ad",
+      "validation_sha256": "a1e6fd800ebf5ad17b3d469f90186638d0d92fd61d4d4896610ee8ca0b4fae9c",
+      "prediction_path": "/home/flyperry/HackAlemAi/hack-rentbox/artifacts/search/local-cpu/local-cpu_039.predictions.npy"
+    },
+    {
+      "name": "local-cpu_037",
+      "worker": "local-cpu",
+      "hostname": "DESKTOP-C97CP8C",
+      "config": {
+        "family": "extra_trees",
+        "features": "trajectory",
+        "max_depth": 12,
+        "min_samples_leaf": 30,
+        "n_estimators": 300
+      },
+      "metrics": {
+        "n": 5732,
+        "mae": 0.1867566726362105,
+        "rmse": 0.24449505147179013,
+        "bias": 0.049460509194872285
+      },
+      "by_month": {
+        "2025-11": {
+          "n": 2832,
+          "mae": 0.16423306228828446,
+          "rmse": 0.21549329153683286,
+          "bias": 0.044348864198265454
+        },
+        "2025-12": {
+          "n": 2900,
+          "mae": 0.20875214315528856,
+          "rmse": 0.2698249258968133,
+          "bias": 0.05445229492948972
+        }
+      },
+      "fit": {},
+      "seconds": 6.52,
+      "train_sha256": "0fc30b62295dfa345fff9eaf1581eab3189f3029b53291203ce963bd092bb1ad",
+      "validation_sha256": "a1e6fd800ebf5ad17b3d469f90186638d0d92fd61d4d4896610ee8ca0b4fae9c",
+      "prediction_path": "/home/flyperry/HackAlemAi/hack-rentbox/artifacts/search/local-cpu/local-cpu_037.predictions.npy"
+    },
+    {
+      "name": "local-cpu_009",
+      "worker": "local-cpu",
+      "hostname": "DESKTOP-C97CP8C",
+      "config": {
+        "family": "boost",
+        "features": "point",
+        "loss": "squared_error",
+        "max_leaf_nodes": 7,
+        "max_iter": 500,
+        "l2_regularization": 10,
+        "min_samples_leaf": 60,
+        "learning_rate": 0.05
+      },
+      "metrics": {
+        "n": 5732,
+        "mae": 0.18676083162889087,
+        "rmse": 0.24791390299624474,
+        "bias": 0.04872660848750572
+      },
+      "by_month": {
+        "2025-11": {
+          "n": 2832,
+          "mae": 0.17014585935664012,
+          "rmse": 0.22291325072760265,
+          "bias": 0.04055520425200874
+        },
+        "2025-12": {
+          "n": 2900,
+          "mae": 0.2029862114478613,
+          "rmse": 0.2701042019703097,
+          "bias": 0.0567064073823083
+        }
+      },
+      "fit": {},
+      "seconds": 0.77,
+      "train_sha256": "0fc30b62295dfa345fff9eaf1581eab3189f3029b53291203ce963bd092bb1ad",
+      "validation_sha256": "a1e6fd800ebf5ad17b3d469f90186638d0d92fd61d4d4896610ee8ca0b4fae9c",
+      "prediction_path": "/home/flyperry/HackAlemAi/hack-rentbox/artifacts/search/local-cpu/local-cpu_009.predictions.npy"
+    },
+    {
+      "name": "local-cpu_008",
+      "worker": "local-cpu",
+      "hostname": "DESKTOP-C97CP8C",
+      "config": {
+        "family": "boost",
+        "features": "point",
+        "loss": "squared_error",
+        "max_leaf_nodes": 7,
+        "max_iter": 250,
+        "l2_regularization": 10,
+        "min_samples_leaf": 60,
+        "learning_rate": 0.05
+      },
+      "metrics": {
+        "n": 5732,
+        "mae": 0.18680276422719422,
+        "rmse": 0.2493788856738596,
+        "bias": 0.05010207094348493
+      },
+      "by_month": {
+        "2025-11": {
+          "n": 2832,
+          "mae": 0.16934924625250705,
+          "rmse": 0.22343474334786473,
+          "bias": 0.04284909215568804
+        },
+        "2025-12": {
+          "n": 2900,
+          "mae": 0.20384702729764728,
+          "rmse": 0.2723397486701326,
+          "bias": 0.057184979883843814
+        }
+      },
+      "fit": {},
+      "seconds": 0.46,
+      "train_sha256": "0fc30b62295dfa345fff9eaf1581eab3189f3029b53291203ce963bd092bb1ad",
+      "validation_sha256": "a1e6fd800ebf5ad17b3d469f90186638d0d92fd61d4d4896610ee8ca0b4fae9c",
+      "prediction_path": "/home/flyperry/HackAlemAi/hack-rentbox/artifacts/search/local-cpu/local-cpu_008.predictions.npy"
+    },
+    {
+      "name": "local-cpu_024",
+      "worker": "local-cpu",
+      "hostname": "DESKTOP-C97CP8C",
+      "config": {
+        "family": "boost",
+        "features": "trajectory",
+        "loss": "squared_error",
+        "max_leaf_nodes": 7,
+        "max_iter": 250,
+        "l2_regularization": 10,
+        "min_samples_leaf": 60,
+        "learning_rate": 0.05
+      },
+      "metrics": {
+        "n": 5732,
+        "mae": 0.1875266715358653,
+        "rmse": 0.2480268374453331,
+        "bias": 0.06151977029461131
+      },
+      "by_month": {
+        "2025-11": {
+          "n": 2832,
+          "mae": 0.1677827772455976,
+          "rmse": 0.22337151899968513,
+          "bias": 0.05517661730736126
+        },
+        "2025-12": {
+          "n": 2900,
+          "mae": 0.2068076055462233,
+          "rmse": 0.2699393666153378,
+          "bias": 0.06771418728078098
+        }
+      },
+      "fit": {},
+      "seconds": 0.69,
+      "train_sha256": "0fc30b62295dfa345fff9eaf1581eab3189f3029b53291203ce963bd092bb1ad",
+      "validation_sha256": "a1e6fd800ebf5ad17b3d469f90186638d0d92fd61d4d4896610ee8ca0b4fae9c",
+      "prediction_path": "/home/flyperry/HackAlemAi/hack-rentbox/artifacts/search/local-cpu/local-cpu_024.predictions.npy"
+    },
+    {
+      "name": "local-cpu_028",
+      "worker": "local-cpu",
+      "hostname": "DESKTOP-C97CP8C",
+      "config": {
+        "family": "boost",
+        "features": "trajectory",
+        "loss": "squared_error",
+        "max_leaf_nodes": 31,
+        "max_iter": 250,
+        "l2_regularization": 10,
+        "min_samples_leaf": 60,
+        "learning_rate": 0.05
+      },
+      "metrics": {
+        "n": 5732,
+        "mae": 0.18795940556291116,
+        "rmse": 0.25146393515980636,
+        "bias": 0.07088440672818648
+      },
+      "by_month": {
+        "2025-11": {
+          "n": 2832,
+          "mae": 0.16723578088280075,
+          "rmse": 0.22298999264343422,
+          "bias": 0.059428829465072046
+        },
+        "2025-12": {
+          "n": 2900,
+          "mae": 0.20819709697466038,
+          "rmse": 0.27645417041198855,
+          "bias": 0.08207137045547618
+        }
+      },
+      "fit": {},
+      "seconds": 0.9,
+      "train_sha256": "0fc30b62295dfa345fff9eaf1581eab3189f3029b53291203ce963bd092bb1ad",
+      "validation_sha256": "a1e6fd800ebf5ad17b3d469f90186638d0d92fd61d4d4896610ee8ca0b4fae9c",
+      "prediction_path": "/home/flyperry/HackAlemAi/hack-rentbox/artifacts/search/local-cpu/local-cpu_028.predictions.npy"
+    },
+    {
+      "name": "local-cpu_025",
+      "worker": "local-cpu",
+      "hostname": "DESKTOP-C97CP8C",
+      "config": {
+        "family": "boost",
+        "features": "trajectory",
+        "loss": "squared_error",
+        "max_leaf_nodes": 7,
+        "max_iter": 500,
+        "l2_regularization": 10,
+        "min_samples_leaf": 60,
+        "learning_rate": 0.05
+      },
+      "metrics": {
+        "n": 5732,
+        "mae": 0.18813830542923465,
+        "rmse": 0.25007155232887357,
+        "bias": 0.06256961083702633
+      },
+      "by_month": {
+        "2025-11": {
+          "n": 2832,
+          "mae": 0.16834848025314536,
+          "rmse": 0.2252573477474425,
+          "bias": 0.0520432906243164
+        },
+        "2025-12": {
+          "n": 2900,
+          "mae": 0.20746409332533294,
+          "rmse": 0.2721288657680706,
+          "bias": 0.07284910698957617
+        }
+      },
+      "fit": {},
+      "seconds": 1.1,
+      "train_sha256": "0fc30b62295dfa345fff9eaf1581eab3189f3029b53291203ce963bd092bb1ad",
+      "validation_sha256": "a1e6fd800ebf5ad17b3d469f90186638d0d92fd61d4d4896610ee8ca0b4fae9c",
+      "prediction_path": "/home/flyperry/HackAlemAi/hack-rentbox/artifacts/search/local-cpu/local-cpu_025.predictions.npy"
+    },
+    {
+      "name": "local-cpu_012",
+      "worker": "local-cpu",
+      "hostname": "DESKTOP-C97CP8C",
+      "config": {
+        "family": "boost",
+        "features": "point",
+        "loss": "squared_error",
+        "max_leaf_nodes": 31,
+        "max_iter": 250,
+        "l2_regularization": 10,
+        "min_samples_leaf": 60,
+        "learning_rate": 0.05
+      },
+      "metrics": {
+        "n": 5732,
+        "mae": 0.1881947232944062,
+        "rmse": 0.25009883960176366,
+        "bias": 0.050640983980113165
+      },
+      "by_month": {
+        "2025-11": {
+          "n": 2832,
+          "mae": 0.17072954249189468,
+          "rmse": 0.2231369194144657,
+          "bias": 0.03715337610456682
+        },
+        "2025-12": {
+          "n": 2900,
+          "mae": 0.20525037571947952,
+          "rmse": 0.27387878650721637,
+          "bias": 0.06381233070547429
+        }
+      },
+      "fit": {},
+      "seconds": 0.85,
+      "train_sha256": "0fc30b62295dfa345fff9eaf1581eab3189f3029b53291203ce963bd092bb1ad",
+      "validation_sha256": "a1e6fd800ebf5ad17b3d469f90186638d0d92fd61d4d4896610ee8ca0b4fae9c",
+      "prediction_path": "/home/flyperry/HackAlemAi/hack-rentbox/artifacts/search/local-cpu/local-cpu_012.predictions.npy"
+    },
+    {
+      "name": "local-cpu_036",
+      "worker": "local-cpu",
+      "hostname": "DESKTOP-C97CP8C",
+      "config": {
+        "family": "extra_trees",
+        "features": "trajectory",
+        "max_depth": 12,
+        "min_samples_leaf": 8,
+        "n_estimators": 300
+      },
+      "metrics": {
+        "n": 5732,
+        "mae": 0.18837012140089673,
+        "rmse": 0.24506895902718,
+        "bias": 0.048608858518434814
+      },
+      "by_month": {
+        "2025-11": {
+          "n": 2832,
+          "mae": 0.16512368412025988,
+          "rmse": 0.21551353058143943,
+          "bias": 0.04367980704532422
+        },
+        "2025-12": {
+          "n": 2900,
+          "mae": 0.2110714698073669,
+          "rmse": 0.27083632113942413,
+          "bias": 0.05342233223286559
+        }
+      },
+      "fit": {},
+      "seconds": 7.04,
+      "train_sha256": "0fc30b62295dfa345fff9eaf1581eab3189f3029b53291203ce963bd092bb1ad",
+      "validation_sha256": "a1e6fd800ebf5ad17b3d469f90186638d0d92fd61d4d4896610ee8ca0b4fae9c",
+      "prediction_path": "/home/flyperry/HackAlemAi/hack-rentbox/artifacts/search/local-cpu/local-cpu_036.predictions.npy"
+    },
+    {
+      "name": "local-cpu_014",
+      "worker": "local-cpu",
+      "hostname": "DESKTOP-C97CP8C",
+      "config": {
+        "family": "boost",
+        "features": "point",
+        "loss": "squared_error",
+        "max_leaf_nodes": 63,
+        "max_iter": 250,
+        "l2_regularization": 10,
+        "min_samples_leaf": 60,
+        "learning_rate": 0.05
+      },
+      "metrics": {
+        "n": 5732,
+        "mae": 0.18885999884493015,
+        "rmse": 0.25159837935075247,
+        "bias": 0.04292247023735677
+      },
+      "by_month": {
+        "2025-11": {
+          "n": 2832,
+          "mae": 0.16691030300054727,
+          "rmse": 0.22164105324299047,
+          "bias": 0.031863294159200174
+        },
+        "2025-12": {
+          "n": 2900,
+          "mae": 0.21029501216606544,
+          "rmse": 0.27775223955074363,
+          "bias": 0.053722327704025526
+        }
+      },
+      "fit": {},
+      "seconds": 1.35,
+      "train_sha256": "0fc30b62295dfa345fff9eaf1581eab3189f3029b53291203ce963bd092bb1ad",
+      "validation_sha256": "a1e6fd800ebf5ad17b3d469f90186638d0d92fd61d4d4896610ee8ca0b4fae9c",
+      "prediction_path": "/home/flyperry/HackAlemAi/hack-rentbox/artifacts/search/local-cpu/local-cpu_014.predictions.npy"
+    },
+    {
+      "name": "local-cpu_038",
+      "worker": "local-cpu",
+      "hostname": "DESKTOP-C97CP8C",
+      "config": {
+        "family": "extra_trees",
+        "features": "trajectory",
+        "max_depth": 20,
+        "min_samples_leaf": 8,
+        "n_estimators": 300
+      },
+      "metrics": {
+        "n": 5732,
+        "mae": 0.18902952860567318,
+        "rmse": 0.2443559676618953,
+        "bias": 0.0500210513936939
+      },
+      "by_month": {
+        "2025-11": {
+          "n": 2832,
+          "mae": 0.16607118794969747,
+          "rmse": 0.21576626784330233,
+          "bias": 0.04759598299898516
+        },
+        "2025-12": {
+          "n": 2900,
+          "mae": 0.21144953575661232,
+          "rmse": 0.26936246799330604,
+          "bias": 0.05238925611569912
+        }
+      },
+      "fit": {},
+      "seconds": 10.39,
+      "train_sha256": "0fc30b62295dfa345fff9eaf1581eab3189f3029b53291203ce963bd092bb1ad",
+      "validation_sha256": "a1e6fd800ebf5ad17b3d469f90186638d0d92fd61d4d4896610ee8ca0b4fae9c",
+      "prediction_path": "/home/flyperry/HackAlemAi/hack-rentbox/artifacts/search/local-cpu/local-cpu_038.predictions.npy"
+    },
+    {
+      "name": "local-cpu_026",
+      "worker": "local-cpu",
+      "hostname": "DESKTOP-C97CP8C",
+      "config": {
+        "family": "boost",
+        "features": "trajectory",
+        "loss": "squared_error",
+        "max_leaf_nodes": 15,
+        "max_iter": 250,
+        "l2_regularization": 10,
+        "min_samples_leaf": 60,
+        "learning_rate": 0.05
+      },
+      "metrics": {
+        "n": 5732,
+        "mae": 0.18916495599159544,
+        "rmse": 0.25003236614598207,
+        "bias": 0.06424729854160016
+      },
+      "by_month": {
+        "2025-11": {
+          "n": 2832,
+          "mae": 0.1685683941501412,
+          "rmse": 0.2234485928827328,
+          "bias": 0.05757391409565017
+        },
+        "2025-12": {
+          "n": 2900,
+          "mae": 0.20927856396918115,
+          "rmse": 0.2735104261836158,
+          "bias": 0.07076420362812787
+        }
+      },
+      "fit": {},
+      "seconds": 0.73,
+      "train_sha256": "0fc30b62295dfa345fff9eaf1581eab3189f3029b53291203ce963bd092bb1ad",
+      "validation_sha256": "a1e6fd800ebf5ad17b3d469f90186638d0d92fd61d4d4896610ee8ca0b4fae9c",
+      "prediction_path": "/home/flyperry/HackAlemAi/hack-rentbox/artifacts/search/local-cpu/local-cpu_026.predictions.npy"
+    },
+    {
+      "name": "local-cpu_010",
+      "worker": "local-cpu",
+      "hostname": "DESKTOP-C97CP8C",
+      "config": {
+        "family": "boost",
+        "features": "point",
+        "loss": "squared_error",
+        "max_leaf_nodes": 15,
+        "max_iter": 250,
+        "l2_regularization": 10,
+        "min_samples_leaf": 60,
+        "learning_rate": 0.05
+      },
+      "metrics": {
+        "n": 5732,
+        "mae": 0.18926630316698212,
+        "rmse": 0.25024070355124345,
+        "bias": 0.05191646303654349
+      },
+      "by_month": {
+        "2025-11": {
+          "n": 2832,
+          "mae": 0.17104411039399364,
+          "rmse": 0.22288082449689187,
+          "bias": 0.040440348172563166
+        },
+        "2025-12": {
+          "n": 2900,
+          "mae": 0.20706121693701782,
+          "rmse": 0.2743381675448139,
+          "bias": 0.06312348279336844
+        }
+      },
+      "fit": {},
+      "seconds": 0.66,
+      "train_sha256": "0fc30b62295dfa345fff9eaf1581eab3189f3029b53291203ce963bd092bb1ad",
+      "validation_sha256": "a1e6fd800ebf5ad17b3d469f90186638d0d92fd61d4d4896610ee8ca0b4fae9c",
+      "prediction_path": "/home/flyperry/HackAlemAi/hack-rentbox/artifacts/search/local-cpu/local-cpu_010.predictions.npy"
+    },
+    {
+      "name": "local-cpu_029",
+      "worker": "local-cpu",
+      "hostname": "DESKTOP-C97CP8C",
+      "config": {
+        "family": "boost",
+        "features": "trajectory",
+        "loss": "squared_error",
+        "max_leaf_nodes": 31,
+        "max_iter": 500,
+        "l2_regularization": 10,
+        "min_samples_leaf": 60,
+        "learning_rate": 0.05
+      },
+      "metrics": {
+        "n": 5732,
+        "mae": 0.18945270990247287,
+        "rmse": 0.2536399867221058,
+        "bias": 0.07318948038451803
+      },
+      "by_month": {
+        "2025-11": {
+          "n": 2832,
+          "mae": 0.16906610225162502,
+          "rmse": 0.2249855995199038,
+          "bias": 0.06281142105726249
+        },
+        "2025-12": {
+          "n": 2900,
+          "mae": 0.20936128675323196,
+          "rmse": 0.278794510584678,
+          "bias": 0.08332419211375519
+        }
+      },
+      "fit": {},
+      "seconds": 1.64,
+      "train_sha256": "0fc30b62295dfa345fff9eaf1581eab3189f3029b53291203ce963bd092bb1ad",
+      "validation_sha256": "a1e6fd800ebf5ad17b3d469f90186638d0d92fd61d4d4896610ee8ca0b4fae9c",
+      "prediction_path": "/home/flyperry/HackAlemAi/hack-rentbox/artifacts/search/local-cpu/local-cpu_029.predictions.npy"
+    },
+    {
+      "name": "local-cpu_030",
+      "worker": "local-cpu",
+      "hostname": "DESKTOP-C97CP8C",
+      "config": {
+        "family": "boost",
+        "features": "trajectory",
+        "loss": "squared_error",
+        "max_leaf_nodes": 63,
+        "max_iter": 250,
+        "l2_regularization": 10,
+        "min_samples_leaf": 60,
+        "learning_rate": 0.05
+      },
+      "metrics": {
+        "n": 5732,
+        "mae": 0.18976824601498468,
+        "rmse": 0.25494558646368376,
+        "bias": 0.07609602555281107
+      },
+      "by_month": {
+        "2025-11": {
+          "n": 2832,
+          "mae": 0.16785142414526263,
+          "rmse": 0.22475723891409435,
+          "bias": 0.06576217630581359
+        },
+        "2025-12": {
+          "n": 2900,
+          "mae": 0.21117115619948573,
+          "rmse": 0.281316766249726,
+          "bias": 0.08618756385194794
+        }
+      },
+      "fit": {},
+      "seconds": 1.54,
+      "train_sha256": "0fc30b62295dfa345fff9eaf1581eab3189f3029b53291203ce963bd092bb1ad",
+      "validation_sha256": "a1e6fd800ebf5ad17b3d469f90186638d0d92fd61d4d4896610ee8ca0b4fae9c",
+      "prediction_path": "/home/flyperry/HackAlemAi/hack-rentbox/artifacts/search/local-cpu/local-cpu_030.predictions.npy"
+    },
+    {
+      "name": "local-cpu_011",
+      "worker": "local-cpu",
+      "hostname": "DESKTOP-C97CP8C",
+      "config": {
+        "family": "boost",
+        "features": "point",
+        "loss": "squared_error",
+        "max_leaf_nodes": 15,
+        "max_iter": 500,
+        "l2_regularization": 10,
+        "min_samples_leaf": 60,
+        "learning_rate": 0.05
+      },
+      "metrics": {
+        "n": 5732,
+        "mae": 0.1899829964398827,
+        "rmse": 0.25007756828699307,
+        "bias": 0.048612493317897396
+      },
+      "by_month": {
+        "2025-11": {
+          "n": 2832,
+          "mae": 0.17227456669565333,
+          "rmse": 0.22288775753295972,
+          "bias": 0.031226668812127576
+        },
+        "2025-12": {
+          "n": 2900,
+          "mae": 0.2072761940383853,
+          "rmse": 0.2740384769345644,
+          "bias": 0.0655906502145664
+        }
+      },
+      "fit": {},
+      "seconds": 1.01,
+      "train_sha256": "0fc30b62295dfa345fff9eaf1581eab3189f3029b53291203ce963bd092bb1ad",
+      "validation_sha256": "a1e6fd800ebf5ad17b3d469f90186638d0d92fd61d4d4896610ee8ca0b4fae9c",
+      "prediction_path": "/home/flyperry/HackAlemAi/hack-rentbox/artifacts/search/local-cpu/local-cpu_011.predictions.npy"
+    },
+    {
+      "name": "local-cpu_015",
+      "worker": "local-cpu",
+      "hostname": "DESKTOP-C97CP8C",
+      "config": {
+        "family": "boost",
+        "features": "point",
+        "loss": "squared_error",
+        "max_leaf_nodes": 63,
+        "max_iter": 500,
+        "l2_regularization": 10,
+        "min_samples_leaf": 60,
+        "learning_rate": 0.05
+      },
+      "metrics": {
+        "n": 5732,
+        "mae": 0.19048329663050384,
+        "rmse": 0.25412030318591866,
+        "bias": 0.042225452445625526
+      },
+      "by_month": {
+        "2025-11": {
+          "n": 2832,
+          "mae": 0.16858589703173574,
+          "rmse": 0.22488661529559653,
+          "bias": 0.032203951931188725
+        },
+        "2025-12": {
+          "n": 2900,
+          "mae": 0.21186723996281803,
+          "rmse": 0.2797354424864689,
+          "bias": 0.05201196605144796
+        }
+      },
+      "fit": {},
+      "seconds": 2.56,
+      "train_sha256": "0fc30b62295dfa345fff9eaf1581eab3189f3029b53291203ce963bd092bb1ad",
+      "validation_sha256": "a1e6fd800ebf5ad17b3d469f90186638d0d92fd61d4d4896610ee8ca0b4fae9c",
+      "prediction_path": "/home/flyperry/HackAlemAi/hack-rentbox/artifacts/search/local-cpu/local-cpu_015.predictions.npy"
+    },
+    {
+      "name": "local-cpu_013",
+      "worker": "local-cpu",
+      "hostname": "DESKTOP-C97CP8C",
+      "config": {
+        "family": "boost",
+        "features": "point",
+        "loss": "squared_error",
+        "max_leaf_nodes": 31,
+        "max_iter": 500,
+        "l2_regularization": 10,
+        "min_samples_leaf": 60,
+        "learning_rate": 0.05
+      },
+      "metrics": {
+        "n": 5732,
+        "mae": 0.1905655783222984,
+        "rmse": 0.251717422185693,
+        "bias": 0.04951313704680089
+      },
+      "by_month": {
+        "2025-11": {
+          "n": 2832,
+          "mae": 0.1708831180093695,
+          "rmse": 0.22367495778833887,
+          "bias": 0.03400477314824059
+        },
+        "2025-12": {
+          "n": 2900,
+          "mae": 0.2097865188761655,
+          "rmse": 0.2763697550005484,
+          "bias": 0.0646578565504984
+        }
+      },
+      "fit": {},
+      "seconds": 1.7,
+      "train_sha256": "0fc30b62295dfa345fff9eaf1581eab3189f3029b53291203ce963bd092bb1ad",
+      "validation_sha256": "a1e6fd800ebf5ad17b3d469f90186638d0d92fd61d4d4896610ee8ca0b4fae9c",
+      "prediction_path": "/home/flyperry/HackAlemAi/hack-rentbox/artifacts/search/local-cpu/local-cpu_013.predictions.npy"
+    },
+    {
+      "name": "local-cpu_027",
+      "worker": "local-cpu",
+      "hostname": "DESKTOP-C97CP8C",
+      "config": {
+        "family": "boost",
+        "features": "trajectory",
+        "loss": "squared_error",
+        "max_leaf_nodes": 15,
+        "max_iter": 500,
+        "l2_regularization": 10,
+        "min_samples_leaf": 60,
+        "learning_rate": 0.05
+      },
+      "metrics": {
+        "n": 5732,
+        "mae": 0.19064773595010504,
+        "rmse": 0.25253953841348825,
+        "bias": 0.07210898298580358
+      },
+      "by_month": {
+        "2025-11": {
+          "n": 2832,
+          "mae": 0.17044407796901195,
+          "rmse": 0.2256186923506932,
+          "bias": 0.06653226187356731
+        },
+        "2025-12": {
+          "n": 2900,
+          "mae": 0.2103776529854345,
+          "rmse": 0.2763092586836065,
+          "bias": 0.0775549396029943
+        }
+      },
+      "fit": {},
+      "seconds": 1.31,
+      "train_sha256": "0fc30b62295dfa345fff9eaf1581eab3189f3029b53291203ce963bd092bb1ad",
+      "validation_sha256": "a1e6fd800ebf5ad17b3d469f90186638d0d92fd61d4d4896610ee8ca0b4fae9c",
+      "prediction_path": "/home/flyperry/HackAlemAi/hack-rentbox/artifacts/search/local-cpu/local-cpu_027.predictions.npy"
+    },
+    {
+      "name": "local-cpu_031",
+      "worker": "local-cpu",
+      "hostname": "DESKTOP-C97CP8C",
+      "config": {
+        "family": "boost",
+        "features": "trajectory",
+        "loss": "squared_error",
+        "max_leaf_nodes": 63,
+        "max_iter": 500,
+        "l2_regularization": 10,
+        "min_samples_leaf": 60,
+        "learning_rate": 0.05
+      },
+      "metrics": {
+        "n": 5732,
+        "mae": 0.19068957413212076,
+        "rmse": 0.2564506037223356,
+        "bias": 0.07702818185742673
+      },
+      "by_month": {
+        "2025-11": {
+          "n": 2832,
+          "mae": 0.167635025866705,
+          "rmse": 0.22456545056877725,
+          "bias": 0.06544624942317592
+        },
+        "2025-12": {
+          "n": 2900,
+          "mae": 0.2132035329899337,
+          "rmse": 0.2841558554013477,
+          "bias": 0.08833853794494335
+        }
+      },
+      "fit": {},
+      "seconds": 2.66,
+      "train_sha256": "0fc30b62295dfa345fff9eaf1581eab3189f3029b53291203ce963bd092bb1ad",
+      "validation_sha256": "a1e6fd800ebf5ad17b3d469f90186638d0d92fd61d4d4896610ee8ca0b4fae9c",
+      "prediction_path": "/home/flyperry/HackAlemAi/hack-rentbox/artifacts/search/local-cpu/local-cpu_031.predictions.npy"
+    }
+  ],
+  "ensembles": [
+    {
+      "name": "top_1_mean",
+      "members": [
+        "cloud-gpu_004"
+      ],
+      "metrics": {
+        "n": 5732,
+        "mae": 0.1637568930950361,
+        "rmse": 0.2521606905145207,
+        "bias": -0.013808995544411947
+      }
+    },
+    {
+      "name": "top_3_mean",
+      "members": [
+        "cloud-gpu_004",
+        "cloud-gpu_010",
+        "cloud-gpu_002"
+      ],
+      "metrics": {
+        "n": 5732,
+        "mae": 0.16351217588027903,
+        "rmse": 0.24982977449093252,
+        "bias": -0.016664809135488436
+      }
+    },
+    {
+      "name": "top_5_mean",
+      "members": [
+        "cloud-gpu_004",
+        "cloud-gpu_010",
+        "cloud-gpu_002",
+        "cloud-gpu_005",
+        "local-gpu_011"
+      ],
+      "metrics": {
+        "n": 5732,
+        "mae": 0.1637249504626407,
+        "rmse": 0.25060315178203546,
+        "bias": -0.016741848880815362
+      }
+    },
+    {
+      "name": "top_8_mean",
+      "members": [
+        "cloud-gpu_004",
+        "cloud-gpu_010",
+        "cloud-gpu_002",
+        "cloud-gpu_005",
+        "local-gpu_011",
+        "cloud-gpu_008",
+        "local-gpu_004",
+        "cloud-gpu_003"
+      ],
+      "metrics": {
+        "n": 5732,
+        "mae": 0.16397554879361195,
+        "rmse": 0.25020936920895986,
+        "bias": -0.014042800490001315
+      }
+    }
+  ],
+  "chosen": {
+    "name": "top_3_mean",
+    "members": [
+      "cloud-gpu_004",
+      "cloud-gpu_010",
+      "cloud-gpu_002"
+    ],
+    "metrics": {
+      "n": 5732,
+      "mae": 0.16351217588027903,
+      "rmse": 0.24982977449093252,
+      "bias": -0.016664809135488436
+    }
+  },
+  "selection_months": [
+    "2025-11",
+    "2025-12"
+  ],
+  "january_used_for_search": false,
+  "note": "January was already reported for the first baseline experiment; it is now a monitoring month, not a newly untouched holdout."
+}

@@ -15,8 +15,16 @@ __pycache__/
 .ruff_cache/
 
 # intermediate training candidates and portable cloud packages
+# The RTX 5090 search keeps summary.json, run.json, leaderboard.csv and best.joblib;
+# the per-candidate artefacts reproduce from GRID_SEED in scripts/train_rtx5090.py.
+artifacts/rtx5090-local/rtx5090_*.joblib
+artifacts/rtx5090-local/rtx5090_*.predictions.npy
+artifacts/rtx5090-local/rtx5090_*.json
+artifacts/rtx5090-local/shard_*.log
 artifacts/search/*/
 artifacts/search/*.parquet
+artifacts/a6000-wide/
+artifacts/catboost-search/
 artifacts/*.tar.gz
 artifacts/prediction.csv
 data/weather/archive.parquet

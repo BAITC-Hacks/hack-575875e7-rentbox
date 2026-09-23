@@ -1,0 +1,341 @@
+{
+  "kind": "archived_weather_power_forecast",
+  "winner": "top_3_mean",
+  "members": [
+    {
+      "name": "cloud-gpu_004",
+      "worker": "cloud-gpu",
+      "hostname": "brev-yf4lxgjo1",
+      "config": {
+        "family": "mlp",
+        "features": "point",
+        "hidden": [
+          128,
+          64,
+          32
+        ],
+        "loss_name": "mae",
+        "seed": 53,
+        "epochs": 250,
+        "learning_rate": 0.0007,
+        "weight_decay": 0.02,
+        "batch_size": 2048,
+        "patience": 35
+      },
+      "metrics": {
+        "n": 5732,
+        "mae": 0.1637568930950361,
+        "rmse": 0.2521606905145207,
+        "bias": -0.013808995544411947
+      },
+      "by_month": {
+        "2025-11": {
+          "n": 2832,
+          "mae": 0.1410077455791223,
+          "rmse": 0.21930695129316757,
+          "bias": -0.013508808564821347
+        },
+        "2025-12": {
+          "n": 2900,
+          "mae": 0.18597261232436987,
+          "rmse": 0.2805553195259476,
+          "bias": -0.014102143656894895
+        }
+      },
+      "fit": {
+        "device": "cuda",
+        "gpu": "NVIDIA RTX A6000",
+        "best_epoch": 14,
+        "epochs_run": 49,
+        "seed": 53,
+        "hidden": [
+          128,
+          64,
+          32
+        ],
+        "loss": "mae",
+        "learning_rate": 0.0007,
+        "weight_decay": 0.02,
+        "batch_size": 2048,
+        "seconds": 1.92,
+        "inference_backend": "numpy; no GPU or torch needed"
+      },
+      "seconds": 1.98,
+      "train_sha256": "0fc30b62295dfa345fff9eaf1581eab3189f3029b53291203ce963bd092bb1ad",
+      "validation_sha256": "a1e6fd800ebf5ad17b3d469f90186638d0d92fd61d4d4896610ee8ca0b4fae9c",
+      "prediction_path": "/home/flyperry/HackAlemAi/hack-rentbox/artifacts/search/cloud-gpu/cloud-gpu_004.predictions.npy"
+    },
+    {
+      "name": "cloud-gpu_010",
+      "worker": "cloud-gpu",
+      "hostname": "brev-yf4lxgjo1",
+      "config": {
+        "family": "mlp",
+        "features": "point",
+        "hidden": [
+          256,
+          128,
+          64
+        ],
+        "loss_name": "mae",
+        "seed": 53,
+        "epochs": 250,
+        "learning_rate": 0.0007,
+        "weight_decay": 0.02,
+        "batch_size": 2048,
+        "patience": 35
+      },
+      "metrics": {
+        "n": 5732,
+        "mae": 0.16440973000441328,
+        "rmse": 0.2527925194233529,
+        "bias": -0.019283051079531332
+      },
+      "by_month": {
+        "2025-11": {
+          "n": 2832,
+          "mae": 0.1401536642809268,
+          "rmse": 0.21937935053896704,
+          "bias": -0.01852791543304898
+        },
+        "2025-12": {
+          "n": 2900,
+          "mae": 0.1880970328074869,
+          "rmse": 0.28162187153336554,
+          "bias": -0.02002048009706168
+        }
+      },
+      "fit": {
+        "device": "cuda",
+        "gpu": "NVIDIA RTX A6000",
+        "best_epoch": 14,
+        "epochs_run": 49,
+        "seed": 53,
+        "hidden": [
+          256,
+          128,
+          64
+        ],
+        "loss": "mae",
+        "learning_rate": 0.0007,
+        "weight_decay": 0.02,
+        "batch_size": 2048,
+        "seconds": 1.87,
+        "inference_backend": "numpy; no GPU or torch needed"
+      },
+      "seconds": 1.99,
+      "train_sha256": "0fc30b62295dfa345fff9eaf1581eab3189f3029b53291203ce963bd092bb1ad",
+      "validation_sha256": "a1e6fd800ebf5ad17b3d469f90186638d0d92fd61d4d4896610ee8ca0b4fae9c",
+      "prediction_path": "/home/flyperry/HackAlemAi/hack-rentbox/artifacts/search/cloud-gpu/cloud-gpu_010.predictions.npy"
+    },
+    {
+      "name": "cloud-gpu_002",
+      "worker": "cloud-gpu",
+      "hostname": "brev-yf4lxgjo1",
+      "config": {
+        "family": "mlp",
+        "features": "point",
+        "hidden": [
+          128,
+          64,
+          32
+        ],
+        "loss_name": "huber",
+        "seed": 53,
+        "epochs": 250,
+        "learning_rate": 0.0007,
+        "weight_decay": 0.02,
+        "batch_size": 2048,
+        "patience": 35
+      },
+      "metrics": {
+        "n": 5732,
+        "mae": 0.16455434551691517,
+        "rmse": 0.24750254539331698,
+        "bias": -0.01690238078252203
+      },
+      "by_month": {
+        "2025-11": {
+          "n": 2832,
+          "mae": 0.14275090605405064,
+          "rmse": 0.2166614547260255,
+          "bias": -0.0144234066142213
+        },
+        "2025-12": {
+          "n": 2900,
+          "mae": 0.1858465319165125,
+          "rmse": 0.2742939378146224,
+          "bias": -0.019323227280669503
+        }
+      },
+      "fit": {
+        "device": "cuda",
+        "gpu": "NVIDIA RTX A6000",
+        "best_epoch": 13,
+        "epochs_run": 48,
+        "seed": 53,
+        "hidden": [
+          128,
+          64,
+          32
+        ],
+        "loss": "huber",
+        "learning_rate": 0.0007,
+        "weight_decay": 0.02,
+        "batch_size": 2048,
+        "seconds": 1.79,
+        "inference_backend": "numpy; no GPU or torch needed"
+      },
+      "seconds": 1.87,
+      "train_sha256": "0fc30b62295dfa345fff9eaf1581eab3189f3029b53291203ce963bd092bb1ad",
+      "validation_sha256": "a1e6fd800ebf5ad17b3d469f90186638d0d92fd61d4d4896610ee8ca0b4fae9c",
+      "prediction_path": "/home/flyperry/HackAlemAi/hack-rentbox/artifacts/search/cloud-gpu/cloud-gpu_002.predictions.npy"
+    }
+  ],
+  "feature_set": "point",
+  "features": [
+    "turbine_id",
+    "forecast_offset_days",
+    "hour_sin",
+    "hour_cos",
+    "year_sin",
+    "year_cos",
+    "gfs_global_wind_speed_100m",
+    "gfs_global_wind_speed_10m",
+    "gfs_global_temperature_2m",
+    "gfs_global_surface_pressure",
+    "gfs_global_u100",
+    "gfs_global_v100",
+    "gfs_global_direction_sin",
+    "gfs_global_direction_cos",
+    "gfs_global_wind_shear",
+    "gfs_global_density_adjusted_wind",
+    "icon_global_wind_speed_100m",
+    "icon_global_wind_speed_10m",
+    "icon_global_temperature_2m",
+    "icon_global_surface_pressure",
+    "icon_global_u100",
+    "icon_global_v100",
+    "icon_global_direction_sin",
+    "icon_global_direction_cos",
+    "icon_global_wind_shear",
+    "icon_global_density_adjusted_wind",
+    "models_wind_difference"
+  ],
+  "created_at": "2026-09-23T09:16:37.054525+00:00",
+  "status": "research_time_assumptions_unconfirmed",
+  "time_assumptions": {
+    "utc_offset_hours": 5,
+    "timestamp_convention": "start",
+    "daily_issue_hour": 23,
+    "confirmed_by_organizers": false
+  },
+  "training_data_available_until": "2026-01-30T19:00:00+00:00",
+  "training_rows": 63100,
+  "data": {
+    "sources": [
+      {
+        "turbine_id": 1,
+        "file": "turbine_1.csv",
+        "sha256": "c4c341582fb2dd348b7187f0128cff265fe055f469413871ebb5db50eef58b5b",
+        "source_rows": 142360,
+        "source_last_timestamp": "2026-01-31 23:50:00",
+        "accepted_hours": 23667,
+        "excluded_hours": 1725
+      },
+      {
+        "turbine_id": 2,
+        "file": "turbine_2.csv",
+        "sha256": "820578cd18bb557cd30c2e102f3ae5a386dfc6c489a5a15743339c2b017305e5",
+        "source_rows": 149499,
+        "source_last_timestamp": "2026-01-31 23:50:00",
+        "accepted_hours": 24785,
+        "excluded_hours": 607
+      }
+    ],
+    "timezone": "unspecified; source-clock labels retained",
+    "timestamp_convention_assumption": "start",
+    "hour_label": "interval_start",
+    "aggregation": "arithmetic mean",
+    "minimum_samples_per_hour": 6,
+    "target": "normalized_power",
+    "missing_target_policy": "exclude incomplete hours; never impute"
+  },
+  "search": {
+    "candidate_count": 88,
+    "selection_months": [
+      "2025-11",
+      "2025-12"
+    ],
+    "chosen": {
+      "name": "top_3_mean",
+      "members": [
+        "cloud-gpu_004",
+        "cloud-gpu_010",
+        "cloud-gpu_002"
+      ],
+      "metrics": {
+        "n": 5732,
+        "mae": 0.16351217588027903,
+        "rmse": 0.24982977449093252,
+        "bias": -0.016664809135488436
+      }
+    },
+    "january_used_for_search": false
+  },
+  "hardware": {
+    "local_gpu": "RTX 5090 Laptop",
+    "cloud_gpu": "A6000 via NVIDIA Brev",
+    "local_cpu": true
+  },
+  "january": {
+    "overall": {
+      "n": 2928,
+      "mae": 0.16933387511391584,
+      "rmse": 0.2543172805288729,
+      "bias": 0.06434641545354294
+    },
+    "by_turbine": {
+      "1": {
+        "n": 1464,
+        "mae": 0.1691019522825895,
+        "rmse": 0.25206259481537624,
+        "bias": 0.06753463303337476
+      },
+      "2": {
+        "n": 1464,
+        "mae": 0.16956579794524212,
+        "rmse": 0.25655215190316055,
+        "bias": 0.06115819787371116
+      }
+    },
+    "by_horizon": {
+      "1-24h": {
+        "n": 1488,
+        "mae": 0.15681835986142556,
+        "rmse": 0.2355532904760332,
+        "bias": 0.04833649465236434
+      },
+      "25-48h": {
+        "n": 1440,
+        "mae": 0.18226657420815578,
+        "rmse": 0.2723519841084944,
+        "bias": 0.08089000028142754
+      }
+    },
+    "unique_target_hours": 1488,
+    "daily_issues": 31
+  },
+  "january_baseline": {
+    "n": 2928,
+    "mae": 0.30240196067914377,
+    "rmse": 0.34179752326459656,
+    "bias": 0.05774269303831735
+  },
+  "weather": {
+    "product": "Open-Meteo Previous Runs; GFS and ICON",
+    "exact_initializations_available": false,
+    "availability_basis": "valid_time - forecast_offset_days*24h + 12h policy margin"
+  },
+  "artifact_sha256": "2064702f58f09dc1a874d01e3fe7b98d17884f4c1ade338775aff363a30af7cf"
+}

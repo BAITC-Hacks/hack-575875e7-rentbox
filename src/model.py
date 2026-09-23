@@ -88,7 +88,7 @@ def fit_mlp(
     *, seed: int = 42, epochs: int = 160, device: str = "cuda",
     hidden: tuple[int, ...] = (64, 64, 32), loss_name: str = "mse",
     learning_rate: float = 0.001, weight_decay: float = 0.01,
-    batch_size: int = 2048, patience: int = 25,
+    batch_size: int = 2048, patience: int = 25, cpu_threads: int = 8,
 ) -> tuple[NumpyMLP, dict]:
     """Train on GPU when requested; temporal validation controls early stopping.
 
@@ -99,7 +99,7 @@ def fit_mlp(
 
     if device == "cuda" and not torch.cuda.is_available():
         raise RuntimeError("CUDA requested but unavailable; use --device cpu")
-    torch.set_num_threads(8)
+    torch.set_num_threads(cpu_threads)
     torch.manual_seed(seed)
     np.random.seed(seed)
     values = np.asarray(x, dtype=np.float32)

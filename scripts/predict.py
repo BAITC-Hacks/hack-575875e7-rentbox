@@ -17,7 +17,7 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--as-of", required=True, help="Timezone-aware issue timestamp")
     parser.add_argument("--horizon", type=int, choices=[24, 48], default=48)
-    parser.add_argument("--model", type=Path, default=ROOT / "artifacts/forecast/model.joblib")
+    parser.add_argument("--model", type=Path, default=ROOT / "artifacts/ensemble/model.joblib")
     parser.add_argument("--output", type=Path, default=ROOT / "artifacts/prediction.csv")
     args = parser.parse_args()
     bundle = joblib.load(args.model)

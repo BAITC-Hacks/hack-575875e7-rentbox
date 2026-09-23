@@ -18,8 +18,13 @@
 - [Контракт API для фронта](docs/API.md)
 - [Результаты проверки данных](reports/data-audit.md)
 - [Скрипт проверки](scripts/audit_data.py)
-- [Первое обучение на архивных прогнозах и ограничения оценки](artifacts/forecast/report.md)
-- [Прогнозы февраля, включая мартовский хвост 48-часовых выпусков](artifacts/forecast/february_replay.csv)
+- [Ансамбль, январские метрики и ограничения оценки](artifacts/ensemble/report.md)
+- [Прогнозы февраля, включая мартовский хвост 48-часовых выпусков](artifacts/ensemble/february_replay.csv)
+
+Готовый ансамбль: январская MAE **0.16933**, RMSE **0.25432** в долях
+нормализованной мощности. Первый бустинг давал MAE 0.19420. Подбор моделей —
+на ноябре–декабре; январь после первого эксперимента используется для мониторинга
+разработки. Качество февраля неизвестно: фактических значений этого месяца нет.
 
 ## Установка и зависимости
 
@@ -63,6 +68,8 @@ python -m scripts.train_forecast --utc-offset 5 --timestamp-convention start --d
 python -m scripts.search_models prepare --utc-offset 5 --timestamp-convention start
 python -m scripts.search_models train --worker local-cpu
 python -m scripts.search_models train --worker local-gpu --device cuda
+python -m scripts.search_models train --worker cloud-gpu --device cuda
+python -m scripts.finalize_search
 ```
 
 Для обучения использован установленный PyTorch 2.11.0+cu128; `--device cpu`
@@ -93,6 +100,7 @@ python -m scripts.search_models train --worker local-gpu --device cuda
 | HTTPX, DuckDB | [HTTPX](https://www.python-httpx.org/), [DuckDB](https://duckdb.org/) | BSD-3-Clause / MIT |
 | PyArrow | [Apache Arrow](https://arrow.apache.org/) | Apache-2.0 |
 | PyTorch, только обучение | [PyTorch](https://pytorch.org/) | BSD-3-Clause |
+| CatBoost, дополнительное обучение на Brev | [CatBoost](https://github.com/catboost/catboost) | Apache-2.0; в обязательные зависимости инференса не входит |
 
 Погодные данные: [Weather data by Open-Meteo.com](https://open-meteo.com/).
 

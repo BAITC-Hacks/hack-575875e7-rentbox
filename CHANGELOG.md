@@ -21,7 +21,7 @@
 data/incoming/        turbine_1.csv, turbine_2.csv — исходные CSV от организаторов (в репозитории)
 data/forecasts.duckdb генерируется, в .gitignore — история прогнозов агента
 docs/PLAN.md          порядок работ и зоны ответственности
-docs/BACKLOG.md       отраслевые сценарии и улучшения сверх плана, с оценками времени
+docs/BACKLOG.md       общий бэклог проекта и приоритеты команды
 scripts/audit_data.py аудит исходных данных без изменения значений
 reports/data-audit.*  отчёт аудита: .md для людей, .json с SHA-256 для машин
 src/storage.py        хранилище истории прогнозов на DuckDB
@@ -32,6 +32,7 @@ scripts/train_*.py    обучение кривой мощности и прог
 scripts/search_models.py поиск на CPU/RTX 5090/Brev
 scripts/predict.py    запуск модели без сети, ключей и GPU
 artifacts/forecast/  модель, январская оценка, прогнозы февраля
+artifacts/ensemble/  ансамбль трёх MLP: январская MAE 0.16933, CPU-инференс
 data/weather/        ответы погодного API и SHA-256
 tests/test_storage.py 10 тестов хранилища
 docs/PLAN.md          план работ и разделение ответственности
@@ -53,7 +54,7 @@ import joblib
 from src.weather import load_archive, select_as_of
 from src.model import predict_weather
 
-bundle = joblib.load("artifacts/forecast/model.joblib")
+bundle = joblib.load("artifacts/ensemble/model.joblib")
 archive, manifest = load_archive()
 weather = select_as_of(archive, "2026-01-31T18:00:00Z", horizon_hours=48)
 power = predict_weather(bundle, weather)  # вектор, те же строки, [0, 1]
@@ -63,8 +64,8 @@ power = predict_weather(bundle, weather)  # вектор, те же строки
 граница доступности погоды и конец обучения относительно `as_of`.
 Артефакт загружать только из доверенного источника.
 
-**Для фронта:** первая прогнозная модель на январе — MAE 0.19420, RMSE 0.27716;
-1–24 ч MAE 0.18349, 25–48 ч MAE 0.20527. Это доли нормализованной мощности,
+**Для фронта:** готовый ансамбль на январе — MAE 0.16933, RMSE 0.25432;
+1–24 ч MAE 0.15682, 25–48 ч MAE 0.18227. Это доли нормализованной мощности,
 не MAPE. Факта февраля нет. Метрики `artifacts/power_curve` с фактическим
 ветром не брать на график качества прогноза.
 
@@ -175,6 +176,25 @@ python scripts/audit_data.py --input data/incoming --output reports/data-audit.j
 ---
 
 ## Хронология
+
+### 14:31 — Ансамбль и расширенное обучение на двух GPU (Codex)
+
+- Первый поиск завершён: 40 CPU + 24 RTX 5090 + 24 A6000. По ноябрю–декабрю
+  выбран ансамбль трёх MLP; январская MAE снизилась с 0.19420 до 0.16933.
+- Готовые веса, январские прогнозы и 29 выпусков февраля — `artifacts/ensemble/`.
+  По умолчанию `scripts/predict.py` использует этот ансамбль; инференс на NumPy.
+- Базовые прогнозы января: последний известный полный час MAE 0.34268;
+  последние доступные сутки MAE 0.36480. Скрипт `scripts/evaluate_baselines.py`.
+- По прямому запросу пользователя расширено обучение: Claude завершил 600
+  локальных конфигураций и ведёт эволюционный поиск; Codex завершил ещё 480
+  конфигураций на A6000, запускает 36 GPU CatBoost. Данные поиска те же, с SHA-256;
+  январь и февраль не участвуют в подборе параметров. Январь уже является месяцем
+  мониторинга разработки, а не новым нетронутым тестом.
+- **Координация:** Codex берёт `src/agent.py`, `src/api.py`, интеграцию с DuckDB
+  и сборку итогового ансамбля. Локальные `train_rtx5090.py` / `evolve_rtx5090.py`
+  остаются за Claude. Не расширять перебор ценой рабочего цикла по ТЗ.
+- Точное время публикации Previous Runs и часовой пояс CSV остаются ограничениями;
+  их нельзя выдавать за подтверждённые метаданные.
 
 ### 14:04 — Прогнозная модель и обучение на Brev (Codex)
 
