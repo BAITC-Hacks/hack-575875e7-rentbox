@@ -1,0 +1,22 @@
+{
+  "endpoint": "https://previous-runs-api.open-meteo.com/v1/forecast",
+  "params": {
+    "latitude": "43.64515,43.643198",
+    "longitude": "78.535604,78.538828",
+    "start_date": "2025-08-01",
+    "end_date": "2025-08-31",
+    "hourly": "temperature_2m_previous_day1,wind_speed_10m_previous_day1,wind_speed_100m_previous_day1,wind_direction_100m_previous_day1,surface_pressure_previous_day1,temperature_2m_previous_day2,wind_speed_10m_previous_day2,wind_speed_100m_previous_day2,wind_direction_100m_previous_day2,surface_pressure_previous_day2,temperature_2m_previous_day3,wind_speed_10m_previous_day3,wind_speed_100m_previous_day3,wind_direction_100m_previous_day3,surface_pressure_previous_day3",
+    "models": "icon_global",
+    "wind_speed_unit": "ms",
+    "timezone": "UTC"
+  },
+  "retrieved_at": "2026-09-23T08:45:23.175519+00:00",
+  "sha256": "acbf02e0487ee0170ad5d1418be20415e8d9e89d0a2a821402b9818008c3905b",
+  "provider": "Open-Meteo",
+  "model": "icon_global",
+  "product": "fixed lead offsets; not a single initialization",
+  "documentation": "https://open-meteo.com/en/docs/previous-runs-api",
+  "license": "CC BY 4.0; credit Open-Meteo and NOAA/DWD",
+  "initialization_time": null,
+  "availability_basis": "valid_time - previous_day * 24h + 12h policy margin"
+}
