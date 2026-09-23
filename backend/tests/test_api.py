@@ -6,6 +6,8 @@ def test_health_and_read_only_catalog(client):
         "status": "ok",
         "agent_configured": False,
         "time_configuration_ready": True,
+        "time_configuration_confirmed": True,
+        "research_mode": False,
         "turbines_count": 1,
     }
     catalog = client.get("/api/turbines").json()
