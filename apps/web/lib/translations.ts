@@ -1,5 +1,26 @@
 // Source keys are the Russian copy; technical IDs and CSV columns remain stable.
 export const translations: Record<string, { en: string; kk: string }> = {
+  "Внешний вид": { en: "Appearance", kk: "Сыртқы көрініс" },
+  "Версия для слабовидящих": {
+    en: "Low-vision mode",
+    kk: "Нашар көретіндерге арналған режим",
+  },
+  "Для слабовидящих": { en: "Low vision", kk: "Нашар көретіндерге" },
+  "Тёмная тема": { en: "Dark theme", kk: "Қараңғы тақырып" },
+  "Включить светлую тему": {
+    en: "Switch to light theme",
+    kk: "Жарық тақырыпты қосу",
+  },
+  "Включить тёмную тему": {
+    en: "Switch to dark theme",
+    kk: "Қараңғы тақырыпты қосу",
+  },
+  "Анимация отключена в версии для слабовидящих": {
+    en: "Animation is disabled in low-vision mode",
+    kk: "Нашар көретіндерге арналған режимде анимация өшірілген",
+  },
+  "Перейти к содержимому": { en: "Skip to content", kk: "Мазмұнға өту" },
+
   "Почасовой прогноз ветровой генерации, погода и AI-агент. Демонстрационный dashboard.":
     {
       en: "Hourly wind power forecasts, weather and an AI agent. Demo dashboard.",

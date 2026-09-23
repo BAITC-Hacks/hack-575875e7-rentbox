@@ -126,3 +126,16 @@ This version is isolated on `design/dashboard-v2`. The previous frontend is pres
 Implementation: `locale-provider.tsx` holds the language preference and locale-bound formatters; `lib/translations.ts` is the RU/EN/KK message catalog. Add translations there when adding visible UI text. `forecast-focus.tsx` and `forecast-insights.ts` implement synchronized timeline and insight cards; `dashboard-v2.css` scopes the new visual treatment.
 
 Validation: `npm test` includes translation/placeholder coverage, localized formatting and unchanged CSV output, plus forecast extrema, tie-breaking, and the February/March boundary. Browser checks cover desktop/mobile layouts, language persistence, preserved hour/scene on language changes, localized dialogs, navigation, and system-driven model scenes.
+
+## Display preferences
+
+The header includes separate **Dark theme** and **Low-vision mode** toggles, with translated labels in Russian, English, and Kazakh. They can be combined. The default is the existing light theme; settings do not change the forecast, selected hour, language, or run history.
+
+- `next-themes` persists light/dark under `windcast.theme`; `AppearanceProvider` persists `high`/`standard` under `windcast.vision`. Both synchronize across tabs. Low-vision mode remains usable in memory when storage is blocked.
+- `appearance.css` defines semantic colors for panels, text, controls, chart series, and 3D labels. The existing light colors remain fallbacks. Dialogs use the same root-scoped palette even when portaled outside the dashboard.
+- Low-vision mode raises interface text to at least 18 px, expands control targets, uses a more spacious responsive layout, strengthens focus outlines and borders, and removes decorative transitions. The chart reserves more space for large axis labels and reduces time-label density on narrow screens. Wide tables retain horizontal scrolling.
+- Forecast and actual series remain distinguishable by solid/dashed strokes as well as color. Values are also available in the hourly table and detail dialog.
+- The turbine stays visible but rotor/wind animation stops and camera changes snap to their targets in low-vision mode. Dashboard interactions, component inspection, and educational icing scenes remain functional. Exiting the mode restores the prior animation preference and respects the OS reduced-motion setting.
+- A keyboard-visible “Skip to content” link focuses the main region. The former single-letter theme shortcut has been removed to avoid conflict with assistive navigation commands.
+
+Checks: `tests/appearance.test.mjs` verifies the defined text/background pairs at 4.5:1 in dark mode and 7:1 in both low-vision palettes, and checks chart line/focus visibility. This is a focused palette regression check, not a claim of a complete accessibility certification. Browser QA covers combined modes, saved preferences, keyboard skip navigation, translated controls, and mobile dialogs.

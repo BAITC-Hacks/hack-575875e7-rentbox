@@ -39,6 +39,10 @@ import {
   Zap,
   type LucideIcon,
 } from "lucide-react"
+import {
+  AppearanceControls,
+  useAppearance,
+} from "@/components/appearance-provider"
 import { TurbineHero } from "@/components/turbine-hero"
 import { ForecastInsights, ForecastTimeline } from "@/components/forecast-focus"
 import type { ForecastInsight } from "@/lib/forecast-insights"
@@ -239,6 +243,8 @@ function ForecastChart({
   inspectedHour: number
 }) {
   const { tr, number, formatDate } = useI18n()
+  const { highVisibility } = useAppearance()
+  const chartLeft = highVisibility ? 66 : 45
 
   const [active, setActive] = useState<number | null>(null)
   const [showActual, setShowActual] = useState(true)
@@ -254,7 +260,8 @@ function ForecastChart({
     observer.observe(element)
     return () => observer.disconnect()
   }, [])
-  const x = (i: number) => 45 + (i / (data.length - 1)) * (plotWidth - 61)
+  const x = (i: number) =>
+    chartLeft + (i / (data.length - 1)) * (plotWidth - chartLeft - 16)
   const y = (v: number) => 222 - v * 1.95
   const path = (key: "forecast" | "actual" | "lower" | "upper") =>
     data
@@ -366,8 +373,9 @@ function ForecastChart({
           inspect(
             clamp(
               Math.round(
-                ((((e.clientX - rect.left) / rect.width) * plotWidth - 45) /
-                  (plotWidth - 61)) *
+                ((((e.clientX - rect.left) / rect.width) * plotWidth -
+                  chartLeft) /
+                  (plotWidth - chartLeft - 16)) *
                   (data.length - 1)
               ),
               0,
@@ -379,7 +387,7 @@ function ForecastChart({
         onBlur={() => setActive(null)}
       >
         <svg
-          viewBox={`0 0 ${plotWidth} 264`}
+          viewBox={`0 0 ${plotWidth} ${highVisibility ? 290 : 264}`}
           role="img"
           aria-label={tr("Почасовой прогноз выработки на {v0} ч", {
             v0: horizon,
@@ -387,26 +395,41 @@ function ForecastChart({
         >
           <defs>
             <linearGradient id="forecast-fill" x1="0" y1="0" x2="0" y2="1">
-              <stop stopColor="#8caf6a" stopOpacity=".18" />
-              <stop offset="1" stopColor="#8caf6a" stopOpacity="0" />
+              <stop
+                stopColor="var(--wc-chart-forecast, #8caf6a)"
+                stopOpacity=".18"
+              />
+              <stop
+                offset="1"
+                stopColor="var(--wc-chart-forecast, #8caf6a)"
+                stopOpacity="0"
+              />
             </linearGradient>
           </defs>
           {[0, 25, 50, 75, 100].map((tick) => (
             <g key={tick}>
               <line
-                x1="45"
+                x1={chartLeft}
                 x2={plotWidth - 16}
                 y1={y(tick)}
                 y2={y(tick)}
-                stroke="#e9ece7"
+                stroke="var(--wc-chart-grid, #e9ece7)"
                 strokeDasharray="3 5"
               />
-              <text x="30" y={y(tick) + 4} textAnchor="end" className="wc-axis">
+              <text
+                x={chartLeft - 12}
+                y={y(tick) + 4}
+                textAnchor="end"
+                className="wc-axis"
+              >
                 {tick}%
               </text>
             </g>
           ))}
-          {[0, 0.25, 0.5, 0.75, 1].map((part) => {
+          {(highVisibility && plotWidth < 460
+            ? [0, 0.5, 1]
+            : [0, 0.25, 0.5, 0.75, 1]
+          ).map((part) => {
             const i = Math.round(part * (data.length - 1))
             return (
               <text
@@ -420,7 +443,7 @@ function ForecastChart({
               >
                 {data[i]!.hour}
                 {i % 24 === 0 && (
-                  <tspan x={x(i)} dy="13">
+                  <tspan x={x(i)} dy={highVisibility ? 22 : 13}>
                     {formatDate(data[i]!.date)}
                   </tspan>
                 )}
@@ -428,15 +451,21 @@ function ForecastChart({
             )
           })}
           <path
-            d={`${path("forecast")} L${plotWidth - 16},222 L45,222 Z`}
+            d={`${path("forecast")} L${plotWidth - 16},222 L${chartLeft},222 Z`}
             fill="url(#forecast-fill)"
           />
-          {showRange && <path d={area} fill="#9abb7c" opacity=".17" />}
+          {showRange && (
+            <path
+              d={area}
+              fill="var(--wc-chart-range, #9abb7c)"
+              opacity=".17"
+            />
+          )}
           {showActual && (
             <path
               d={path("actual")}
               fill="none"
-              stroke="#9fa59c"
+              stroke="var(--wc-chart-actual, #9fa59c)"
               strokeWidth="1.8"
               strokeDasharray="5 5"
               strokeLinecap="round"
@@ -445,7 +474,7 @@ function ForecastChart({
           <path
             d={path("forecast")}
             fill="none"
-            stroke="#48794d"
+            stroke="var(--wc-chart-forecast, #48794d)"
             strokeWidth="2.7"
             strokeLinejoin="round"
             strokeLinecap="round"
@@ -455,12 +484,12 @@ function ForecastChart({
               <rect
                 x={
                   x(displayIndex) -
-                  Math.max(5, (plotWidth - 61) / data.length / 2)
+                  Math.max(5, (plotWidth - chartLeft - 16) / data.length / 2)
                 }
                 y="20"
-                width={Math.max(10, (plotWidth - 61) / data.length)}
+                width={Math.max(10, (plotWidth - chartLeft - 16) / data.length)}
                 height="203"
-                fill="#e0ebd5"
+                fill="var(--wc-chart-selection, #e0ebd5)"
                 opacity=".65"
               />
 
@@ -469,15 +498,15 @@ function ForecastChart({
                 x2={x(displayIndex)}
                 y1="20"
                 y2="223"
-                stroke="#718d62"
+                stroke="var(--wc-chart-forecast, #718d62)"
                 strokeDasharray="3 4"
               />
               <circle
                 cx={x(displayIndex)}
                 cy={y(selected.forecast)}
                 r="5"
-                fill="#48794d"
-                stroke="white"
+                fill="var(--wc-chart-forecast, #48794d)"
+                stroke="var(--wc-chart-dot-outline, white)"
                 strokeWidth="3"
               />
             </g>
@@ -1040,6 +1069,7 @@ function HourlyTable({
 }
 export function WindDashboard() {
   const { tr, number, formatDate, formatTimestamp } = useI18n()
+  const { highVisibility } = useAppearance()
 
   const [view, setView] = useState<View>("overview")
   const [sceneOverride, setSceneOverride] = useState<SceneMode | null>(null)
@@ -1125,16 +1155,18 @@ export function WindDashboard() {
     setSceneHour(index)
     chooseScene(data[index]!.temperature <= 0 ? "icing" : "sensors")
     if (data[index]!.temperature > 0) setSceneFocus("temperature")
-    document
-      .getElementById("turbine-system-view")
-      ?.scrollIntoView({ behavior: "smooth", block: "start" })
+    document.getElementById("turbine-system-view")?.scrollIntoView({
+      behavior: highVisibility ? "auto" : "smooth",
+      block: "start",
+    })
   }
   function inspectSource(focus: SceneFocus) {
     chooseScene("sensors")
     setSceneFocus(focus)
-    document
-      .getElementById("turbine-system-view")
-      ?.scrollIntoView({ behavior: "smooth", block: "start" })
+    document.getElementById("turbine-system-view")?.scrollIntoView({
+      behavior: highVisibility ? "auto" : "smooth",
+      block: "start",
+    })
   }
   function inspectAgentStep(index: number) {
     setInspectedStep(index)
@@ -1185,7 +1217,7 @@ export function WindDashboard() {
     setSceneOverride(null)
     setSceneFocus(next === "sources" ? "wind" : "gearbox")
     setMobileMenu(false)
-    window.scrollTo({ top: 0, behavior: "smooth" })
+    window.scrollTo({ top: 0, behavior: highVisibility ? "auto" : "smooth" })
   }
   function refresh() {
     if (busy) return
@@ -1206,7 +1238,10 @@ export function WindDashboard() {
       insight.kind === "cold"
         ? document.querySelector(".wc-turbine-hero")
         : document.getElementById("turbine-system-view")
-    target?.scrollIntoView({ behavior: "smooth", block: "nearest" })
+    target?.scrollIntoView({
+      behavior: highVisibility ? "auto" : "smooth",
+      block: "nearest",
+    })
   }
   const turbineScene = (
     <TurbineHero
@@ -1247,6 +1282,9 @@ export function WindDashboard() {
   return (
     <TooltipProvider delay={200}>
       <div className="wc-app wc-design-v2">
+        <a className="wc-skip-link" href="#main-content">
+          {tr("Перейти к содержимому")}
+        </a>
         {mobileMenu && (
           <button
             className="wc-mobile-backdrop"
@@ -1348,6 +1386,7 @@ export function WindDashboard() {
               <strong>{tr(currentNav.label)}</strong>
             </div>
             <div className="wc-topbar-right">
+              <AppearanceControls />
               <LanguageSelector />
               <Badge className="wc-demo-badge">
                 <span />
@@ -1371,7 +1410,7 @@ export function WindDashboard() {
               </button>
             </div>
           </header>
-          <main className="wc-main">
+          <main className="wc-main" id="main-content" tabIndex={-1}>
             <div className="wc-page-title">
               <div>
                 <div className="wc-eyebrow">{tr("ЭНЕРГИЯ ПОД КОНТРОЛЕМ")}</div>
@@ -1603,7 +1642,10 @@ export function WindDashboard() {
                       inspectAgentStep(index)
                       document
                         .getElementById("turbine-system-view")
-                        ?.scrollIntoView({ behavior: "smooth", block: "start" })
+                        ?.scrollIntoView({
+                          behavior: highVisibility ? "auto" : "smooth",
+                          block: "start",
+                        })
                     }}
                     expanded
                   />

@@ -10,7 +10,7 @@ import {
   type SceneFocus,
   type SceneMode,
 } from "@/lib/turbine-scene"
-import {} from "@/lib/forecast-data"
+import { useAppearance } from "@/components/appearance-provider"
 import type { TurbineSceneSettings } from "@/lib/turbine-renderer"
 
 const motionQuery = "(prefers-reduced-motion: reduce)"
@@ -44,12 +44,14 @@ export function TurbineStage({
     "loading"
   )
   const [motionRequested, setMotionRequested] = useState<boolean | null>(null)
-  const reducedMotion = useSyncExternalStore(
+  const { highVisibility } = useAppearance()
+  const systemReducedMotion = useSyncExternalStore(
     subscribeMotion,
     () => window.matchMedia(motionQuery).matches,
     () => true
   )
-  const playing = motionRequested ?? !reducedMotion
+  const reducedMotion = systemReducedMotion || highVisibility
+  const playing = !highVisibility && (motionRequested ?? !systemReducedMotion)
   const settingsRef = useRef<TurbineSceneSettings>({
     mode,
     focus,
@@ -232,8 +234,13 @@ export function TurbineStage({
             <button
               type="button"
               aria-label={
-                playing ? tr("Приостановить анимацию") : tr("Включить анимацию")
+                highVisibility
+                  ? tr("Анимация отключена в версии для слабовидящих")
+                  : playing
+                    ? tr("Приостановить анимацию")
+                    : tr("Включить анимацию")
               }
+              disabled={highVisibility}
               aria-pressed={playing}
               onClick={() => setMotionRequested(!playing)}
             >

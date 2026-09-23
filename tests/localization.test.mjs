@@ -57,6 +57,7 @@ test("UI translation keys and scene metadata have both requested languages", () 
     "turbine-stage.tsx",
     "forecast-focus.tsx",
     "locale-provider.tsx",
+    "appearance-provider.tsx",
   ]
   const files = componentFiles
     .map((f) => `apps/web/components/${f}`)
