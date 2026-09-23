@@ -8,6 +8,12 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     UV_LINK_MODE=copy \
     PATH="/app/backend/.venv/bin:$PATH"
 
+# Нативная библиотека ecCodes нужна для разбора GRIB при обновлении архива
+# погоды (refresh_weather=true). Python-обёртка gribapi без неё не работает.
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends libeccodes0 \
+    && rm -rf /var/lib/apt/lists/*
+
 COPY backend/pyproject.toml backend/uv.lock ./backend/
 RUN uv sync --project backend --frozen --no-dev --no-cache
 COPY backend/__init__.py ./backend/__init__.py
