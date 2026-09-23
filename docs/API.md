@@ -337,8 +337,9 @@ run_id,as_of,turbine_id,valid_time,lead_hour,predicted_power,wind_speed_100m,win
 ## Помощник сайта OpenAI ASTRA
 
 `GET /api/help/status` возвращает `provider=openai`, `model=gpt-6-astra`,
-`enabled`, `configured`, `available`, `prompt_version`. `available` означает,
-что помощник включён и ключ задан; доступность модели по сети этим не проверяется.
+`auth_mode` (`api_key` или `chatgpt`), `enabled`, `configured`, `available`,
+`prompt_version`. `available` означает наличие включённого подключения: ключа
+либо локального входа Codex через ChatGPT. Доступ к модели проверяется при вопросе.
 
 `POST /api/help/chat`:
 
@@ -381,7 +382,7 @@ run_id,as_of,turbine_id,valid_time,lead_hour,predicted_power,wind_speed_100m,win
 Неприменимые поля `view`/`run_id` равны `null`. Все ID источников и кнопок проверяются
 по серверному списку. При ответе модели `model` может содержать snapshot `gpt-6-astra-*`.
 
-Без ключа или при сбое OpenAI возвращается HTTP 200 с `provider=local_help`,
+Без доступного подключения или при сбое OpenAI возвращается HTTP 200 с `provider=local_help`,
 `model=null` и пояснением в `warning`. **Не подписывайте такой ответ как ASTRA.**
 Некорректный вход возвращает 422. Лимит внешних обращений — 20 в минуту и 2
 одновременно на процесс; превышение включает обычную справку.

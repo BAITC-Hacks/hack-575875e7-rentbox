@@ -118,7 +118,7 @@ openai_settings() {
     local python
     python=$(settings_python) || die "для мастера OpenAI нужен Python 3"
     ensure_env
-    "$python" scripts/configure_openai.py
+    "$python" scripts/configure_openai.py "$@"
 }
 
 check() {
@@ -346,7 +346,7 @@ start_docker() {
     bold "Запуск в Docker (порт $PORT)"
     local output
     local result=0
-    output=$(BACKEND_PORT="$PORT" $COMPOSE up -d --build --wait 2>&1) || result=$?
+    output=$(BACKEND_PORT="$PORT" $COMPOSE up -d --build --wait backend 2>&1) || result=$?
     printf '%s\n' "$output" | grep -Ev '^#|DONE|CACHED|^$' || true
 
     # В WSL порт может держать процесс Windows: из Linux он не виден как
@@ -814,7 +814,7 @@ fi
 
 case "$1" in
     setup) setup ;;
-    settings|openai) openai_settings ;;
+    settings|openai) shift; openai_settings "$@" ;;
     start) start ;;
     all)   all ;;
     web)   web ;;

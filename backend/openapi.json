@@ -2251,6 +2251,15 @@
             "title": "Provider",
             "default": "openai"
           },
+          "auth_mode": {
+            "type": "string",
+            "enum": [
+              "api_key",
+              "chatgpt"
+            ],
+            "title": "Auth Mode",
+            "default": "api_key"
+          },
           "model": {
             "type": "string",
             "const": "gpt-6-astra",
