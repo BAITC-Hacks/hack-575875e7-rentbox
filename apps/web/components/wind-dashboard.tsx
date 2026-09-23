@@ -1588,7 +1588,11 @@ export function WindDashboard() {
                 <div className="wc-eyebrow">{tr("ЭНЕРГИЯ ПОД КОНТРОЛЕМ")}</div>
                 <h1>{tr(PAGE_TITLES[view])}</h1>
                 <p>
-                  {tr("Прогноз, погода и работа AI-агента — в одном месте.")}
+                  {tr(
+                    view === "forecast"
+                      ? "Почасовые значения выбранного выпуска, детализация по часам и выгрузка CSV."
+                      : "Прогноз, погода и работа AI-агента — в одном месте."
+                  )}
                 </p>
               </div>
               <div className="wc-heading-actions">
@@ -1953,11 +1957,13 @@ export function WindDashboard() {
                   index={inspectedHour}
                   onSelect={selectHour}
                 />
-                <ForecastInsights
-                  data={data}
-                  index={inspectedHour}
-                  onSelect={inspectInsight}
-                />
+                {view === "overview" && (
+                  <ForecastInsights
+                    data={data}
+                    index={inspectedHour}
+                    onSelect={inspectInsight}
+                  />
+                )}
                 {view === "overview" && (
                   <div className="wc-overview-support">
                     {simulation ? (
@@ -2019,18 +2025,19 @@ export function WindDashboard() {
                     </span>
                   </div>
                 )}
-                <HourlyTable
-                  key={`${date}-${horizon}-${turbine}-${simulation?.seed ?? "forecast"}`}
-                  data={data}
-                  onExport={exportCsv}
-                  onPoint={(point) => {
-                    setSceneHour(
-                      data.findIndex((p) => p.timestamp === point.timestamp)
-                    )
-                    setSelectedPoint(point)
-                  }}
-                  compact={view === "overview"}
-                />
+                {view === "forecast" && (
+                  <HourlyTable
+                    key={`${date}-${horizon}-${turbine}-${simulation?.seed ?? "forecast"}`}
+                    data={data}
+                    onExport={exportCsv}
+                    onPoint={(point) => {
+                      setSceneHour(
+                        data.findIndex((p) => p.timestamp === point.timestamp)
+                      )
+                      setSelectedPoint(point)
+                    }}
+                  />
+                )}
               </>
             )}
             {view === "agent" && !simulation && (

@@ -1,5 +1,9 @@
 // Source keys are the Russian copy; technical IDs and CSV columns remain stable.
 export const translations: Record<string, { en: string; kk: string }> = {
+  "Почасовые значения выбранного выпуска, детализация по часам и выгрузка CSV.": {
+    en: "Hourly values of the selected run, hour-by-hour detail and CSV export.",
+    kk: "Таңдалған шығарылымның сағаттық мәндері, сағат бойынша егжей-тегжей және CSV экспорты.",
+  },
   "Нужна помощь?": {
     en: "Need help?",
     kk: "Көмек керек пе?",
