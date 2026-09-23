@@ -28,6 +28,7 @@ export function TurbineStage({
   temperature,
   onFocus,
   disabled = false,
+  operationalStop = false,
 }: {
   mode: SceneMode
   focus: SceneFocus
@@ -35,6 +36,7 @@ export function TurbineStage({
   power: number
   temperature: number
   onFocus: (focus: SceneFocus) => void
+  operationalStop?: boolean
   disabled?: boolean
 }) {
   const { tr, number } = useI18n()
@@ -58,6 +60,7 @@ export function TurbineStage({
     wind,
     power,
     temperature,
+    operationalStop,
     playing: false,
     reducedMotion: true,
   })
@@ -68,10 +71,20 @@ export function TurbineStage({
       wind,
       power,
       temperature,
+      operationalStop,
       playing,
       reducedMotion,
     }
-  }, [mode, focus, wind, power, temperature, playing, reducedMotion])
+  }, [
+    mode,
+    focus,
+    wind,
+    power,
+    temperature,
+    playing,
+    reducedMotion,
+    operationalStop,
+  ])
   useEffect(() => {
     const host = hostRef.current
     if (!host) return

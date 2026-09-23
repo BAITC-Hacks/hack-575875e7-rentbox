@@ -14,6 +14,7 @@ import {
   type SceneFocus,
   type SceneMode,
 } from "@/lib/turbine-scene"
+import { SimulationHour } from "@/components/simulation-controls"
 import { TurbineStage } from "@/components/turbine-stage"
 
 type Props = {
@@ -140,7 +141,13 @@ export function TurbineHero({
           <br />
           <span>{tr(copy.subtitle)}</span>
         </h2>
-        <p>{tr(copy.detail)}</p>
+        <p>
+          {tr(
+            point.simulation && mode === "icing"
+              ? "Учебный сценарий обледенения: слой на лопастях показывает заданные генератором условия. Потери рассчитаны условно."
+              : copy.detail
+          )}
+        </p>
         <div className="wc-turbine-live-metrics">
           <div>
             <span>
@@ -173,6 +180,7 @@ export function TurbineHero({
             </strong>
           </div>
         </div>
+        <SimulationHour point={point} />
         {(mode === "cutaway" || mode === "sensors") && (
           <div className="wc-twin-details">
             <div
@@ -209,7 +217,9 @@ export function TurbineHero({
               <strong>{tr("Иллюстрация обледенения")}</strong>
               <span>
                 {tr(
-                  "Нет данных о влажности и датчика льда. Потери мощности и вероятность не рассчитаны."
+                  point.simulation
+                    ? "Влажность и потери заданы генератором. Реальных измерений льда нет."
+                    : "Нет данных о влажности и датчика льда. Потери мощности и вероятность не рассчитаны."
                 )}
               </span>
             </div>
@@ -225,6 +235,7 @@ export function TurbineHero({
         wind={point.wind}
         power={point.forecast}
         temperature={point.temperature}
+        operationalStop={Boolean(point.simulation) && point.forecast === 0}
         disabled={busy}
         onFocus={(next) => {
           if (["rotor", "gearbox", "generator"].includes(next))

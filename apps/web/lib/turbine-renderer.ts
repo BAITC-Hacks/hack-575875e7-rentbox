@@ -11,6 +11,7 @@ export type TurbineSceneSettings = {
   mode: SceneMode
   focus: SceneFocus
   wind: number
+  operationalStop?: boolean
   power: number
   temperature: number
   playing: boolean
@@ -430,7 +431,8 @@ export async function mountTurbineScene(
             ease
           )
         else if (s.playing)
-          rotor.rotation.z -= dt * illustrativeRotorSpeed(s.wind, s.mode)
+          rotor.rotation.z -=
+            dt * illustrativeRotorSpeed(s.wind, s.mode, s.operationalStop)
       }
       if (s.playing && flow.visible) {
         for (let i = 2; i < coords.length; i += 3) {
@@ -444,6 +446,7 @@ export async function mountTurbineScene(
         .toArray()
         .map((v) => v.toFixed(2))
         .join(",")
+      host.dataset.operationalStop = String(Boolean(s.operationalStop))
       host.dataset.cutaway = String(cut)
       host.dataset.ice = String(frozen)
       renderer.render(scene, camera)

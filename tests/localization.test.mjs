@@ -58,11 +58,13 @@ test("UI translation keys and scene metadata have both requested languages", () 
     "forecast-focus.tsx",
     "locale-provider.tsx",
     "appearance-provider.tsx",
+    "simulation-controls.tsx",
   ]
   const files = componentFiles
     .map((f) => `apps/web/components/${f}`)
     .concat([
       "apps/web/lib/turbine-scene.ts",
+      "apps/web/lib/wind-simulation.ts",
       "apps/web/lib/forecast-insights.ts",
     ])
   for (const file of files) {

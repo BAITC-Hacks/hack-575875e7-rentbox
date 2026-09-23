@@ -1,3 +1,5 @@
+import type { SimulationConfig, SimulationReading } from "./wind-simulation"
+
 export type TurbineId = "all" | "t1" | "t2"
 export type Horizon = 24 | 48
 export type ForecastPoint = {
@@ -10,11 +12,13 @@ export type ForecastPoint = {
   upper: number
   wind: number
   temperature: number
+  simulation?: SimulationReading
 }
 export type ForecastRun = {
   id: string
   date: string
-  horizon: Horizon
+  horizon: number
+  simulation?: SimulationConfig
   turbine: TurbineId
   revision: number
   completedAt: string
