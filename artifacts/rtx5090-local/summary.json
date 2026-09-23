@@ -1,0 +1,54 @@
+{
+  "candidates": 600,
+  "failed": 0,
+  "best": {
+    "name": "rtx5090_0149",
+    "config": {
+      "family": "mlp",
+      "features": "point",
+      "hidden": [
+        128,
+        64,
+        32
+      ],
+      "loss_name": "mae",
+      "learning_rate": 0.0007,
+      "weight_decay": 0.02,
+      "batch_size": 4096,
+      "seed": 202,
+      "epochs": 400,
+      "patience": 40
+    },
+    "metrics": {
+      "n": 5732,
+      "mae": 0.16397771325394891,
+      "rmse": 0.2537353412787094,
+      "bias": -0.007820417181944855
+    }
+  },
+  "ensemble": {
+    "members": [
+      "rtx5090_0149",
+      "rtx5090_0073",
+      "rtx5090_0443",
+      "rtx5090_0143",
+      "rtx5090_0046",
+      "rtx5090_0521",
+      "rtx5090_0009",
+      "rtx5090_0185",
+      "rtx5090_0227",
+      "rtx5090_0431"
+    ],
+    "metrics": {
+      "n": 5732,
+      "mae": 0.16327409743997937,
+      "rmse": 0.2505999909196664,
+      "bias": -0.011786453474790862
+    }
+  },
+  "selection_months": [
+    "2025-11",
+    "2025-12"
+  ],
+  "note": "Validation is November-December 2025. January 2026 is the untouched holdout."
+}

@@ -1,0 +1,47 @@
+{
+  "digest": "ef2d1a21adecc344",
+  "generation": 5,
+  "config": {
+    "family": "mlp",
+    "features": "point",
+    "bias_correction": true,
+    "hidden": [
+      512,
+      256,
+      128
+    ],
+    "loss_name": "mae",
+    "learning_rate": 0.002,
+    "weight_decay": 0.01,
+    "batch_size": 4096,
+    "seed": 8974,
+    "epochs": 500,
+    "patience": 50
+  },
+  "metrics": {
+    "n": 5732,
+    "mae": 0.16371784073059217,
+    "rmse": 0.2524062213852394,
+    "bias": -0.017417437372351994
+  },
+  "bias_offset": -6e-05,
+  "fit": {
+    "device": "cuda",
+    "gpu": "NVIDIA GeForce RTX 5090 Laptop GPU",
+    "best_epoch": 7,
+    "epochs_run": 57,
+    "seed": 8974,
+    "hidden": [
+      512,
+      256,
+      128
+    ],
+    "loss": "mae",
+    "learning_rate": 0.002,
+    "weight_decay": 0.01,
+    "batch_size": 4096,
+    "seconds": 2.17,
+    "inference_backend": "numpy; no GPU or torch needed"
+  },
+  "seconds": 2.3
+}
