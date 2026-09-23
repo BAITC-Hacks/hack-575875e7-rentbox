@@ -3,8 +3,10 @@
 #
 #   ./scripts/train.sh            найти NVIDIA и обучить на ней, иначе на CPU
 #   ./scripts/train.sh --cpu      принудительно на CPU
+#   ./scripts/train.sh --gpu      требовать доступную CUDA
 #   ./scripts/train.sh --check    только показать, что будет использовано
 #   ./scripts/train.sh --cloud    подсказка по запуску на NVIDIA Brev
+#   ./scripts/train.sh --output DIR  каталог новых результатов
 #
 # Своё окружение с PyTorch: PYTHON=/path/to/python ./scripts/train.sh
 #
@@ -22,16 +24,25 @@ info()  { printf '  %s\n' "$*"; }
 PYTHON="${PYTHON:-}"
 WORKER=""
 FORCE_CPU=0
+FORCE_GPU=0
+CHECK_ONLY=0
+CLOUD_HINT=0
+OUTPUT_DIR=""
+
+die() { red "$*"; exit 1; }
 
 find_python() {
     # Готовое окружение можно указать явно: PYTHON=/path/to/python ./scripts/train.sh
-    if [ -n "${PYTHON:-}" ] && [ -x "${PYTHON}" ]; then
+    if [ -n "$PYTHON" ]; then
+        command -v "$PYTHON" >/dev/null 2>&1 || [ -x "$PYTHON" ] || die "Не найден указанный PYTHON: $PYTHON"
         return 0
     fi
-    for candidate in backend/.venv/bin/python .venv/bin/python python3.12 python3; do
+    for candidate in .venv/bin/python ../.venv/bin/python backend/.venv/bin/python python3.12 python3; do
         if command -v "$candidate" >/dev/null 2>&1 || [ -x "$candidate" ]; then
-            PYTHON="$candidate"
-            return 0
+            if "$candidate" -c 'import sys; assert sys.version_info >= (3, 12); import numpy, pandas, sklearn, pyarrow, httpx, duckdb, joblib' >/dev/null 2>&1; then
+                PYTHON="$candidate"
+                return 0
+            fi
         fi
     done
     red "Не найден Python 3.12."
@@ -42,6 +53,9 @@ find_python() {
 # Что доступно: GPU, только CPU, или PyTorch вовсе не установлен.
 detect_device() {
     find_python
+    "$PYTHON" -c 'import sys; assert sys.version_info >= (3, 12), "нужен Python 3.12+"; import numpy, pandas, sklearn, pyarrow, httpx, duckdb, joblib' \
+        || die "В выбранном Python отсутствуют зависимости обучения. Используйте requirements.txt и Python 3.12+."
+    info "Python: $PYTHON"
     local report
     report=$("$PYTHON" - <<'PROBE' 2>/dev/null || true
 try:
@@ -80,7 +94,13 @@ PROBE
             WORKER="cpu"
             ;;
     esac
-    [ "$FORCE_CPU" -eq 1 ] && WORKER="cpu" && info "  · Принудительный режим CPU"
+    if [ "$FORCE_CPU" -eq 1 ]; then
+        WORKER="cpu"
+        info "  · Принудительный режим CPU"
+    fi
+    if [ "$FORCE_GPU" -eq 1 ] && [ "$WORKER" != "local-gpu" ]; then
+        die "Запрошена GPU, но CUDA в выбранном Python недоступна."
+    fi
     return 0
 }
 
@@ -91,56 +111,59 @@ cloud_hint() {
   Результат обучения — те же NumPy-веса, инференс остаётся на CPU.
 
   1. Активировать промокод Brev и создать инстанс с GPU.
-  2. Скопировать пакет обучения и uv на инстанс:
-       scp artifacts/brev-training.tar.gz <instance>:/tmp/
-       scp $(command -v uv) <instance>:/tmp/wind-uv
-  3. Запустить на инстансе: bash scripts/brev-train.sh
-  4. Забрать artifacts/search/cloud-gpu/ обратно в репозиторий
-     и выполнить: python -m scripts.train_gfs finalize
+  2. Использовать этот же репозиторий с data/incoming и data/gfs-runs.
+     В Python должны быть зависимости requirements.txt и PyTorch с CUDA.
+  3. Запустить на инстансе:
+       PYTHON=.venv/bin/python ./scripts/train.sh --gpu --output artifacts/retraining/brev
+  4. Забрать каталог artifacts/retraining/brev/model обратно на рабочую машину.
 
-  Скрипт на инстансе откажется работать, если CUDA недоступна:
-  тихого отката на CPU в облаке быть не должно.
+  --gpu проверяет CUDA до обучения. Готовая конкурсная модель сохраняется.
+  Ключ build.nvidia.com используется для вызовов NIM; этот скрипт обучает
+  модель на GPU инстанса и не отправляет обучение в NIM API.
 TEXT
 }
 
-for argument in "$@"; do
-    case "$argument" in
+while [ $# -gt 0 ]; do
+    case "$1" in
         --cpu)   FORCE_CPU=1 ;;
-        --check) bold "Проверка устройства"; detect_device; green "Будет использовано: $WORKER"; exit 0 ;;
-        --cloud) cloud_hint; exit 0 ;;
-        -h|--help) sed -n '2,10p' "$0" | sed 's/^# \?//'; exit 0 ;;
-        *) red "Неизвестный аргумент: $argument"; exit 1 ;;
+        --gpu)   FORCE_GPU=1 ;;
+        --check) CHECK_ONLY=1 ;;
+        --cloud) CLOUD_HINT=1 ;;
+        --output) [ $# -ge 2 ] || die "После --output нужен каталог"; OUTPUT_DIR="$2"; shift ;;
+        -h|--help) sed -n '2,11p' "$0" | sed 's/^# \?//'; exit 0 ;;
+        *) die "Неизвестный аргумент: $1" ;;
     esac
+    shift
 done
+[ "$FORCE_CPU" -eq 0 ] || [ "$FORCE_GPU" -eq 0 ] || die "Выберите один режим: --cpu или --gpu"
+if [ "$CLOUD_HINT" -eq 1 ]; then cloud_hint; exit 0; fi
 
 bold "Подготовка к обучению"
 detect_device
+if [ "$CHECK_ONLY" -eq 1 ]; then green "Будет использовано: $WORKER"; exit 0; fi
 printf '\n'
 
 if [ "$WORKER" = "cpu" ]; then
-    info "Обучение на CPU занимает заметно больше времени, чем на GPU."
-    info "Готовая модель уже есть в artifacts/gfs-model — переобучение не обязательно."
-    printf '  Продолжить? [y/N]: '
-    read -r answer
-    case "$answer" in
-        y|Y|д|Д) ;;
-        *) info "Отменено."; exit 0 ;;
-    esac
-    printf '\n'
+    info "Будут обучены CPU-модели; PyTorch и NVIDIA API для этого режима не нужны."
 fi
+OUTPUT_DIR="${OUTPUT_DIR:-artifacts/retraining/$(date -u +%Y%m%dT%H%M%SZ)-$$}"
+SEARCH_DIR="$OUTPUT_DIR/search"
+MODEL_DIR="$OUTPUT_DIR/model"
+info "Новые результаты: $OUTPUT_DIR"
 
 bold "Подготовка обучающей выборки"
-"$PYTHON" -m scripts.train_gfs prepare
+"$PYTHON" -m scripts.train_gfs prepare --search-dir "$SEARCH_DIR"
 
 printf '\n'
 bold "Обучение, воркер $WORKER"
-"$PYTHON" -m scripts.train_gfs train --worker "$WORKER"
+"$PYTHON" -m scripts.train_gfs train --worker "$WORKER" --search-dir "$SEARCH_DIR"
 
 printf '\n'
 bold "Отбор модели и январская оценка"
-"$PYTHON" -m scripts.train_gfs finalize
+"$PYTHON" -m scripts.train_gfs finalize --workers "$WORKER" --search-dir "$SEARCH_DIR" --output-dir "$MODEL_DIR"
 
 printf '\n'
-green "Готово. Модель и метрики — в artifacts/gfs-model/"
-info "Отчёт: artifacts/gfs-model/report.md"
-info "Проверить прогноз: ./run.sh demo"
+green "Готово. Модель и метрики — в $MODEL_DIR/"
+info "Январская оценка: $MODEL_DIR/metrics.json"
+info "Прогноз февраля: $MODEL_DIR/february_replay.csv"
+info "Рабочая модель artifacts/gfs-model сохраняется; новый результат можно выбрать через RENTBOX_MODEL_DIR."

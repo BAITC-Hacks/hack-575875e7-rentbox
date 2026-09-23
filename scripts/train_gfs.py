@@ -14,6 +14,7 @@ import subprocess
 import sys
 import time
 from datetime import datetime, timezone
+from pathlib import Path
 
 import joblib
 import numpy as np
@@ -124,7 +125,13 @@ def train_worker(worker: str, shard: int, shards: int) -> None:
                 continue
             name = f"{worker}_{index:03d}"
             report = output / (name + ".json")
-            if report.exists() and (output / (name + ".joblib")).exists():
+            if (report.exists() and (output / (name + ".joblib")).exists()
+                    and (output / (name + ".predictions.npy")).exists()):
+                previous = json.loads(report.read_text())
+                if (previous.get("config") != config
+                        or any(previous.get(k) != protocol[k]
+                               for k in ["train_sha256", "validation_sha256"])):
+                    raise ValueError(f"Candidate {name} belongs to another search; use a new output directory")
                 continue
             started = time.monotonic()
             model, fit = fit_config(config, train, protocol, valid)
@@ -142,22 +149,31 @@ def train_worker(worker: str, shard: int, shards: int) -> None:
             print(json.dumps({"name": name, "mae": info["metrics"]["mae"], "seconds": info["seconds"]}), flush=True)
 
 
-def finalize() -> None:
+def finalize(workers: list[str] | None = None) -> None:
+    workers = list(dict.fromkeys(workers or ["cpu", "local-gpu", "cloud-gpu"]))
     protocol = json.loads((SEARCH / "protocol.json").read_text())
+    if hashlib.sha256((SEARCH / "validation.parquet").read_bytes()).hexdigest() != protocol["validation_sha256"]:
+        raise ValueError("Validation pack changed")
     valid = pd.read_parquet(SEARCH / "validation.parquet")
-    for worker in ["cpu", "local-gpu", "cloud-gpu"]:
+    candidates = []
+    for worker in workers:
         expected = len(configurations(worker))
-        complete = len(list((SEARCH / worker).glob(worker + "_*.json")))
-        if complete != expected:
-            raise ValueError(f"Search incomplete: {worker} {complete}/{expected}")
+        reports = [SEARCH / worker / f"{worker}_{index:03d}.json" for index in range(expected)]
+        complete = [path for path in reports if path.exists()
+                    and path.with_suffix(".joblib").exists()
+                    and path.with_suffix(".predictions.npy").exists()]
+        if len(complete) != expected:
+            raise ValueError(f"Search incomplete: {worker} {len(complete)}/{expected}")
+        candidates.extend(complete)
     rows = []
-    for path in sorted(SEARCH.glob("*/*.json")):
+    for path in sorted(candidates):
         info = json.loads(path.read_text())
         if "config" not in info:
             continue
         if any(info[k] != protocol[k] for k in ["train_sha256", "validation_sha256"]):
             raise ValueError("Candidate data mismatch")
-        info["prediction_path"] = str(path.with_suffix(".predictions.npy").relative_to(ROOT))
+        prediction_path = path.with_suffix(".predictions.npy").resolve()
+        info["prediction_path"] = str(prediction_path.relative_to(ROOT) if prediction_path.is_relative_to(ROOT) else prediction_path)
         rows.append(info)
     if not rows:
         raise ValueError("No completed GFS candidates")
@@ -170,7 +186,7 @@ def finalize() -> None:
         ensembles.append({"count": count, "members": [r["name"] for r in rows[:count]], "metrics": metrics(valid.power, prediction)})
     chosen = min(ensembles, key=lambda e:e["metrics"]["mae"])
     members = rows[:chosen["count"]]
-    selection = {"candidate_count": len(rows), "ranking": rows, "ensembles": ensembles,
+    selection = {"candidate_count": len(rows), "workers": workers, "ranking": rows, "ensembles": ensembles,
                  "chosen": chosen, "selection_months": protocol["selection_months"], "january_used_for_search": False}
     (SEARCH / "selection.json").write_text(json.dumps(selection, indent=2) + "\n")
     print(json.dumps({"selection_frozen": chosen}), flush=True)
@@ -196,7 +212,7 @@ def finalize() -> None:
         "created_at": datetime.now(timezone.utc).isoformat(), "data": provenance,
         "training_rows": len(before_february), "training_data_available_until": (before_february.valid_time.max() + pd.Timedelta(hours=1)).isoformat(),
         "time_assumptions": {"utc_offset_hours": 5, "timestamp_convention": "start", "daily_issue_hour": 23, "confirmed_by_organizers": False},
-        "search": {"candidate_count": len(rows), "selection_months": protocol["selection_months"], "chosen": chosen, "january_used_for_search": False},
+        "search": {"candidate_count": len(rows), "workers": workers, "selection_months": protocol["selection_months"], "chosen": chosen, "january_used_for_search": False},
         "january": january_score, "weather": protocol["weather"],
         "note": "January is a development monitoring month; February actuals are absent. Availability checked against original GFS S3 object timestamps."}
     validation_metadata = copy.deepcopy(metadata)
@@ -216,16 +232,24 @@ def finalize() -> None:
 
 
 def main() -> None:
+    global SEARCH, OUTPUT
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("action", choices=["prepare", "train", "finalize"])
     parser.add_argument("--worker", choices=["cpu", "local-gpu", "cloud-gpu"], default="local-gpu")
+    parser.add_argument("--workers", nargs="+", choices=["cpu", "local-gpu", "cloud-gpu"],
+                        help="Completed workers included in finalize; defaults to all three")
+    parser.add_argument("--search-dir", type=Path, default=SEARCH)
+    parser.add_argument("--output-dir", type=Path, default=OUTPUT)
     parser.add_argument("--shards", type=int, default=4)
     parser.add_argument("--shard", type=int)
     args = parser.parse_args()
+    SEARCH, OUTPUT = args.search_dir.resolve(), args.output_dir.resolve()
+    if args.shards < 1 or (args.shard is not None and not 0 <= args.shard < args.shards):
+        parser.error("shards must be positive and shard must be in [0, shards)")
     if args.action == "prepare":
         prepare()
     elif args.action == "finalize":
-        finalize()
+        finalize(args.workers)
     elif args.shard is not None:
         train_worker(args.worker, args.shard, args.shards)
     else:
@@ -235,7 +259,7 @@ def main() -> None:
         for shard in range(args.shards):
             with (output / f"shard-{shard}.log").open("w") as logfile:
                 jobs.append(subprocess.Popen([sys.executable, "-m", "scripts.train_gfs", "train", "--worker", args.worker,
-                    "--shards", str(args.shards), "--shard", str(shard)], cwd=ROOT,
+                    "--shards", str(args.shards), "--shard", str(shard), "--search-dir", str(SEARCH)], cwd=ROOT,
                     env={**os.environ, "OPENBLAS_NUM_THREADS": "2", "OMP_NUM_THREADS": "2"}, stdout=logfile, stderr=subprocess.STDOUT))
         codes = [job.wait() for job in jobs]
         print(json.dumps({"worker": args.worker, "exit_codes": codes}), flush=True)
