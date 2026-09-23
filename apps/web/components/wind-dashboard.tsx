@@ -1,7 +1,5 @@
 "use client"
 
-import { LanguageSelector, useI18n } from "@/components/locale-provider"
-
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react"
 import {
   ArrowRight,
@@ -19,7 +17,6 @@ import {
   Download,
   ExternalLink,
   FileClock,
-  FlaskConical,
   Gauge,
   History,
   Info,
@@ -38,13 +35,8 @@ import {
   Zap,
   type LucideIcon,
 } from "lucide-react"
-import {
-  AppearanceControls,
-  useAppearance,
-} from "@/components/appearance-provider"
 import { TurbineHero } from "@/components/turbine-hero"
-import { ForecastInsights, ForecastTimeline } from "@/components/forecast-focus"
-import type { ForecastInsight } from "@/lib/forecast-insights"
+import { PlatformHelper } from "@/components/platform-helper"
 import { Button } from "@workspace/ui/components/button"
 import { Card } from "@workspace/ui/components/card"
 import { Badge } from "@workspace/ui/components/badge"
@@ -73,7 +65,10 @@ import {
   AGENT_STEPS,
   TEST_DATES,
   clamp,
+  formatDate,
+  formatTimestamp,
   getMetrics,
+  number,
   type ForecastPoint,
   type Horizon,
   type TurbineId,
@@ -93,21 +88,6 @@ import {
   type SceneMode,
 } from "@/lib/turbine-scene"
 
-import {
-  SimulationControl,
-  SimulationSummary,
-  SimulationMethod,
-  SimulationHour,
-  newSimulationSeed,
-} from "@/components/simulation-controls"
-import {
-  generateSimulation,
-  simulationCsv,
-  simulationSummary,
-  OPERATING_LABELS,
-  type SimulationConfig,
-} from "@/lib/wind-simulation"
-
 type View = DashboardView
 const NAV: { id: View; label: string; icon: LucideIcon }[] = [
   { id: "overview", label: "Обзор", icon: LayoutDashboard },
@@ -124,14 +104,9 @@ const PAGE_TITLES: Record<View, string> = {
   history: "История запусков",
 }
 function Hint({ children }: { children: ReactNode }) {
-  const { tr } = useI18n()
-
   return (
     <Tooltip>
-      <TooltipTrigger
-        className="wc-hint"
-        aria-label={tr("Подробнее о показателе")}
-      >
+      <TooltipTrigger className="wc-hint" aria-label="Подробнее о показателе">
         <Info size={14} />
       </TooltipTrigger>
       <TooltipContent>{children}</TooltipContent>
@@ -145,9 +120,7 @@ function Sparkline({
   values: number[]
   color?: string
 }) {
-  const { tr } = useI18n()
-  if (!values.length)
-    return <span className="wc-muted">{tr("Нет данных")}</span>
+  if (!values.length) return <span className="wc-muted">Нет данных</span>
   const min = Math.min(...values),
     max = Math.max(...values)
   const line = values
@@ -254,17 +227,12 @@ function ForecastChart({
   inspectedHour,
 }: {
   data: ForecastPoint[]
-  horizon: number
+  horizon: Horizon
   setHorizon: (h: Horizon) => void
   busy: boolean
   onInspect: (index: number) => void
   inspectedHour: number
 }) {
-  const { tr, number, formatDate } = useI18n()
-  const { highVisibility } = useAppearance()
-  const simulated = Boolean(data[0]?.simulation)
-  const chartLeft = highVisibility ? 66 : 45
-
   const [active, setActive] = useState<number | null>(null)
   const [showActual, setShowActual] = useState(true)
   const [showRange, setShowRange] = useState(true)
@@ -281,8 +249,7 @@ function ForecastChart({
     observer.observe(element)
     return () => observer.disconnect()
   }, [])
-  const x = (i: number) =>
-    chartLeft + (i / (data.length - 1)) * (plotWidth - chartLeft - 16)
+  const x = (i: number) => 45 + (i / (data.length - 1)) * (plotWidth - 61)
   const y = (v: number) => 222 - v * 1.95
   const path = (key: "forecast" | "actual" | "lower" | "upper") =>
     data
@@ -306,64 +273,40 @@ function ForecastChart({
       <div className="wc-panel-heading">
         <div>
           <h2>
-            {tr(simulated ? "Симуляция выработки" : "Почасовой прогноз")}
-            <span className="wc-tag">
-              {horizon} {tr("ч")}
-            </span>
+            Почасовой прогноз<span className="wc-tag">{horizon} ч</span>
           </h2>
-          <p>{tr("Нормализованная мощность · % от номинальной")}</p>
+          <p>Нормализованная мощность · % от номинальной</p>
         </div>
-        {!simulated && (
-          <div className="wc-segment" aria-label={tr("Горизонт прогноза")}>
-            {([24, 48] as const).map((h) => (
-              <button
-                key={h}
-                disabled={busy}
-                aria-pressed={horizon === h}
-                onClick={() => {
-                  setActive(null)
-                  setHorizon(h)
-                }}
-              >
-                {h} {h === 24 ? tr("часа") : tr("часов")}
-              </button>
-            ))}
-          </div>
-        )}
-      </div>
-      <div
-        className="wc-chart-selected"
-        aria-label={tr("Выбранный час прогноза")}
-      >
-        <span>
-          {formatDate(data[inspectedHour]!.date)} ·{" "}
-          <b>{data[inspectedHour]!.hour}</b>
-        </span>
-        <strong>
-          {number(data[inspectedHour]!.forecast)}
-          <small>{tr("% мощности")}</small>
-        </strong>
-        <span>
-          <Wind size={13} />
-          {number(data[inspectedHour]!.wind)} {tr("м/с")}
-        </span>
+        <div className="wc-segment" aria-label="Горизонт прогноза">
+          {([24, 48] as const).map((h) => (
+            <button
+              key={h}
+              disabled={busy}
+              aria-pressed={horizon === h}
+              onClick={() => {
+                setActive(null)
+                setHorizon(h)
+              }}
+            >
+              {h} {h === 24 ? "часа" : "часов"}
+            </button>
+          ))}
+        </div>
       </div>
       <div className="wc-chart-legend">
         <span>
           <i className="wc-legend-line green" />
-          {tr("Прогноз")}
+          Прогноз
         </span>
-        {!simulated && (
-          <button
-            onClick={() => setShowActual(!showActual)}
-            disabled={!hasActual}
-            aria-pressed={hasActual && showActual}
-            className={!showActual ? "off" : ""}
-          >
-            <i className="wc-legend-line dashed" />
-            {hasActual ? tr("Факт") : tr("Факт отсутствует")}
-          </button>
-        )}
+        <button
+          onClick={() => setShowActual(!showActual)}
+          disabled={!hasActual}
+          aria-pressed={hasActual && showActual}
+          className={!showActual ? "off" : ""}
+        >
+          <i className="wc-legend-line dashed" />
+          {hasActual ? "Факт" : "Факт отсутствует"}
+        </button>
         <button
           onClick={() => setShowRange(!showRange)}
           disabled={!hasRange}
@@ -371,7 +314,7 @@ function ForecastChart({
           className={!showRange ? "off" : ""}
         >
           <i className="wc-legend-range" />
-          {hasRange ? tr("Диапазон прогноза") : tr("Диапазон не рассчитан")}
+          {hasRange ? "Диапазон прогноза" : "Диапазон не рассчитан"}
         </button>
         <span className="wc-chart-zone">UTC+5</span>
       </div>
@@ -379,9 +322,7 @@ function ForecastChart({
         className="wc-chart"
         ref={chartRef}
         role="group"
-        aria-label={tr(
-          "Интерактивный график прогноза. Используйте стрелки для выбора часа."
-        )}
+        aria-label="Интерактивный график прогноза. Используйте стрелки для выбора часа."
         tabIndex={0}
         onKeyDown={(e) => {
           if (e.key === "ArrowRight" || e.key === "ArrowLeft") {
@@ -400,9 +341,8 @@ function ForecastChart({
           inspect(
             clamp(
               Math.round(
-                ((((e.clientX - rect.left) / rect.width) * plotWidth -
-                  chartLeft) /
-                  (plotWidth - chartLeft - 16)) *
+                ((((e.clientX - rect.left) / rect.width) * plotWidth - 45) /
+                  (plotWidth - 61)) *
                   (data.length - 1)
               ),
               0,
@@ -414,49 +354,32 @@ function ForecastChart({
         onBlur={() => setActive(null)}
       >
         <svg
-          viewBox={`0 0 ${plotWidth} ${highVisibility ? 290 : 264}`}
+          viewBox={`0 0 ${plotWidth} 264`}
           role="img"
-          aria-label={tr("Почасовой прогноз выработки на {v0} ч", {
-            v0: horizon,
-          })}
+          aria-label={`Почасовой прогноз выработки на ${horizon} ч`}
         >
           <defs>
             <linearGradient id="forecast-fill" x1="0" y1="0" x2="0" y2="1">
-              <stop
-                stopColor="var(--wc-chart-forecast, #8caf6a)"
-                stopOpacity=".18"
-              />
-              <stop
-                offset="1"
-                stopColor="var(--wc-chart-forecast, #8caf6a)"
-                stopOpacity="0"
-              />
+              <stop stopColor="#8caf6a" stopOpacity=".18" />
+              <stop offset="1" stopColor="#8caf6a" stopOpacity="0" />
             </linearGradient>
           </defs>
           {[0, 25, 50, 75, 100].map((tick) => (
             <g key={tick}>
               <line
-                x1={chartLeft}
+                x1="45"
                 x2={plotWidth - 16}
                 y1={y(tick)}
                 y2={y(tick)}
-                stroke="var(--wc-chart-grid, #e9ece7)"
+                stroke="#e9ece7"
                 strokeDasharray="3 5"
               />
-              <text
-                x={chartLeft - 12}
-                y={y(tick) + 4}
-                textAnchor="end"
-                className="wc-axis"
-              >
+              <text x="30" y={y(tick) + 4} textAnchor="end" className="wc-axis">
                 {tick}%
               </text>
             </g>
           ))}
-          {(highVisibility && plotWidth < 460
-            ? [0, 0.5, 1]
-            : [0, 0.25, 0.5, 0.75, 1]
-          ).map((part) => {
+          {[0, 0.25, 0.5, 0.75, 1].map((part) => {
             const i = Math.round(part * (data.length - 1))
             return (
               <text
@@ -469,8 +392,8 @@ function ForecastChart({
                 className="wc-axis"
               >
                 {data[i]!.hour}
-                {(simulated || i % 24 === 0) && (
-                  <tspan x={x(i)} dy={highVisibility ? 22 : 13}>
+                {i % 24 === 0 && (
+                  <tspan x={x(i)} dy="13">
                     {formatDate(data[i]!.date)}
                   </tspan>
                 )}
@@ -478,21 +401,15 @@ function ForecastChart({
             )
           })}
           <path
-            d={`${path("forecast")} L${plotWidth - 16},222 L${chartLeft},222 Z`}
+            d={`${path("forecast")} L${plotWidth - 16},222 L45,222 Z`}
             fill="url(#forecast-fill)"
           />
-          {hasRange && showRange && (
-            <path
-              d={area}
-              fill="var(--wc-chart-range, #9abb7c)"
-              opacity=".17"
-            />
-          )}
-          {hasActual && showActual && !simulated && (
+          {hasRange && showRange && <path d={area} fill="#9abb7c" opacity=".17" />}
+          {hasActual && showActual && (
             <path
               d={path("actual")}
               fill="none"
-              stroke="var(--wc-chart-actual, #9fa59c)"
+              stroke="#9fa59c"
               strokeWidth="1.8"
               strokeDasharray="5 5"
               strokeLinecap="round"
@@ -501,39 +418,27 @@ function ForecastChart({
           <path
             d={path("forecast")}
             fill="none"
-            stroke="var(--wc-chart-forecast, #48794d)"
+            stroke="#48794d"
             strokeWidth="2.7"
             strokeLinejoin="round"
             strokeLinecap="round"
           />
           {selected && (
             <g>
-              <rect
-                x={
-                  x(displayIndex) -
-                  Math.max(5, (plotWidth - chartLeft - 16) / data.length / 2)
-                }
-                y="20"
-                width={Math.max(10, (plotWidth - chartLeft - 16) / data.length)}
-                height="203"
-                fill="var(--wc-chart-selection, #e0ebd5)"
-                opacity=".65"
-              />
-
               <line
                 x1={x(displayIndex)}
                 x2={x(displayIndex)}
                 y1="20"
                 y2="223"
-                stroke="var(--wc-chart-forecast, #718d62)"
+                stroke="#718d62"
                 strokeDasharray="3 4"
               />
               <circle
                 cx={x(displayIndex)}
                 cy={y(selected.forecast)}
                 r="5"
-                fill="var(--wc-chart-forecast, #48794d)"
-                stroke="var(--wc-chart-dot-outline, white)"
+                fill="#48794d"
+                stroke="white"
                 strokeWidth="3"
               />
             </g>
@@ -548,38 +453,29 @@ function ForecastChart({
               {formatDate(selected.date)} · {selected.hour}
             </b>
             <span>
-              {tr("Прогноз")}
-              <strong>{number(selected.forecast)}%</strong>
+              Прогноз<strong>{number(selected.forecast)}%</strong>
             </span>
-            {showActual && !simulated && (
+            {showActual && (
               <span>
-                {tr("Факт")}
+                Факт
                 <strong>
                   {selected.actual === null
-                    ? tr("Нет данных")
+                    ? "Нет данных"
                     : `${number(selected.actual)}%`}
                 </strong>
               </span>
             )}
             <span>
-              {tr("Ветер")}
-              <strong>
-                {number(selected.wind)} {tr("м/с")}
-              </strong>
+              Ветер<strong>{number(selected.wind)} м/с</strong>
             </span>
           </div>
         )}
       </div>
       <div className="wc-chart-bottom">
         <span>
-          <ShieldCheck size={14} />{" "}
-          {tr(
-            simulated
-              ? "Синтетическая симуляция · не прогноз погоды"
-              : "Архивный прогноз без данных из будущего"
-          )}
+          <ShieldCheck size={14} /> Архивный прогноз без данных из будущего
         </span>
-        <span>{tr("Выбранный час связан с 3D-моделью")}</span>
+        <span>Выбранный час связан с 3D-моделью</span>
       </div>
     </Card>
   )
@@ -599,27 +495,18 @@ function AgentPanel({
   expanded?: boolean
   onInspect?: (index: number) => void
 }) {
-  const { tr } = useI18n()
-
   return (
     <Card className={`wc-card wc-agent-card ${expanded ? "expanded" : ""}`}>
       <div className="wc-panel-heading">
         <div>
           <h2>
-            <Sparkles size={17} /> {tr("AI-агент")}
+            <Sparkles size={17} /> AI-агент
           </h2>
-          <p>
-            {run
-              ? tr("Режим {v0} · {v1}%", {
-                  v0: run.agent_mode,
-                  v1: Math.round(run.progress * 100),
-                })
-              : tr("Ожидает запуска")}
-          </p>
+          <p>{run ? `Режим ${run.agent_mode} · ${Math.round(run.progress * 100)}%` : "Ожидает запуска"}</p>
         </div>
         <span className={`wc-status ${busy ? "processing" : ""}`}>
           <i />
-          {run ? tr(statusLabel[run.status]) : tr("Нет запуска")}
+          {run ? statusLabel[run.status] : "Нет запуска"}
         </span>
       </div>
       <div className="wc-agent-steps">
@@ -649,24 +536,16 @@ function AgentPanel({
                       disabled={busy}
                       onClick={() => onInspect(i)}
                     >
-                      {tr(item.title)}
+                      {item.title}
                     </button>
                   ) : (
-                    tr(item.title)
+                    item.title
                   )}
                 </h3>
-                {expanded && <p>{tr(item.detail)}</p>}
+                {expanded && <p>{item.detail}</p>}
               </div>
               <span className="wc-step-result">
-                {current
-                  ? tr("Выполняется")
-                  : done
-                    ? tr("Готово")
-                    : run?.status === "failed"
-                      ? tr("Не выполнено")
-                      : run
-                        ? tr("В очереди")
-                        : tr("Ожидает запуска")}
+                {current ? "Выполняется" : done ? "Готово" : run?.status === "failed" ? "Не выполнено" : run ? "В очереди" : "Ожидает запуска"}
               </span>
             </div>
           )
@@ -675,18 +554,12 @@ function AgentPanel({
       <div className="wc-agent-footer">
         <span>
           <span className="wc-live-dot" />
-          {run?.status === "completed"
-            ? tr("6 из 6 этапов выполнено")
-            : run?.status === "failed"
-              ? tr("Расчёт завершился ошибкой")
-              : busy
-                ? tr("Выполняется расчёт")
-                : tr("Запустите прогноз")}
+          {run?.status === "completed" ? "6 из 6 этапов выполнено" : run?.status === "failed" ? "Расчёт завершился ошибкой" : busy ? "Выполняется расчёт" : "Запустите прогноз"}
         </span>
         <button
           className="wc-text-button"
           onClick={onOpen}
-          aria-label={tr("Открыть журнал агента")}
+          aria-label="Открыть журнал агента"
         >
           <ArrowUpRight size={17} />
         </button>
@@ -697,92 +570,44 @@ function AgentPanel({
 function WeatherPanel({
   data,
   onInspect,
-  inspectedHour,
 }: {
-  inspectedHour: number
   data: ForecastPoint[]
   onInspect: (index: number) => void
 }) {
-  const { tr, number, formatDate } = useI18n()
-
-  const point = data[inspectedHour]!
-  const dayOffset = Math.floor(inspectedHour / 24) * 24
-  const selected = [0, 6, 12, 18]
-    .map((i) => data[dayOffset + i]!)
-    .filter(Boolean)
+  const selected = [0, 6, 12, 18].map((i) => data[i]!)
   return (
     <Card className="wc-card wc-weather-card">
       <div className="wc-panel-heading">
         <div>
-          <h2>{tr("Погодные условия")}</h2>
-          <p>
-            {tr(point.simulation ? "Симуляция" : "Прогнозные часы ·")}{" "}
-            {formatDate(point.date)}
-          </p>
+          <h2>Погодные условия</h2>
+          <p>Прогнозные часы · {formatDate(data[0]!.date)}</p>
         </div>
         <CloudSun size={21} className="wc-muted" />
       </div>
-      <button
-        type="button"
-        className="wc-weather-selected"
-        onClick={() => onInspect(inspectedHour)}
-        aria-label={tr("Показать погодный сценарий выбранного часа {v0}", {
-          v0: point.hour,
-        })}
-      >
-        <span>
-          <small>
-            {formatDate(point.date)} · {point.hour}
-          </small>
-          <strong>
-            {number(point.temperature)}
-            <small>°C</small>
-          </strong>
-        </span>
-        <span>
-          <Wind size={18} />
-          <strong>
-            {number(point.wind)} {tr("м/с")}
-          </strong>
-          <small>{tr("Выбранный час")}</small>
-        </span>
-      </button>
       <div className="wc-weather-hours">
         {selected.map((p, i) => (
           <button
             type="button"
             key={p.timestamp}
-            aria-pressed={inspectedHour === dayOffset + i * 6}
-            onClick={() => onInspect(dayOffset + i * 6)}
-            aria-label={tr("Показать погодный сценарий на {v0}", {
-              v0: p.hour,
-            })}
+            onClick={() => onInspect(i * 6)}
+            aria-label={`Показать погодный сценарий на ${p.hour}`}
           >
             <span>{p.hour}</span>
             <Info className="wc-weather-icon" />
             <strong>{number(p.temperature, 0)}°</strong>
             <small>
               <Wind size={12} />
-              {number(p.wind)} {tr("м/с")}
+              {number(p.wind)} м/с
             </small>
           </button>
         ))}
       </div>
       <div className="wc-weather-note">
         <ArrowUpRight size={15} />
-        <span>
-          {tr(
-            point.simulation
-              ? "Состояние погоды задано сценарием"
-              : "Ветер и температура — из прогноза погоды, использованного моделью"
-          )}
-        </span>
+        <span>Ветер и температура — из прогноза погоды, использованного моделью</span>
         <Hint>
-          {tr(
-            point.simulation
-              ? "Ветер и температура сгенерированы сценарием симуляции. Это не прогноз погоды."
-              : "Скорость ветра на 100 м и температура на 2 м берутся из того же выпуска NOAA GFS, по которому рассчитана мощность. Для станции показано среднее двух турбин."
-          )}
+          Скорость ветра на 100 м и температура на 2 м берутся из того же выпуска NOAA GFS, по
+          которому рассчитана мощность. Для станции показано среднее двух турбин.
         </Hint>
       </div>
     </Card>
@@ -791,35 +616,29 @@ function WeatherPanel({
 function TurbinePanel({
   forecast,
   turbines,
-  simulationData,
   onOpen,
 }: {
   forecast: ApiForecast | null
   turbines: DashboardTurbine[]
-  simulationData?: Record<TurbineId, ForecastPoint[]> | null
   onOpen: (id: TurbineId) => void
 }) {
-  const { tr, number } = useI18n()
-
   return (
     <Card className="wc-card wc-turbines-card">
       <div className="wc-panel-heading">
         <div>
           <h2>
-            {tr("Турбины станции")} <span className="wc-count">2</span>
+            Турбины станции <span className="wc-count">2</span>
           </h2>
-          <p>{tr("Средняя выработка на выбранном горизонте")}</p>
+          <p>Средняя выработка на выбранном горизонте</p>
         </div>
         <span className="wc-status">
           <i />
-          {tr("Доступны")}
+          Доступны
         </span>
       </div>
       <div className="wc-turbine-list">
         {turbines.map((t) => {
-          const m = getMetrics(
-            simulationData?.[t.id] ?? forecastPoints(forecast, t.id)
-          )
+          const m = getMetrics(forecastPoints(forecast, t.id))
           return (
             <button
               className="wc-turbine-row"
@@ -830,9 +649,9 @@ function TurbinePanel({
                 <Wind size={25} strokeWidth={1.3} />
               </span>
               <span className="wc-turbine-name">
-                <strong>{tr(t.name)}</strong>
+                <strong>{t.name}</strong>
                 <small>
-                  {t.code} · {tr(t.location)}
+                  {t.code} · {t.location}
                 </small>
               </span>
               <span className="wc-turbine-value">
@@ -850,8 +669,7 @@ function TurbinePanel({
         })}
       </div>
       <div className="wc-subtle-note">
-        <Info size={13} />{" "}
-        {tr("Мощность нормализована относительно номинальной.")}
+        <Info size={13} /> Мощность нормализована относительно номинальной.
       </div>
     </Card>
   )
@@ -863,89 +681,32 @@ function SourcesPanel({
   forecast: ApiForecast | null
   detailed?: boolean
 }) {
-  const { tr, formatTimestamp } = useI18n()
   const sources = forecastSources(forecast)
   return (
     <Card className="wc-card wc-source-card">
       <div className="wc-panel-heading">
-        <div>
-          <h2>{tr("Источники прогноза")}</h2>
-          <p>{tr("Метаданные выбранного расчёта · время UTC+5")}</p>
-        </div>
+        <div><h2>Источники прогноза</h2><p>Метаданные выбранного расчёта · время UTC+5</p></div>
         <ShieldCheck size={22} className="wc-green" />
       </div>
-      {!forecast && (
-        <p className="wc-subtle-note">
-          {tr(
-            "Откройте сохранённый расчёт или запустите прогноз, чтобы увидеть его источники."
-          )}
-        </p>
-      )}
+      {!forecast && <p className="wc-subtle-note">Откройте сохранённый расчёт или запустите прогноз, чтобы увидеть его источники.</p>}
       {sources.map((source) => (
-        <div
-          className="wc-provenance"
-          key={`${source.source_id}:${source.sha256}`}
-        >
-          <div>
-            <span>{tr("Погодный источник")}</span>
-            <strong>
-              {source.provider} · {source.model}
-            </strong>
-          </div>
-          <div>
-            <span>{tr("Выпуск погоды")}</span>
-            <strong>
-              {source.initialization_time
-                ? formatTimestamp(source.initialization_time)
-                : tr("Точное время неизвестно")}
-            </strong>
-          </div>
-          <div>
-            <span>{tr("Публикация погоды")}</span>
-            <strong>
-              {source.available_at
-                ? formatTimestamp(source.available_at)
-                : tr("Оценка доступности по каждому часу")}
-            </strong>
-          </div>
-          {detailed && (
-            <>
-              <div>
-                <span>{tr("Архив скачан")}</span>
-                <strong>{formatTimestamp(source.retrieved_at)}</strong>
-              </div>
-              <div>
-                <span>SHA-256</span>
-                <code className="wc-hash">{source.sha256}</code>
-              </div>
-              <p>{source.availability_basis}</p>
-            </>
-          )}
+        <div className="wc-provenance" key={`${source.source_id}:${source.sha256}`}>
+          <div><span>Погодный источник</span><strong>{source.provider} · {source.model}</strong></div>
+          <div><span>Выпуск погоды</span><strong>{source.initialization_time ? formatTimestamp(source.initialization_time) : "Точное время неизвестно"}</strong></div>
+          <div><span>Публикация погоды</span><strong>{source.available_at ? formatTimestamp(source.available_at) : "Оценка доступности по каждому часу"}</strong></div>
+          {detailed && <>
+            <div><span>Архив скачан</span><strong>{formatTimestamp(source.retrieved_at)}</strong></div>
+            <div><span>SHA-256</span><code className="wc-hash">{source.sha256}</code></div>
+            <p>{source.availability_basis}</p>
+          </>}
         </div>
       ))}
-      {forecast && (
-        <div className="wc-provenance">
-          <div>
-            <span>{tr("Момент решения")}</span>
-            <strong>{formatTimestamp(forecast.as_of)}</strong>
-          </div>
-          <div>
-            <span>{tr("Обучающие данные доступны до")}</span>
-            <strong>
-              {formatTimestamp(forecast.training_data_available_until)}
-            </strong>
-          </div>
-          <div>
-            <span>{tr("Версия модели")}</span>
-            <code className="wc-hash">{forecast.model_version}</code>
-          </div>
-          <p>
-            {tr(
-              "Дата скачивания архива отличается от исторического времени публикации. Для Previous Runs доступность остаётся оценочной."
-            )}
-          </p>
-        </div>
-      )}
+      {forecast && <div className="wc-provenance">
+        <div><span>Момент решения</span><strong>{formatTimestamp(forecast.as_of)}</strong></div>
+        <div><span>Обучающие данные доступны до</span><strong>{formatTimestamp(forecast.training_data_available_until)}</strong></div>
+        <div><span>Версия модели</span><code className="wc-hash">{forecast.model_version}</code></div>
+        <p>Дата скачивания архива отличается от исторического времени публикации. Для Previous Runs доступность остаётся оценочной.</p>
+      </div>}
     </Card>
   )
 }
@@ -960,8 +721,6 @@ function HourlyTable({
   onPoint: (p: ForecastPoint) => void
   compact?: boolean
 }) {
-  const { tr, number, formatDate } = useI18n()
-
   const [page, setPage] = useState(0)
   const [query, setQuery] = useState("")
   const [sort, setSort] = useState<"time" | "high" | "low">("time")
@@ -976,7 +735,7 @@ function HourlyTable({
       : [...points].sort((a, b) =>
           sort === "high" ? b.forecast - a.forecast : a.forecast - b.forecast
         )
-  }, [data, query, sort, formatDate])
+  }, [data, query, sort])
   const size = compact ? 6 : 12
   const pages = Math.max(1, Math.ceil(filtered.length / size))
   const currentPage = Math.min(page, pages - 1)
@@ -985,21 +744,15 @@ function HourlyTable({
     <Card className="wc-card wc-table-card">
       <div className="wc-panel-heading">
         <div>
-          <h2>{tr("Почасовая детализация")}</h2>
-          <p>
-            {tr(
-              data[0]?.simulation
-                ? "Синтетическая симуляция · шаг 1 час · UTC+5"
-                : "Прогноз мощности · факт февраля отсутствует · UTC+5"
-            )}
-          </p>
+          <h2>Почасовая детализация</h2>
+          <p>Прогноз мощности · факт февраля отсутствует · UTC+5</p>
         </div>
         <div className="wc-table-actions">
           <label className="wc-search">
             <Search size={15} />
             <input
-              aria-label={tr("Найти час")}
-              placeholder={tr("Найти час…")}
+              aria-label="Найти час"
+              placeholder="Найти час…"
               value={query}
               onChange={(e) => {
                 setQuery(e.target.value)
@@ -1008,15 +761,14 @@ function HourlyTable({
             />
           </label>
           <Button variant="outline" size="sm" onClick={onExport}>
-            <Download size={14} />{" "}
-            {tr(data[0]?.simulation ? "Экспорт" : "CSV выпуска")}
+            <Download size={14} /> CSV выпуска
           </Button>
         </div>
       </div>
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>{tr("Дата и время")}</TableHead>
+            <TableHead>Дата и время</TableHead>
             <TableHead>
               <button
                 className="wc-sort"
@@ -1025,23 +777,19 @@ function HourlyTable({
                   setPage(0)
                 }}
               >
-                {tr(data[0]?.simulation ? "Мощность, %" : "Прогноз, %")}{" "}
+                Прогноз, %{" "}
                 <ChevronDown
                   size={13}
                   className={sort === "low" ? "wc-rotate" : ""}
                 />
               </button>
             </TableHead>
+            <TableHead>Факт, %</TableHead>
+            <TableHead>Отклонение, п.п.</TableHead>
+            <TableHead>Ветер, м/с</TableHead>
+            <TableHead>Температура</TableHead>
             <TableHead>
-              {tr(data[0]?.simulation ? "Порывы, м/с" : "Факт, %")}
-            </TableHead>
-            <TableHead>
-              {tr(data[0]?.simulation ? "Состояние" : "Отклонение, п.п.")}
-            </TableHead>
-            <TableHead>{tr("Ветер, м/с")}</TableHead>
-            <TableHead>{tr("Температура")}</TableHead>
-            <TableHead>
-              <span className="sr-only">{tr("Подробности")}</span>
+              <span className="sr-only">Подробности</span>
             </TableHead>
           </TableRow>
         </TableHeader>
@@ -1063,20 +811,10 @@ function HourlyTable({
                 </span>
               </TableCell>
               <TableCell>
-                {p.simulation
-                  ? number(p.simulation.gust)
-                  : p.actual === null
-                    ? "—"
-                    : number(p.actual)}
+                {p.actual === null ? "—" : number(p.actual)}
               </TableCell>
               <TableCell>
-                {p.simulation ? (
-                  tr(
-                    p.simulation.stoppedTurbines > 0 && p.forecast > 0
-                      ? "Частичная остановка"
-                      : OPERATING_LABELS[p.simulation.state]
-                  )
-                ) : p.actual === null ? (
+                {p.actual === null ? (
                   "—"
                 ) : (
                   <span
@@ -1098,10 +836,7 @@ function HourlyTable({
                 <button
                   className="wc-icon-button"
                   onClick={() => onPoint(p)}
-                  aria-label={tr("Подробнее за {v0}, {v1}", {
-                    v0: p.hour,
-                    v1: formatDate(p.date),
-                  })}
+                  aria-label={`Подробнее за ${p.hour}, ${formatDate(p.date)}`}
                 >
                   <MoreHorizontal size={17} />
                 </button>
@@ -1113,11 +848,9 @@ function HourlyTable({
               <TableCell colSpan={7}>
                 <div className="wc-empty">
                   <Search size={24} />
-                  <strong>{tr("Ничего не найдено")}</strong>
-                  <span>{tr("Попробуйте время в формате 09:00.")}</span>
-                  <button onClick={() => setQuery("")}>
-                    {tr("Сбросить поиск")}
-                  </button>
+                  <strong>Ничего не найдено</strong>
+                  <span>Попробуйте время в формате 09:00.</span>
+                  <button onClick={() => setQuery("")}>Сбросить поиск</button>
                 </div>
               </TableCell>
             </TableRow>
@@ -1127,15 +860,15 @@ function HourlyTable({
       <div className="wc-pagination">
         <span>
           {filtered.length ? currentPage * size + 1 : 0}–
-          {Math.min((currentPage + 1) * size, filtered.length)} {tr("из")}{" "}
-          {filtered.length} {tr("часов")}
+          {Math.min((currentPage + 1) * size, filtered.length)} из{" "}
+          {filtered.length} часов
         </span>
         <div>
           <button
             className="wc-icon-button"
             disabled={currentPage === 0}
             onClick={() => setPage(currentPage - 1)}
-            aria-label={tr("Предыдущая страница")}
+            aria-label="Предыдущая страница"
           >
             <ChevronLeft size={15} />
           </button>
@@ -1146,7 +879,7 @@ function HourlyTable({
             className="wc-icon-button"
             disabled={currentPage === pages - 1}
             onClick={() => setPage(currentPage + 1)}
-            aria-label={tr("Следующая страница")}
+            aria-label="Следующая страница"
           >
             <ChevronRight size={15} />
           </button>
@@ -1156,9 +889,6 @@ function HourlyTable({
   )
 }
 export function WindDashboard() {
-  const { tr, number, formatDate, formatTimestamp } = useI18n()
-  const { highVisibility } = useAppearance()
-
   const [view, setView] = useState<View>("overview")
   const [sceneOverride, setSceneOverride] = useState<SceneMode | null>(null)
   const [sceneFocus, setSceneFocus] = useState<SceneFocus>("gearbox")
@@ -1174,7 +904,6 @@ export function WindDashboard() {
   const [refreshWeather, setRefreshWeather] = useState(false)
   const [downloadError, setDownloadError] = useState<string | null>(null)
   const [downloading, setDownloading] = useState(false)
-  const [simulation, setSimulation] = useState<SimulationConfig | null>(null)
   const [mobileMenu, setMobileMenu] = useState(false)
   const sidebarRef = useRef<HTMLElement>(null)
   const menuButtonRef = useRef<HTMLButtonElement>(null)
@@ -1214,46 +943,20 @@ export function WindDashboard() {
       menuButton?.focus()
     }
   }, [mobileMenu])
-  const [toast, setToast] = useState<{
-    key: string
-    values?: Record<string, string | number>
-  } | null>(null)
+  const [toast, setToast] = useState("")
   const [dialog, setDialog] = useState<
     "help" | "notifications" | TurbineId | null
   >(null)
   const [selectedPoint, setSelectedPoint] = useState<ForecastPoint | null>(null)
   const forecast = dashboard.forecast
-  const result =
-    forecast &&
-    forecastDate(forecast.as_of) === date &&
-    forecast.horizon_hours === horizon
-      ? forecast
-      : null
-  const simulationData = useMemo(
-    () => (simulation ? generateSimulation(simulation) : null),
-    [simulation]
-  )
-  const data = useMemo(
-    () => simulationData?.[turbine] ?? forecastPoints(result, turbine),
-    [simulationData, result, turbine]
-  )
-  const simulatedMetrics = simulation
-    ? simulationSummary(data, simulation, turbine)
-    : null
+  const result = forecast && forecastDate(forecast.as_of) === date && forecast.horizon_hours === horizon
+    ? forecast : null
+  const helperRun = run && forecastDate(run.as_of) === date && run.horizon_hours === horizon
+    && turbineIds(turbine).every((id) => run.turbine_ids.includes(id)) ? run : null
+  const data = useMemo(() => forecastPoints(result, turbine), [result, turbine])
   const metrics = useMemo(() => getMetrics(data), [data])
   const inspectedHour = resolveHour(sceneHour, data.length)
-  const automaticScene =
-    simulation && (view === "overview" || view === "forecast")
-      ? (data[inspectedHour]?.simulation?.icingLoss ?? 0) > 1
-        ? "icing"
-        : "flow"
-      : null
-  const sceneMode = resolveSceneMode(
-    view,
-    sceneOverride ?? automaticScene,
-    busy,
-    step
-  )
+  const sceneMode = resolveSceneMode(view, sceneOverride, busy, step)
   function chooseScene(mode: SceneMode) {
     setSceneOverride(mode)
     if (mode === "cutaway") setSceneFocus("gearbox")
@@ -1264,18 +967,16 @@ export function WindDashboard() {
     const temperature = data[index]?.temperature
     chooseScene(temperature != null && temperature <= 0 ? "icing" : "sensors")
     if (temperature != null && temperature > 0) setSceneFocus("temperature")
-    document.getElementById("turbine-system-view")?.scrollIntoView({
-      behavior: highVisibility ? "auto" : "smooth",
-      block: "start",
-    })
+    document
+      .getElementById("turbine-system-view")
+      ?.scrollIntoView({ behavior: "smooth", block: "start" })
   }
   function inspectSource(focus: SceneFocus) {
     chooseScene("sensors")
     setSceneFocus(focus)
-    document.getElementById("turbine-system-view")?.scrollIntoView({
-      behavior: highVisibility ? "auto" : "smooth",
-      block: "start",
-    })
+    document
+      .getElementById("turbine-system-view")
+      ?.scrollIntoView({ behavior: "smooth", block: "start" })
   }
   function inspectAgentStep(index: number) {
     setInspectedStep(index)
@@ -1287,29 +988,14 @@ export function WindDashboard() {
   )
   const currentNav = NAV.find((item) => item.id === view)!
   const selectedTurbine = turbines.find((item) => item.id === dialog)
-  const turbineMetrics = selectedTurbine
-    ? getMetrics(
-        simulationData?.[selectedTurbine.id] ??
-          forecastPoints(result, selectedTurbine.id)
-      )
-    : null
-  const warnings = [
-    ...new Set([
-      ...(summary?.warnings ?? []),
-      ...(run?.warnings ?? []),
-      ...(result?.analysis.warnings ?? []),
-    ]),
-  ]
-  const dates = TEST_DATES.includes(date)
-    ? TEST_DATES
-    : [...TEST_DATES, date].sort()
+  const turbineMetrics = selectedTurbine ? getMetrics(forecastPoints(result, selectedTurbine.id)) : null
+  const warnings = [...new Set([...(summary?.warnings ?? []), ...(run?.warnings ?? []), ...(result?.analysis.warnings ?? [])])]
+  const dates = TEST_DATES.includes(date) ? TEST_DATES : [...TEST_DATES, date].sort()
   const error = dashboard.error ?? downloadError
-  const selectedWeather = selectedPoint
-    ? pointSources(result, turbine, selectedPoint.timestamp)
-    : []
+  const selectedWeather = selectedPoint ? pointSources(result, turbine, selectedPoint.timestamp) : []
   useEffect(() => {
     if (!toast) return
-    const timer = window.setTimeout(() => setToast(null), 4500)
+    const timer = window.setTimeout(() => setToast(""), 4500)
     return () => window.clearTimeout(timer)
   }, [toast])
   function navigate(next: View) {
@@ -1317,30 +1003,10 @@ export function WindDashboard() {
     setSceneOverride(null)
     setSceneFocus(next === "sources" ? "wind" : "gearbox")
     setMobileMenu(false)
-    window.scrollTo({ top: 0, behavior: highVisibility ? "auto" : "smooth" })
-  }
-  function runSimulation(config: SimulationConfig) {
-    if (busy) return
-    setSimulation(config)
-    setSceneHour(0)
-    setSelectedPoint(null)
-    navigate("overview")
-    setToast({
-      key: "Симуляция готова. Это синтетический сценарий, он не сохраняется в истории сервера.",
-    })
-  }
-  function resetSimulation() {
-    setSimulation(null)
-    setSceneHour(0)
-    setSelectedPoint(null)
-    setSceneOverride(null)
+    window.scrollTo({ top: 0, behavior: "smooth" })
   }
   function refresh() {
     if (busy || dashboard.loading) return
-    if (simulation) {
-      runSimulation({ ...simulation, seed: newSimulationSeed() })
-      return
-    }
     setDownloadError(null)
     setSelectedPoint(null)
     setSceneHour(0)
@@ -1348,16 +1014,11 @@ export function WindDashboard() {
       openRun(run)
       return
     }
-    void dashboard.start({
-      as_of: issueForDate(date),
-      horizon_hours: horizon,
-      turbine_ids: turbineIds(turbine),
-      refresh_weather: refreshWeather,
-    })
+    void dashboard.start({ as_of: issueForDate(date), horizon_hours: horizon,
+      turbine_ids: turbineIds(turbine), refresh_weather: refreshWeather })
   }
   function openRun(item: ApiRun) {
     if (busy) return
-    setSimulation(null)
     setDate(forecastDate(item.as_of))
     setHorizon(item.horizon_hours)
     setTurbine(turbineSelection(item.turbine_ids))
@@ -1366,90 +1027,24 @@ export function WindDashboard() {
     navigate(item.status === "completed" ? "forecast" : "agent")
     void dashboard.open(item.run_id)
   }
-  const analytical = view === "overview" || view === "forecast"
-  function selectHour(index: number) {
-    setSceneHour(resolveHour(index, data.length))
-    if (simulation) setSceneOverride(null)
-  }
-  function inspectInsight(insight: ForecastInsight) {
-    selectHour(insight.index)
-    if (insight.kind === "cold") {
-      const temperature = insight.point.temperature
-      chooseScene(temperature != null && temperature <= 0 ? "icing" : "sensors")
-      setSceneFocus("temperature")
-    } else chooseScene("flow")
-    const target =
-      insight.kind === "cold"
-        ? document.querySelector(".wc-turbine-hero")
-        : document.getElementById("turbine-system-view")
-    target?.scrollIntoView({
-      behavior: highVisibility ? "auto" : "smooth",
-      block: "nearest",
-    })
-  }
-  const turbineScene = (
-    <TurbineHero
-      compact={analytical}
-      view={view}
-      turbine={turbine}
-      mode={sceneMode}
-      focus={sceneFocus}
-      point={data[inspectedHour] ?? null}
-      hourIndex={inspectedHour}
-      data={data}
-      busy={busy}
-      step={busy ? step : inspectedStep}
-      onMode={chooseScene}
-      onFocus={setSceneFocus}
-      onHour={setSceneHour}
-      onStep={inspectAgentStep}
-    />
-  )
   async function exportCsv() {
-    if (simulation) {
-      // Synthetic scenario: built in the browser, never stored on the server.
-      const url = URL.createObjectURL(
-        new Blob([simulationCsv(data, simulation, turbine)], {
-          type: "text/csv;charset=utf-8;",
-        })
-      )
-      const anchor = document.createElement("a")
-      anchor.href = url
-      anchor.download = `windcast-simulation-${simulation.scenario}-${simulation.startDate}-${simulation.endDate}-${turbine}-${simulation.seed}.csv`
-      document.body.appendChild(anchor)
-      anchor.click()
-      anchor.remove()
-      window.setTimeout(() => URL.revokeObjectURL(url), 1000)
-      setToast({
-        key: "CSV с прогнозом на {v0} ч готов.",
-        values: { v0: data.length },
-      })
-      return
-    }
     if (!result || !run || downloading) return
     setDownloading(true)
     setDownloadError(null)
     try {
       await downloadForecast(run.run_id)
-      setToast({ key: "CSV выбранного выпуска скачан." })
+      setToast("CSV выбранного выпуска скачан.")
     } catch (cause) {
-      setDownloadError(
-        cause instanceof Error ? cause.message : tr("Не удалось скачать CSV.")
-      )
-    } finally {
-      setDownloading(false)
-    }
+      setDownloadError(cause instanceof Error ? cause.message : "Не удалось скачать CSV.")
+    } finally { setDownloading(false) }
   }
   return (
     <TooltipProvider delay={200}>
-      <div className="wc-app wc-design-v2">
-        <a className="wc-skip-link" href="#main-content">
-          {tr("Перейти к содержимому")}
-        </a>
+      <div className="wc-app">
         {mobileMenu && (
           <button
             className="wc-mobile-backdrop"
-            aria-label={tr("Закрыть меню")}
+            aria-label="Закрыть меню"
             onClick={() => setMobileMenu(false)}
           />
         )}
@@ -1458,7 +1053,7 @@ export function WindDashboard() {
           ref={sidebarRef}
           role={mobileMenu ? "dialog" : undefined}
           aria-modal={mobileMenu || undefined}
-          aria-label={mobileMenu ? tr("Меню навигации") : undefined}
+          aria-label={mobileMenu ? "Меню навигации" : undefined}
           className={`wc-sidebar ${mobileMenu ? "open" : ""}`}
         >
           <a
@@ -1482,13 +1077,13 @@ export function WindDashboard() {
               <Wind size={18} />
             </span>
             <span>
-              <strong>{tr("Ветровая станция")}</strong>
-              <small>{tr("Казахстан · 2 турбины")}</small>
+              <strong>Ветровая станция</strong>
+              <small>Казахстан · 2 турбины</small>
             </span>
             <ChevronDown size={15} />
           </button>
-          <span className="wc-nav-label">{tr("РАБОЧЕЕ ПРОСТРАНСТВО")}</span>
-          <nav aria-label={tr("Основная навигация")}>
+          <span className="wc-nav-label">РАБОЧЕЕ ПРОСТРАНСТВО</span>
+          <nav aria-label="Основная навигация">
             {NAV.map(({ id, label, icon: Icon }) => (
               <button
                 key={id}
@@ -1497,7 +1092,7 @@ export function WindDashboard() {
                 onClick={() => navigate(id)}
               >
                 <Icon size={18} strokeWidth={1.6} />
-                <span>{tr(label)}</span>
+                <span>{label}</span>
                 {id === "agent" && <span className="wc-nav-ai">AI</span>}
                 {view === id && <span className="wc-nav-active-dot" />}
               </button>
@@ -1506,26 +1101,24 @@ export function WindDashboard() {
           <div className="wc-sidebar-bottom">
             <div className="wc-sidebar-note">
               <span className="wc-note-kicker">
-                <Sparkles size={13} /> {tr("АГЕНТНЫЙ ПРОГНОЗ")}
+                <Sparkles size={13} /> AGENTIC FORECASTING
               </span>
               <p>
-                {tr("Увидеть энергию.")}
+                Увидеть энергию.
                 <br />
-                {tr("Раньше, чем она появится.")}
+                Раньше, чем она появится.
               </p>
               <TurbineArt compact />
             </div>
             <button className="wc-nav-item" onClick={() => setDialog("help")}>
-              <CircleHelp size={18} strokeWidth={1.6} />
-              {tr("О проекте")}
+              <CircleHelp size={18} strokeWidth={1.6} />Помощник
               <ArrowUpRight size={14} />
             </button>
             <div className="wc-sidebar-version">
               <span>
-                <i className="wc-live-dot" />{" "}
-                {health ? tr("API подключён") : tr("Нет подключения")}
+                <i className="wc-live-dot" /> {health ? "API подключён" : "Нет подключения"}
               </span>
-              <span>v2</span>
+              <span>v0.3</span>
             </div>
           </div>
         </aside>
@@ -1538,62 +1131,46 @@ export function WindDashboard() {
                 aria-expanded={mobileMenu}
                 aria-controls="wc-sidebar"
                 onClick={() => setMobileMenu(true)}
-                aria-label={tr("Открыть меню")}
+                aria-label="Открыть меню"
               >
                 <Menu size={21} />
               </button>
               <LayoutDashboard size={16} />
-              <span>{tr("Рабочее пространство")}</span>
+              <span>Рабочее пространство</span>
               <ChevronRight size={13} />
-              <strong>{tr(currentNav.label)}</strong>
+              <strong>{currentNav.label}</strong>
             </div>
             <div className="wc-topbar-right">
-              <AppearanceControls />
-              <LanguageSelector />
               <Badge className="wc-demo-badge">
                 <span />
-                {tr(
-                  health?.research_mode
-                    ? "Исследовательский режим"
-                    : health
-                      ? "Реальные прогнозы"
-                      : "Ожидание API"
-                )}
+                {health?.research_mode ? "Исследовательский режим" : health ? "Реальные прогнозы" : "Ожидание API"}
               </Badge>
               <span className="wc-topbar-divider" />
               <button
                 className="wc-icon-button wc-bell"
                 onClick={() => setDialog("notifications")}
-                aria-label={tr("Уведомления")}
+                aria-label="Уведомления"
               >
                 <Bell size={18} />
                 <i />
               </button>
               <button
                 className="wc-avatar"
-                aria-label={tr("О демонстрационном проекте")}
+                aria-label="Открыть помощник Windcast"
                 onClick={() => setDialog("help")}
               >
                 WC
               </button>
             </div>
           </header>
-          <main className="wc-main" id="main-content" tabIndex={-1}>
+          <main className="wc-main">
             <div className="wc-page-title">
               <div>
-                <div className="wc-eyebrow">{tr("ЭНЕРГИЯ ПОД КОНТРОЛЕМ")}</div>
-                <h1>{tr(PAGE_TITLES[view])}</h1>
-                <p>
-                  {tr("Прогноз, погода и работа AI-агента — в одном месте.")}
-                </p>
+                <div className="wc-eyebrow">ЭНЕРГИЯ ПОД КОНТРОЛЕМ</div>
+                <h1>{PAGE_TITLES[view]}</h1>
+                <p>Прогноз, погода и работа AI-агента — в одном месте.</p>
               </div>
               <div className="wc-heading-actions">
-                <SimulationControl
-                  active={simulation}
-                  date={date}
-                  disabled={busy}
-                  onRun={runSimulation}
-                />
                 <Button
                   variant="outline"
                   className="wc-export-button"
@@ -1601,31 +1178,19 @@ export function WindDashboard() {
                   disabled={!data.length || busy || downloading}
                 >
                   <Download size={15} />
-                  {tr(simulation ? "Экспорт" : "CSV выпуска")}
+                  CSV выпуска
                 </Button>
                 <Button
                   className="wc-primary-button"
                   onClick={refresh}
-                  disabled={
-                    busy ||
-                    (!simulation &&
-                      (dashboard.loading ||
-                        !health?.agent_configured ||
-                        !health.time_configuration_ready))
-                  }
+                  disabled={busy || dashboard.loading || !health?.agent_configured || !health.time_configuration_ready}
                 >
                   {busy ? (
                     <LoaderCircle size={15} className="wc-spin" />
                   ) : (
                     <RefreshCw size={15} />
                   )}
-                  {busy
-                    ? tr("Выполняется расчёт…")
-                    : simulation
-                      ? tr("Новая реализация")
-                      : run && ["running", "queued"].includes(run.status)
-                        ? tr("Проверить запуск")
-                        : tr("Рассчитать прогноз")}
+                  {busy ? "Выполняется расчёт…" : run && ["running", "queued"].includes(run.status) ? "Проверить запуск" : "Рассчитать прогноз"}
                 </Button>
               </div>
             </div>
@@ -1634,7 +1199,7 @@ export function WindDashboard() {
                 <label className="wc-select-label">
                   <Wind size={15} />
                   <select
-                    aria-label={tr("Выбор турбины")}
+                    aria-label="Выбор турбины"
                     value={turbine}
                     disabled={busy}
                     onChange={(e) => {
@@ -1642,372 +1207,163 @@ export function WindDashboard() {
                       setSelectedPoint(null)
                     }}
                   >
-                    <option value="all">{tr("Все турбины")}</option>
-                    {turbines.map((item) => (
-                      <option key={item.id} value={item.id}>
-                        {tr(item.name)}
+                    <option value="all">Все турбины</option>
+                    {turbines.map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}
+                  </select>
+                  <ChevronDown size={13} />
+                </label>
+                <label className="wc-select-label date">
+                  <CalendarDays size={15} />
+                  <select
+                    aria-label="Дата прогноза"
+                    value={date}
+                    disabled={busy}
+                    onChange={(e) => {
+                      setDate(e.target.value)
+                      setSelectedPoint(null)
+                    }}
+                  >
+                    {dates.map((d) => (
+                      <option key={d} value={d}>
+                        {formatDate(d, true)} 2026
                       </option>
                     ))}
                   </select>
                   <ChevronDown size={13} />
                 </label>
-                {!simulation && (
-                  <>
-                    <label className="wc-select-label date">
-                      <CalendarDays size={15} />
-                      <select
-                        aria-label={tr("Дата прогноза")}
-                        value={date}
-                        disabled={busy}
-                        onChange={(e) => {
-                          setDate(e.target.value)
-                          setSelectedPoint(null)
-                        }}
-                      >
-                        {dates.map((d) => (
-                          <option key={d} value={d}>
-                            {formatDate(d, true)} 2026
-                          </option>
-                        ))}
-                      </select>
-                      <ChevronDown size={13} />
-                    </label>
-                    <div
-                      className="wc-segment"
-                      aria-label={tr("Горизонт расчёта")}
-                    >
-                      {([24, 48] as const).map((hours) => (
-                        <button
-                          key={hours}
-                          disabled={busy}
-                          aria-pressed={horizon === hours}
-                          onClick={() => {
-                            setHorizon(hours)
-                            setSelectedPoint(null)
-                          }}
-                        >
-                          {hours} {tr("ч")}
-                        </button>
-                      ))}
-                    </div>
-                    <label className="wc-refresh-weather">
-                      <input
-                        type="checkbox"
-                        checked={refreshWeather}
-                        disabled={busy}
-                        onChange={(event) =>
-                          setRefreshWeather(event.target.checked)
-                        }
-                      />
-                      {tr("Обновить архив погоды")}
-                    </label>
-                  </>
-                )}
-                <span className="wc-archive-label">
-                  <History size={13} />{" "}
-                  {tr(simulation ? "Режим симуляции" : "Ретроспективный режим")}
-                </span>
-              </div>
-              {!simulation && (
-                <span className="wc-issued">
-                  {tr("Расчёт на")}{" "}
-                  <strong>{formatTimestamp(issuedAt)}</strong>
-                  <Hint>
-                    {tr(
-                      "Момент исторического прогноза, UTC+5. Все погодные входные данные доступны до этого времени."
-                    )}
-                  </Hint>
-                </span>
-              )}
-            </div>
-            {dashboard.loading && (
-              <div className="wc-info-banner" role="status">
-                <LoaderCircle className="wc-spin" size={18} />
-                {tr("Подключение к серверу…")}
-              </div>
-            )}
-            {error && (
-              <div className="wc-info-banner wc-error-banner" role="alert">
-                <Info size={20} />
-                <div>
-                  <strong>{tr("Не удалось выполнить действие")}</strong>
-                  <p>{error}</p>
+                <div className="wc-segment" aria-label="Горизонт расчёта">
+                  {([24, 48] as const).map((hours) => <button key={hours} disabled={busy} aria-pressed={horizon === hours} onClick={() => { setHorizon(hours); setSelectedPoint(null) }}>{hours} ч</button>)}
                 </div>
-                <Button
-                  variant="outline"
-                  disabled={busy}
-                  onClick={() => {
-                    setDownloadError(null)
-                    void dashboard.reload()
-                  }}
-                >
-                  {tr("Обновить состояние")}
-                </Button>
+                <label className="wc-refresh-weather"><input type="checkbox" checked={refreshWeather} disabled={busy} onChange={(event) => setRefreshWeather(event.target.checked)} />Обновить архив погоды</label>
+                <span className="wc-archive-label">
+                  <History size={13} /> Ретроспективный режим
+                </span>
               </div>
-            )}
-            {health && !health.time_configuration_ready && (
-              <div className="wc-info-banner">
-                <Info size={20} />
-                <p>
-                  {tr(
-                    "Время исходных измерений не настроено. Расчёт недоступен до настройки сервера."
-                  )}
-                </p>
-              </div>
-            )}
-            {health && !health.agent_configured && (
-              <div className="wc-info-banner">
-                <Info size={20} />
-                <p>{tr("Модуль прогнозирования не подключён к серверу.")}</p>
-              </div>
-            )}
-            {health?.research_mode && !simulation && (
-              <div className="wc-info-banner">
-                <Info size={20} />
-                <p>
-                  <strong>{tr("Исследовательский режим.")}</strong>{" "}
-                  {tr(
-                    "UTC+5 и начало интервала исходных CSV пока не подтверждены организаторами."
-                  )}
-                </p>
-              </div>
-            )}
-            {warnings.length > 0 && !simulation && (
-              <details className="wc-api-warnings">
-                <summary>
-                  {tr("Предупреждения о данных и расчёте")} · {warnings.length}
-                </summary>
-                <ul>
-                  {warnings.map((warning) => (
-                    <li key={warning}>{warning}</li>
-                  ))}
-                </ul>
-              </details>
-            )}
-            {busy && (
-              <div
-                className="wc-run-progress"
-                role="progressbar"
-                aria-label={tr("Расчёт прогноза")}
-                aria-valuemin={0}
-                aria-valuemax={100}
-                aria-valuenow={Math.round((run?.progress ?? 0) * 100)}
-              >
-                <span style={{ width: `${(run?.progress ?? 0) * 100}%` }} />
-              </div>
-            )}
-            {!data.length && analytical && (
-              <Card className="wc-card wc-api-empty">
-                <TurbineArt compact />
-                <h2>
-                  {busy ? tr("Выполняется расчёт") : tr("Прогноз ещё не выбран")}
-                </h2>
-                <p>
-                  {busy
-                    ? tr("События и прогресс поступают от агента.")
-                    : tr(
-                        "Выберите дату и горизонт, затем нажмите «Рассчитать прогноз» или откройте сохранённый выпуск в истории."
-                      )}
-                </p>
-                <Button
-                  variant="outline"
-                  onClick={() => navigate(busy ? "agent" : "history")}
-                >
-                  {busy ? tr("Открыть журнал") : tr("Открыть историю")}
-                </Button>
-              </Card>
-            )}
-            {simulation && (
-              <SimulationSummary
-                config={simulation}
-                data={data}
+              <span className="wc-issued">
+                Расчёт на{" "}
+                <strong>{formatTimestamp(issuedAt)}</strong>
+                <Hint>
+                  Момент исторического прогноза, UTC+5. Все погодные входные
+                  данные доступны до этого времени.
+                </Hint>
+              </span>
+            </div>
+            {dashboard.loading && <div className="wc-info-banner" role="status"><LoaderCircle className="wc-spin" size={18} />Подключение к серверу…</div>}
+            {error && <div className="wc-info-banner wc-error-banner" role="alert"><Info size={20} /><div><strong>Не удалось выполнить действие</strong><p>{error}</p></div><Button variant="outline" disabled={busy} onClick={() => { setDownloadError(null); void dashboard.reload() }}>Обновить состояние</Button></div>}
+            {health && !health.time_configuration_ready && <div className="wc-info-banner"><Info size={20} /><p>Время исходных измерений не настроено. Расчёт недоступен до настройки сервера.</p></div>}
+            {health && !health.agent_configured && <div className="wc-info-banner"><Info size={20} /><p>Модуль прогнозирования не подключён к серверу.</p></div>}
+            {health?.research_mode && <div className="wc-info-banner"><Info size={20} /><p><strong>Исследовательский режим.</strong> UTC+5 и начало интервала исходных CSV пока не подтверждены организаторами.</p></div>}
+            {warnings.length > 0 && <details className="wc-api-warnings"><summary>Предупреждения о данных и расчёте · {warnings.length}</summary><ul>{warnings.map((warning) => <li key={warning}>{warning}</li>)}</ul></details>}
+            {busy && <div className="wc-run-progress" role="progressbar" aria-label="Расчёт прогноза" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round((run?.progress ?? 0) * 100)}><span style={{ width: `${(run?.progress ?? 0) * 100}%` }} /></div>}
+            {!data.length && (view === "overview" || view === "forecast") && <Card className="wc-card wc-api-empty"><TurbineArt compact /><h2>{busy ? "Выполняется расчёт" : "Прогноз ещё не выбран"}</h2><p>{busy ? "События и прогресс поступают от агента." : "Выберите дату и горизонт, затем нажмите «Рассчитать прогноз» или откройте сохранённый выпуск в истории."}</p><Button variant="outline" onClick={() => navigate(busy ? "agent" : "history")}>{busy ? "Открыть журнал" : "Открыть историю"}</Button></Card>}
+            <div id="turbine-system-view">
+              <TurbineHero
+                view={view}
                 turbine={turbine}
-                onRun={runSimulation}
-                onReset={resetSimulation}
-                onInspect={(index) => {
-                  selectHour(index)
-                  if (!analytical) setView("overview")
-                  document
-                    .getElementById("turbine-system-view")
-                    ?.scrollIntoView({
-                      behavior: highVisibility ? "auto" : "smooth",
-                      block: "start",
-                    })
-                }}
+                mode={sceneMode}
+                focus={sceneFocus}
+                point={data[inspectedHour] ?? null}
+                hourIndex={inspectedHour}
+                data={data}
+                busy={busy}
+                step={busy ? step : inspectedStep}
+                onMode={chooseScene}
+                onFocus={setSceneFocus}
+                onHour={setSceneHour}
+                onStep={inspectAgentStep}
               />
-            )}
-            {(!analytical || !data.length) && (
-              <div id="turbine-system-view">{turbineScene}</div>
-            )}
-            {analytical && data.length > 0 && (
+            </div>
+            {(view === "overview" || view === "forecast") && data.length > 0 && (
               <>
-                <section
-                  className="wc-stats"
-                  aria-label={tr("Ключевые показатели")}
-                >
+                <section className="wc-stats" aria-label="Ключевые показатели">
                   <StatCard
-                    title={tr("Средняя выработка")}
+                    title="Средняя выработка"
                     value={number(metrics.mean)}
                     unit="%"
                     icon={Zap}
-                    note={tr("{v0} ч полной нагрузки", {
-                      v0: number(metrics.fullLoadHours),
-                    })}
+                    note={`${number(metrics.fullLoadHours)} ч полной нагрузки`}
                     values={data.map((p) => p.forecast)}
-                    hint={tr(
-                      "Средняя прогнозная мощность в процентах от номинальной. Для двух турбин используется среднее нормализованных значений."
-                    )}
+                    hint="Средняя прогнозная мощность в процентах от номинальной. Для двух турбин используется среднее нормализованных значений."
                   />
                   <StatCard
-                    title={tr("Пиковая выработка")}
+                    title="Пиковая выработка"
                     value={number(metrics.peak)}
                     unit="%"
                     icon={TrendingUp}
-                    note={
-                      peak
-                        ? tr("Ожидается в {v0}", {
-                            v0: simulation
-                              ? `${formatDate(peak.date)} · ${peak.hour}`
-                              : peak.hour,
-                          })
-                        : tr("Нет прогноза")
-                    }
+                    note={peak ? `Ожидается в ${peak.hour}` : "Нет прогноза"}
                     values={data.slice(0, 12).map((p) => p.forecast)}
-                    hint={tr(
-                      "Максимальная прогнозная мощность на выбранном горизонте."
-                    )}
+                    hint="Максимальная прогнозная мощность на выбранном горизонте."
                   />
                   <StatCard
-                    title={tr("Скорость ветра")}
+                    title="Скорость ветра"
                     value={number(metrics.wind)}
-                    unit={tr("м/с")}
+                    unit="м/с"
                     icon={Wind}
-                    note={tr(
-                      metrics.wind === null
-                        ? "Нет в этом выпуске"
-                        : simulation
-                          ? "Среднее за период"
-                          : "Среднее на 100 м"
-                    )}
+                    note={metrics.wind === null ? "Нет в этом выпуске" : "Среднее на 100 м"}
                     values={data.map((p) => p.wind)}
-                    hint={tr(
-                      simulation
-                        ? "Средний ветер за весь период симуляции."
-                        : "Средняя прогнозная скорость ветра на высоте 100 м из выпуска погоды, использованного моделью. Выпуски, сохранённые до добавления погоды в ответ, показывают «—»."
-                    )}
+                    hint="Средняя прогнозная скорость ветра на высоте 100 м из выпуска погоды, использованного моделью. Выпуски, сохранённые до добавления погоды в ответ, показывают «—»."
                     positive={false}
                   />
-                  {simulatedMetrics ? (
-                    <StatCard
-                      title={tr("Энергия за период")}
-                      value={number(simulatedMetrics.energyMWh)}
-                      unit={tr("МВт·ч")}
-                      icon={Gauge}
-                      note={tr("Условная мощность: {v0} МВт", {
-                        v0: number(simulatedMetrics.capacityMW),
-                      })}
-                      values={data.map((p) => p.forecast)}
-                      hint={tr(
-                        "Сумма почасовой выработки при заданной номинальной мощности. Фактических наблюдений в симуляции нет."
-                      )}
-                      positive={false}
-                    />
-                  ) : (
-                    <StatCard
-                      title={tr("Ошибка прогноза")}
-                      value={number(metrics.nmae)}
-                      unit="%"
-                      icon={Gauge}
-                      note={tr("Факт февраля отсутствует")}
-                      values={data
-                        .filter((p) => p.actual !== null)
-                        .map((p) => Math.abs(p.forecast - p.actual!))}
-                      hint={tr(
-                        "Ошибка выбранного прогноза не вычисляется без фактической выработки. Январские метрики относятся к другой выборке."
-                      )}
-                      positive={false}
-                    />
-                  )}
+                  <StatCard
+                    title="Ошибка прогноза"
+                    value={number(metrics.nmae)}
+                    unit="%"
+                    icon={Gauge}
+                    note="Факт февраля отсутствует"
+                    values={data
+                      .filter((p) => p.actual !== null)
+                      .map((p) => Math.abs(p.forecast - p.actual!))}
+                    hint="Ошибка выбранного прогноза не вычисляется без фактической выработки. Январские метрики относятся к другой выборке."
+                    positive={false}
+                  />
                 </section>
-                <div className="wc-analysis-grid" id="turbine-system-view">
+                <div
+                  className={`wc-chart-grid ${view === "forecast" ? "full" : ""}`}
+                >
                   <ForecastChart
-                    key={`${date}-${turbine}-${simulation?.seed ?? "forecast"}`}
+                    key={`${date}-${turbine}`}
                     data={data}
-                    horizon={data.length}
+                    horizon={horizon}
                     setHorizon={(next) => {
                       setHorizon(next)
                       setSceneHour((hour) => resolveHour(hour, next))
                     }}
                     busy={busy}
-                    onInspect={selectHour}
+                    onInspect={setSceneHour}
                     inspectedHour={inspectedHour}
                   />
-                  {turbineScene}
-                </div>
-                <ForecastTimeline
-                  data={data}
-                  index={inspectedHour}
-                  onSelect={selectHour}
-                />
-                <ForecastInsights
-                  data={data}
-                  index={inspectedHour}
-                  onSelect={inspectInsight}
-                />
-                {view === "overview" && (
-                  <div className="wc-overview-support">
-                    {simulation ? (
-                      <Card className="wc-card wc-simulation-guide">
-                        <FlaskConical size={22} />
-                        <h2>{tr("Модель генерации")}</h2>
-                        <p>
-                          {tr(
-                            "Ветер, температура и влажность связаны во времени. Порывы и обледенение меняют выработку и состояние 3D-модели."
-                          )}
-                        </p>
-                        <button
-                          type="button"
-                          className="wc-text-button"
-                          onClick={() => navigate("sources")}
-                        >
-                          {tr("Условия и допущения")}
-                          <ArrowRight size={15} />
-                        </button>
-                      </Card>
-                    ) : (
-                      <AgentPanel
-                        run={run}
-                        busy={busy}
-                        step={step}
-                        onOpen={() => navigate("agent")}
-                        onInspect={(index) => {
-                          navigate("agent")
-                          inspectAgentStep(index)
-                        }}
-                      />
-                    )}
-                    <WeatherPanel
-                      data={data}
-                      inspectedHour={inspectedHour}
-                      onInspect={inspectWeather}
+                  {view === "overview" && (
+                    <AgentPanel
+                      run={run}
+                      busy={busy}
+                      step={step}
+                      onOpen={() => navigate("agent")}
+                      onInspect={(index) => {
+                        navigate("agent")
+                        inspectAgentStep(index)
+                      }}
                     />
+                  )}
+                </div>
+                {view === "overview" && (
+                  <div className="wc-secondary-grid">
+                    <WeatherPanel data={data} onInspect={inspectWeather} />
                     <TurbinePanel
                       forecast={result}
                       turbines={turbines}
-                      simulationData={simulationData}
                       onOpen={setDialog}
                     />
                   </div>
                 )}
-                {view === "forecast" && !simulation && (
+                {view === "forecast" && (
                   <div className="wc-evaluation-note">
                     <ShieldCheck size={20} />
                     <div>
-                      <strong>{tr("Честная ретроспективная оценка")}</strong>
+                      <strong>Честная ретроспективная оценка</strong>
                       <p>
-                        {tr(
-                          "Фактическая выработка февраля отсутствует. Ошибка и интервал неопределённости не рассчитаны. На графике показан прогноз обученной модели; мартовский хвост сохраняется."
-                        )}
+                        Фактическая выработка февраля отсутствует. Ошибка и
+                        интервал неопределённости не рассчитаны. На графике
+                        показан прогноз обученной модели; мартовский хвост сохраняется.
                       </p>
                     </div>
                     <span>
@@ -2016,7 +1372,7 @@ export function WindDashboard() {
                   </div>
                 )}
                 <HourlyTable
-                  key={`${date}-${horizon}-${turbine}-${simulation?.seed ?? "forecast"}`}
+                  key={`${date}-${horizon}-${turbine}`}
                   data={data}
                   onExport={exportCsv}
                   onPoint={(point) => {
@@ -2029,7 +1385,7 @@ export function WindDashboard() {
                 />
               </>
             )}
-            {view === "agent" && !simulation && (
+            {view === "agent" && (
               <>
                 <div className="wc-agent-page-grid">
                   <AgentPanel
@@ -2041,68 +1397,47 @@ export function WindDashboard() {
                       inspectAgentStep(index)
                       document
                         .getElementById("turbine-system-view")
-                        ?.scrollIntoView({
-                          behavior: highVisibility ? "auto" : "smooth",
-                          block: "start",
-                        })
+                        ?.scrollIntoView({ behavior: "smooth", block: "start" })
                     }}
                     expanded
                   />
                   <Card className="wc-card wc-agent-log">
                     <div className="wc-panel-heading">
                       <div>
-                        <h2>{tr("Журнал событий")}</h2>
-                        <p>
-                          {run
-                            ? `${tr("Запуск на")} ${formatTimestamp(run.as_of)} · ${run.horizon_hours} ${tr("ч")}`
-                            : tr("События выбранного запуска")}
-                        </p>
+                        <h2>Журнал событий</h2>
+                        <p>{run ? `Запуск на ${formatTimestamp(run.as_of)} · ${run.horizon_hours} ч` : "События выбранного запуска"}</p>
                       </div>
-                      <span className="wc-terminal-label">
-                        {run?.agent_mode.toUpperCase() ?? tr("ОЖИДАНИЕ")}
-                      </span>
+                      <span className="wc-terminal-label">{run?.agent_mode.toUpperCase() ?? "ОЖИДАНИЕ"}</span>
                     </div>
                     <div className="wc-log-lines">
                       {run?.events.map((event) => (
                         <div key={event.id} data-level={event.level}>
                           <span>{formatTimestamp(event.timestamp)}</span>
-                          {event.level === "info" ? (
-                            <Check size={13} />
-                          ) : (
-                            <Info size={13} />
-                          )}
+                          {event.level === "info" ? <Check size={13} /> : <Info size={13} />}
                           <p>{event.message}</p>
                         </div>
                       ))}
-                      {!run?.events.length && (
-                        <p>{tr("События появятся после запуска расчёта.")}</p>
-                      )}
+                      {!run?.events.length && <p>События появятся после запуска расчёта.</p>}
                     </div>
                     <div className="wc-log-explainer">
                       <Info size={15} />
-                      {run
-                        ? `${tr("Ревизия")} ${run.revision}${run.reused_run_id ? ` · ${tr("предыдущий результат переиспользован")}` : ""}`
-                        : tr("Журнал поступает с сервера.")}
+                      {run ? `Ревизия ${run.revision}${run.reused_run_id ? " · предыдущий результат переиспользован" : ""}` : "Журнал поступает с сервера."}
                     </div>
                   </Card>
                 </div>
               </>
             )}
-            {(view === "sources" || view === "agent") && simulation && (
-              <SimulationMethod />
-            )}
-            {view === "sources" && !simulation && (
+            {view === "sources" && (
               <>
                 <div className="wc-info-banner">
                   <ShieldCheck size={21} />
                   <div>
                     <strong>
-                      {tr("Только то, что было известно на момент прогноза")}
+                      Только то, что было известно на момент прогноза
                     </strong>
                     <p>
-                      {tr(
-                        "Модель использует архивные прогнозы погоды. Для выбранного выпуска ниже показаны сохранённые метаданные источников."
-                      )}
+                      Модель использует архивные прогнозы погоды. Для выбранного
+                      выпуска ниже показаны сохранённые метаданные источников.
                     </p>
                   </div>
                 </div>
@@ -2110,17 +1445,17 @@ export function WindDashboard() {
                 <div className="wc-secondary-grid">
                   <Card className="wc-card wc-dataset-card">
                     <Database size={26} />
-                    <h2>{tr("История работы ВЭС")}</h2>
-                    <p>{tr("Март 2023 — январь 2026")}</p>
+                    <h2>История работы ВЭС</h2>
+                    <p>Март 2023 — январь 2026</p>
                     <div className="wc-data-fields">
-                      <span>{tr("Временная метка")}</span>
+                      <span>Временная метка</span>
                       <button
                         type="button"
                         onClick={() => {
                           inspectSource("wind")
                         }}
                       >
-                        {tr("Скорость ветра, м/с")}
+                        Скорость ветра, м/с
                       </button>
                       <button
                         type="button"
@@ -2128,7 +1463,7 @@ export function WindDashboard() {
                           inspectSource("power")
                         }}
                       >
-                        {tr("Нормализованная мощность")}
+                        Нормализованная мощность
                       </button>
                       <button
                         type="button"
@@ -2136,32 +1471,18 @@ export function WindDashboard() {
                           inspectSource("temperature")
                         }}
                       >
-                        {tr("Температура, °C")}
+                        Температура, °C
                       </button>
                     </div>
                     <small>
-                      {summary
-                        ? tr("{v0} исходных записей.", {
-                            v0: number(
-                              summary.turbines.reduce(
-                                (total, item) => total + item.rows,
-                                0
-                              ),
-                              0
-                            ),
-                          })
-                        : tr("Сводка ещё не загружена.")}{" "}
-                      {summary?.turbines.every(
-                        (item) => item.source_matches_audit
-                      )
-                        ? tr("Контрольные суммы совпадают с аудитом.")
-                        : tr("Проверьте предупреждения о данных.")}
+                      {summary ? `${number(summary.turbines.reduce((total, item) => total + item.rows, 0), 0)} исходных записей. ` : "Сводка ещё не загружена. "}
+                      {summary?.turbines.every((item) => item.source_matches_audit) ? "Контрольные суммы совпадают с аудитом." : "Проверьте предупреждения о данных."}
                     </small>
                   </Card>
                   <Card className="wc-card wc-dataset-card">
                     <MapPin size={26} />
-                    <h2>{tr("Две точки наблюдения")}</h2>
-                    <p>{tr("Площадки из описания кейса")}</p>
+                    <h2>Две точки наблюдения</h2>
+                    <p>Площадки из описания кейса</p>
                     {turbines.map((t) => (
                       <a
                         className="wc-map-link"
@@ -2170,12 +1491,12 @@ export function WindDashboard() {
                         target="_blank"
                         rel="noreferrer"
                       >
-                        {tr(t.name)}
+                        {t.name}
                         <ExternalLink size={14} />
                       </a>
                     ))}
                     <small>
-                      {tr("Числовые координаты не подменяются вымышленными.")}
+                      Числовые координаты не подменяются вымышленными.
                     </small>
                   </Card>
                 </div>
@@ -2186,42 +1507,28 @@ export function WindDashboard() {
                 <div className="wc-panel-heading">
                   <div>
                     <h2>
-                      {tr("Запуски прогнозирования")}{" "}
+                      Запуски прогнозирования{" "}
                       <span className="wc-count">{runs.length}</span>
                     </h2>
                     <p>
-                      {tr("Последние 100 запусков · сохранены на сервере")}
+                      Последние 100 запусков · сохранены на сервере
                     </p>
                   </div>
-                  <Button
-                    variant="outline"
-                    disabled={busy || dashboard.loading}
-                    onClick={() => void dashboard.reload()}
-                  >
-                    {tr("Обновить историю")}
-                  </Button>
+                  <Button variant="outline" disabled={busy || dashboard.loading} onClick={() => void dashboard.reload()}>Обновить историю</Button>
                 </div>
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>{tr("Запуск")}</TableHead>
-                      <TableHead>{tr("Момент решения · UTC+5")}</TableHead>
-                      <TableHead>{tr("Объект")}</TableHead>
-                      <TableHead>{tr("Горизонт")}</TableHead>
-                      <TableHead>{tr("Статус")}</TableHead>
+                      <TableHead>Запуск</TableHead>
+                      <TableHead>Момент решения · UTC+5</TableHead>
+                      <TableHead>Объект</TableHead>
+                      <TableHead>Горизонт</TableHead>
+                      <TableHead>Статус</TableHead>
                       <TableHead />
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {!runs.length && (
-                      <TableRow>
-                        <TableCell colSpan={6}>
-                          <p className="wc-empty">
-                            {tr("Сохранённых запусков пока нет.")}
-                          </p>
-                        </TableCell>
-                      </TableRow>
-                    )}
+                    {!runs.length && <TableRow><TableCell colSpan={6}><p className="wc-empty">Сохранённых запусков пока нет.</p></TableCell></TableRow>}
                     {runs.map((run) => (
                       <TableRow key={run.run_id}>
                         <TableCell>
@@ -2233,19 +1540,18 @@ export function WindDashboard() {
                         <TableCell>{formatTimestamp(run.as_of)}</TableCell>
                         <TableCell>
                           {run.turbine_ids.length === 2
-                            ? tr("Все турбины")
+                            ? "Все турбины"
                             : run.turbine_ids[0] === 1
-                              ? tr("Турбина 01")
-                              : tr("Турбина 02")}
+                              ? "Турбина 01"
+                              : "Турбина 02"}
                         </TableCell>
                         <TableCell>
-                          {run.horizon_hours}{" "}
-                          {run.horizon_hours === 24 ? tr("часа") : tr("часов")}
+                          {run.horizon_hours} {run.horizon_hours === 24 ? "часа" : "часов"}
                         </TableCell>
                         <TableCell>
                           <span className="wc-status">
                             <i />
-                            {tr(statusLabel[run.status])}
+                            {statusLabel[run.status]}
                           </span>
                         </TableCell>
                         <TableCell>
@@ -2254,7 +1560,7 @@ export function WindDashboard() {
                             onClick={() => openRun(run)}
                             disabled={busy}
                           >
-                            {tr("Открыть")}
+                            Открыть
                             <ArrowUpRight size={14} />
                           </button>
                         </TableCell>
@@ -2269,13 +1575,7 @@ export function WindDashboard() {
                 <Wind size={14} />
                 Windcast · Agentic Wind Intelligence
               </span>
-              <span>
-                {tr(
-                  simulation
-                    ? "Синтетическая симуляция · не прогноз погоды"
-                    : "Прогноз модели · Тестовый период: февраль 2026"
-                )}
-              </span>
+              <span>Прогноз модели · Тестовый период: февраль 2026</span>
             </footer>
           </main>
         </div>
@@ -2284,91 +1584,59 @@ export function WindDashboard() {
             <span>
               <Check size={15} />
             </span>
-            {tr(toast.key, toast.values)}
+            {toast}
             <button
-              aria-label={tr("Закрыть уведомление")}
-              onClick={() => setToast(null)}
+              aria-label="Закрыть уведомление"
+              onClick={() => setToast("")}
             >
               <X size={15} />
             </button>
           </div>
         )}
+        <PlatformHelper
+          open={dialog === "help"}
+          onOpenChange={(open) => setDialog(open ? "help" : null)}
+          context={{ view, date, horizon_hours: horizon,
+            turbine_ids: turbine === "all" ? [1, 2] : turbine === "t1" ? [1] : [2] }}
+          runId={helperRun?.run_id ?? null}
+          downloadableRunId={result && helperRun?.status === "completed" ? result.run_id : null}
+          downloading={downloading}
+          onNavigate={navigate}
+          onDownload={exportCsv}
+        />
         <Dialog
-          open={dialog !== null}
+          open={dialog !== null && dialog !== "help"}
           onOpenChange={(open) => {
             if (!open) setDialog(null)
           }}
         >
-          <DialogContent className="wc-dialog" closeLabel={tr("Закрыть")}>
+          <DialogContent className="wc-dialog">
             <DialogHeader>
               <DialogTitle>
-                {dialog === "help"
-                  ? tr("Windcast — энергия данных")
-                  : dialog === "notifications"
-                    ? tr("Уведомления")
-                    : tr(selectedTurbine?.name ?? "Ветровая станция")}
+                {dialog === "notifications"
+                  ? "Уведомления"
+                  : (selectedTurbine?.name ?? "Ветровая станция")}
               </DialogTitle>
               <DialogDescription>
-                {dialog === "help"
-                  ? tr("Почасовой прогноз двух турбин по архивной погоде.")
-                  : dialog === "notifications"
-                    ? tr(
-                        "Состояние сервера и предупреждения выбранного расчёта."
-                      )
-                    : tr("Карточка объекта из каталога сервера")}
+                {dialog === "notifications"
+                  ? "Состояние сервера и предупреждения выбранного расчёта."
+                  : "Карточка объекта из каталога сервера"}
               </DialogDescription>
             </DialogHeader>
-            {dialog === "help" ? (
-              <div className="wc-dialog-copy">
-                <p>
-                  {tr(
-                    "Выберите турбину, дату в феврале 2026 и горизонт 24/48 часов. Нажмите «Рассчитать прогноз». Журнал показывает события агента, а «CSV выпуска» скачивает весь выбранный выпуск с метаданными погоды."
-                  )}
-                </p>
-                <p>
-                  {tr(
-                    "Расчёт выполняет обученная модель, результаты сохраняются в истории. Мощность показана в процентах от номинала. Часовой пояс исходных CSV остаётся неподтверждённым, пока это указано в статусе сервера. Отображение времени — UTC+5."
-                  )}
-                </p>
-                <p>
-                  {tr(
-                    "Кнопка «Симуляция» задаёт период до 31 дня, погодный сценарий и условную мощность турбины. Это синтетический сценарий, а не прогноз: он не сохраняется в истории сервера."
-                  )}
-                </p>
-                <a
-                  href="https://docs.google.com/document/d/1Fn5IJoj87Fx7IAknG26zkfX8c0eq7feCujd0m66PCgY/preview"
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  {tr("Открыть описание кейса")} <ExternalLink size={14} />
-                </a>
-              </div>
-            ) : dialog === "notifications" ? (
+            {dialog === "notifications" ? (
               <div className="wc-notifications">
                 <div>
                   <CheckCheck size={20} />
                   <span>
-                    <strong>
-                      {health ? tr("Сервер доступен") : tr("Сервер недоступен")}
-                    </strong>
-                    <p>
-                      {tr("Турбин в каталоге: {v0}.", { v0: turbines.length })}{" "}
-                      {health?.research_mode
-                        ? tr("Настройки времени исследовательские.")
-                        : ""}
-                    </p>
+                    <strong>{health ? "Сервер доступен" : "Сервер недоступен"}</strong>
+                    <p>Турбин в каталоге: {turbines.length}. {health?.research_mode ? "Настройки времени исследовательские." : ""}</p>
                   </span>
                 </div>
                 <div>
                   <History size={20} />
                   <span>
-                    <strong>
-                      {tr("Запусков в истории:")} {runs.length}
-                    </strong>
-                    <p>
-                      {tr("Последний:")}{" "}
-                      {runs[0]?.run_id ?? tr("запусков ещё нет")}
-                    </p>
+                    <strong>Запусков в истории: {runs.length}</strong>
+                    <p>Последний: {runs[0]?.run_id ?? "запусков ещё нет"}</p>
                   </span>
                 </div>
                 <Button
@@ -2378,7 +1646,7 @@ export function WindDashboard() {
                     navigate("history")
                   }}
                 >
-                  {tr("Открыть историю")} <ArrowRight size={14} />
+                  Открыть историю <ArrowRight size={14} />
                 </Button>
               </div>
             ) : (
@@ -2387,25 +1655,23 @@ export function WindDashboard() {
                 {selectedTurbine && turbineMetrics ? (
                   <>
                     <div>
-                      <span>{tr("Идентификатор")}</span>
+                      <span>Идентификатор</span>
                       <strong>{selectedTurbine.code}</strong>
                     </div>
                     <div>
-                      <span>{tr("Средняя выработка")}</span>
+                      <span>Средняя выработка</span>
                       <strong>{number(turbineMetrics.mean)}%</strong>
                     </div>
                     <div>
-                      <span>{tr("Скорость ветра")}</span>
-                      <strong>
-                        {number(turbineMetrics.wind)} {tr("м/с")}
-                      </strong>
+                      <span>Скорость ветра</span>
+                      <strong>{number(turbineMetrics.wind)} м/с</strong>
                     </div>
                     <a
                       href={selectedTurbine.map}
                       target="_blank"
                       rel="noreferrer"
                     >
-                      {tr("Координаты из кейса")}
+                      Координаты из кейса
                       <ExternalLink size={14} />
                     </a>
                     <Button
@@ -2417,15 +1683,14 @@ export function WindDashboard() {
                         navigate("forecast")
                       }}
                     >
-                      {tr("Открыть прогноз")} <ArrowRight size={14} />
+                      Открыть прогноз <ArrowRight size={14} />
                     </Button>
                   </>
                 ) : (
                   <>
                     <p>
-                      {tr(
-                        "Две турбины из кейса. Общие показатели рассчитаны как среднее нормализованной мощности."
-                      )}
+                      Две турбины из кейса. Общие показатели рассчитаны как
+                      среднее нормализованной мощности.
                     </p>
                     <Button
                       onClick={() => {
@@ -2434,7 +1699,7 @@ export function WindDashboard() {
                       }}
                       disabled={busy}
                     >
-                      {tr("Показать всю станцию")}
+                      Показать всю станцию
                     </Button>
                   </>
                 )}
@@ -2448,82 +1713,49 @@ export function WindDashboard() {
             if (!open) setSelectedPoint(null)
           }}
         >
-          <DialogContent className="wc-dialog" closeLabel={tr("Закрыть")}>
+          <DialogContent className="wc-dialog">
             <DialogHeader>
-              <DialogTitle>
-                {tr("Прогноз на")} {selectedPoint?.hour}
-              </DialogTitle>
+              <DialogTitle>Прогноз на {selectedPoint?.hour}</DialogTitle>
               <DialogDescription>
-                {selectedPoint && formatDate(selectedPoint.date, true)}{" "}
-                {selectedPoint?.date.slice(0, 4)} · UTC+5 ·{" "}
-                {tr(
-                  selectedPoint?.simulation
-                    ? "синтетические данные"
-                    : "прогноз модели"
-                )}
+                {selectedPoint && formatDate(selectedPoint.date, true)} 2026 ·
+                UTC+5 · прогноз модели
               </DialogDescription>
             </DialogHeader>
             {selectedPoint && (
               <div className="wc-provenance">
                 <div>
-                  <span>{tr("Прогноз мощности")}</span>
+                  <span>Прогноз мощности</span>
                   <strong>{number(selectedPoint.forecast)}%</strong>
                 </div>
                 <div>
-                  <span>{tr("Диапазон")}</span>
+                  <span>Диапазон</span>
                   <strong>
-                    {selectedPoint.lower == null || selectedPoint.upper == null
-                      ? tr("Не рассчитан")
-                      : `${number(selectedPoint.lower)}–${number(selectedPoint.upper)}%`}
+                    {selectedPoint.lower == null || selectedPoint.upper == null ? "Не рассчитан" : `${number(selectedPoint.lower)}–${number(selectedPoint.upper)}%`}
                   </strong>
                 </div>
                 <div>
-                  <span>{tr("Фактическое значение")}</span>
+                  <span>Фактическое значение</span>
                   <strong>
                     {selectedPoint.actual === null
-                      ? tr(
-                          selectedPoint.simulation
-                            ? "Нет наблюдений: симуляция"
-                            : "Нет данных за тестовый период"
-                        )
+                      ? "Нет данных за тестовый период"
                       : `${number(selectedPoint.actual)}%`}
                   </strong>
                 </div>
                 <div>
-                  <span>{tr("Скорость ветра")}</span>
-                  <strong>
-                    {number(selectedPoint.wind)} {tr("м/с")}
-                  </strong>
+                  <span>Скорость ветра</span>
+                  <strong>{number(selectedPoint.wind)} м/с</strong>
                 </div>
                 <div>
-                  <span>{tr("Температура")}</span>
+                  <span>Температура</span>
                   <strong>{number(selectedPoint.temperature)} °C</strong>
                 </div>
-                {selectedWeather.map((source) => (
-                  <div
-                    className="wc-point-source"
-                    key={`${source.turbine_id}:${source.source_id}`}
-                  >
-                    <span>
-                      {tr("Турбина")} {source.turbine_id} · {source.provider} ·{" "}
-                      {source.model}
-                    </span>
-                    <strong>
-                      {source.available_at
-                        ? `${tr("Доступен:")} ${formatTimestamp(source.available_at)}`
-                        : source.available_at_estimate
-                          ? `${tr("Оценка доступности:")} ${formatTimestamp(source.available_at_estimate)} · offset ${source.forecast_offset_days} ${tr("сут.")}`
-                          : tr("Доступность не указана")}
-                    </strong>
-                  </div>
-                ))}
-                <SimulationHour point={selectedPoint} />
+                {selectedWeather.map((source) => <div className="wc-point-source" key={`${source.turbine_id}:${source.source_id}`}>
+                  <span>Турбина {source.turbine_id} · {source.provider} · {source.model}</span>
+                  <strong>{source.available_at ? `Доступен: ${formatTimestamp(source.available_at)}` : source.available_at_estimate ? `Оценка доступности: ${formatTimestamp(source.available_at_estimate)} · offset ${source.forecast_offset_days} сут.` : "Доступность не указана"}</strong>
+                </div>)}
                 <p>
-                  {tr(
-                    selectedPoint.simulation
-                      ? "Диапазон и факт в симуляции не рассчитываются: это синтетический сценарий."
-                      : "Отсутствующие фактические значения и погодные показатели не заменяются нулями. Мощность — прогноз для выбранного часа."
-                  )}
+                  Отсутствующие фактические значения и погодные показатели
+                  не заменяются нулями. Мощность — прогноз для выбранного часа.
                 </p>
               </div>
             )}

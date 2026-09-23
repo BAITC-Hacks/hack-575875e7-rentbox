@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Запуск RentBox одной командой.
+# Запуск Windcast одной командой.
 #
 #   ./run.sh          меню выбора (или сразу запуск, если терминал неинтерактивный)
 #   ./run.sh all      поднять backend и дашборд вместе
@@ -212,7 +212,7 @@ SETTINGS
 }
 
 setup() {
-    bold "Первоначальная настройка RentBox"
+    bold "Первоначальная настройка Windcast"
     info "Enter — принять значение в скобках, s — пропустить и взять всё по умолчанию."
     if [ -f .env ]; then
         printf '\n'
@@ -543,7 +543,7 @@ hours = len({row["valid_time"] for row in rows})
 start, end = local(rows[0]["valid_time"]), local(rows[-1]["valid_time"])
 print(f"\n  {hours} часов × {len(turbines)} турбины = {len(rows)} значений")
 print(f"  Период: {start:%d.%m %H:%M} — {end:%d.%m %H:%M} по местному времени")
-print(f"  Мощность от {min(power) * 100:.1f}% до {max(power) * 100:.1f}% номинала, "
+print(f"  Мощность от {min(power) * 100:.1f}% до {max(power) * 100:.1f}% нормализованной шкалы, "
       f"в среднем {sum(power) / len(power) * 100:.1f}%")
 RENDER
 }
@@ -580,7 +580,7 @@ logs() {
 
 menu() {
     printf '\n'
-    bold "RentBox — прогноз выработки ВЭС"
+    bold "Windcast — прогноз выработки ВЭС"
     printf '\n'
     printf '  \033[1m1\033[0m  Посчитать прогноз          на 48 часов вперёд для двух турбин\n'
     printf '  \033[1m2\033[0m  Сервис и дашборд           backend + интерфейс в браузере\n'

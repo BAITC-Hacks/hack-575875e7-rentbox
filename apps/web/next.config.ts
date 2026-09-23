@@ -2,6 +2,8 @@ import type { NextConfig } from "next"
 
 const nextConfig: NextConfig = {
   devIndicators: false,
+  // The helper allows up to 45 seconds for the OpenAI response.
+  experimental: { proxyTimeout: 60_000 },
   transpilePackages: ["@workspace/ui"],
   async rewrites() {
     const backend = (

@@ -17,7 +17,7 @@ class Settings(BaseSettings):
         extra="ignore",
     )
 
-    app_name: str = "RentBox Energy API"
+    app_name: str = "Windcast Energy API"
     turbines_file: Path = BACKEND_DIR / "config" / "turbines.json"
     audit_file: Path = PROJECT_DIR / "reports" / "data-audit.json"
     input_dir: Path = PROJECT_DIR / "data" / "incoming"

@@ -40,6 +40,11 @@
 | GET | `/agent/runs/{run_id}/forecast.csv` | Скачать тот же результат в CSV |
 | POST | `/agent/replays` | Последовательность ежедневных прогнозов |
 | GET | `/agent/replays/{replay_id}` | Прогресс последовательности и ID её запусков |
+| GET | `/help/status` | Конфигурация помощника OpenAI GPT-6 Astra без секретов |
+| POST | `/help/chat` | Ответ помощника по контексту сайта |
+| GET | `/integrations/nvidia` | Конфигурация NVIDIA NIM без секретов |
+| POST | `/integrations/nvidia/check` | Проверочный вызов NIM |
+| POST | `/agent/runs/{run_id}/explanation` | Необязательное пояснение NIM для готового выпуска |
 
 ## Готовность и данные
 
@@ -328,3 +333,66 @@ run_id,as_of,turbine_id,valid_time,lead_hour,predicted_power,wind_speed_100m,win
 Ошибки фонового выполнения читаются через GET статуса с HTTP 200 и
 `status: "failed"`. Дополнительные коды: `JOB_INTERRUPTED`, `AGENT_LIMIT_EXCEEDED`,
 `REPLAY_FAILED`. При ошибке расчёта маршрут результата возвращает 409.
+
+## Помощник сайта OpenAI ASTRA
+
+`GET /api/help/status` возвращает `provider=openai`, `model=gpt-6-astra`,
+`enabled`, `configured`, `available`, `prompt_version`. `available` означает,
+что помощник включён и ключ задан; доступность модели по сети этим не проверяется.
+
+`POST /api/help/chat`:
+
+```json
+{
+  "message": "Где посмотреть погоду для этого прогноза?",
+  "history": [],
+  "run_id": null,
+  "context": {
+    "view": "forecast",
+    "date": "2026-02-01",
+    "horizon_hours": 48,
+    "turbine_ids": [1, 2]
+  }
+}
+```
+
+- `message`: непустой текст до 2000 символов;
+- `history`: до 8 сообщений `{role: user|assistant, content}`, до 3000 символов каждое;
+- `run_id`: ID выбранного запуска формата `run_` + 32 hex-символа либо `null`;
+- `context.view`: `overview`, `forecast`, `agent`, `sources`, `history`;
+- `context.date`: дата **начала прогноза** в интерфейсе, не as_of; допускается `null`;
+- горизонт 24/48 и номера турбин используют ту же валидацию, что запуск прогноза.
+
+Сервер сам читает выпуск по ID. Отсутствующий выпуск не подменяется другим:
+помощник получает признак недоступности и предлагает перейти в историю.
+
+Ответ содержит `provider` (`openai` либо `local_help`), `model` (ASTRA или `null`),
+`text`, `sources`, `actions`, `warning`, `prompt_version`.
+
+Источник: `{id, title, view}`. Действие:
+`{type: navigate|download_csv, label, view, run_id}`.
+Неприменимые поля `view`/`run_id` равны `null`. Все ID источников и кнопок проверяются
+по серверному списку. При ответе модели `model` может содержать snapshot `gpt-6-astra-*`.
+
+Без ключа или при сбое OpenAI возвращается HTTP 200 с `provider=local_help`,
+`model=null` и пояснением в `warning`. **Не подписывайте такой ответ как ASTRA.**
+Некорректный вход возвращает 422. Лимит внешних обращений — 20 в минуту и 2
+одновременно на процесс; превышение включает обычную справку.
+
+Чат не меняет прогнозы, не запускает задачи и не пишет историю в DuckDB.
+Кнопку пользователь нажимает сам; CSV доступен для соответствующего завершённого
+выпуска. [Настройки и системный промпт](AI-HELP.md).
+
+## Необязательный NVIDIA NIM
+
+- `GET /api/integrations/nvidia`: `enabled`, `configured`, `model`, `purpose`.
+- `POST /api/integrations/nvidia/check`: выполняет реальный вызов модели;
+  без ключа/включения — 409 `CONFIGURATION_REQUIRED`, сбой — 503 `NVIDIA_UNAVAILABLE`.
+- `POST /api/agent/runs/{run_id}/explanation`: поясняет готовый выпуск.
+  Неизвестный ID — 404, незавершённый выпуск — 409.
+
+Пояснение: `{provider: nvidia|policy, model, text, warning, generated_at}`.
+При отключённом NIM или ошибке API возвращается реальный исходный анализ агента
+с `provider=policy`. Численный прогноз не меняется. `generated_at` — время пояснения,
+а момент исторического решения остаётся в `forecast.as_of`.
+[Подключение и обучение на GPU](NVIDIA.md).
