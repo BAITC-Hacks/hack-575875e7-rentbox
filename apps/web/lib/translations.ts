@@ -1,5 +1,61 @@
 // Source keys are the Russian copy; technical IDs and CSV columns remain stable.
 export const translations: Record<string, { en: string; kk: string }> = {
+  "Штормовая защита · ротор остановлен": {
+    "en": "Storm protection · rotor stopped",
+    "kk": "Дауылдан қорғау · ротор тоқтады"
+  },
+  "Ротор ждёт безопасного ветра": {
+    "en": "Rotor waiting for safe wind",
+    "kk": "Ротор қауіпсіз желді күтуде"
+  },
+  "Слабый ветер · ротор остановлен": {
+    "en": "Low wind · rotor stopped",
+    "kk": "Әлсіз жел · ротор тоқтады"
+  },
+  "Архивный снимок · без вращения": {
+    "en": "Historical snapshot · no rotation",
+    "kk": "Мұрағаттық көрініс · айналмайды"
+  },
+  "Пауза для осмотра лопастей": {
+    "en": "Paused for blade inspection",
+    "kk": "Қалақтарды қарау үшін тоқтатылған"
+  },
+  "Анимация на паузе": {
+    "en": "Animation paused",
+    "kk": "Анимация тоқтатылған"
+  },
+  "Ротор вращается по выбранному часу": {
+    "en": "Rotor follows the selected hour",
+    "kk": "Ротор таңдалған сағатқа сәйкес айналады"
+  },
+  "Остановить проигрывание": {
+    "en": "Stop playback",
+    "kk": "Ойнатуды тоқтату"
+  },
+  "Проиграть период": {
+    "en": "Play period",
+    "kk": "Кезеңді ойнату"
+  },
+  "Автопроигрывание отключено в режиме без анимации": {
+    "en": "Playback is disabled in reduced-motion mode",
+    "kk": "Анимациясыз режимде ойнату өшірілген"
+  },
+  "1 секунда = 1 час · выработка и 3D следуют времени": {
+    "en": "1 second = 1 hour · generation and 3D follow time",
+    "kk": "1 секунд = 1 сағат · өндіру мен 3D уақытқа ілеседі"
+  },
+  "Мощность показана в шкале 0–1; база нормализации не подтверждена.": {
+    "en": "Power uses a 0–1 scale; the normalization basis is unconfirmed.",
+    "kk": "Қуат 0–1 шкаласында; нормалау негізі расталмаған."
+  },
+  "Нет ветра · ротор неподвижен": {
+    en: "No wind \u00b7 rotor is still",
+    kk: "Жел жоқ · ротор қозғалмайды",
+  },
+  "Нет данных о ветре · ротор неподвижен": {
+    en: "No wind data \u00b7 rotor is still",
+    kk: "Жел деректері жоқ · ротор қозғалмайды",
+  },
   "Почасовые значения выбранного выпуска, детализация по часам и выгрузка CSV.": {
     en: "Hourly values of the selected run, hour-by-hour detail and CSV export.",
     kk: "Таңдалған шығарылымның сағаттық мәндері, сағат бойынша егжей-тегжей және CSV экспорты.",
