@@ -157,10 +157,7 @@ Implementation: `apps/web/lib/wind-simulation.ts` is the pure generator, validat
 Checks: `tests/wind-simulation.test.mjs` covers invalid periods/capacities, leap days/year boundaries, all scenarios over 31 days, bounds, reproducibility, station aggregation, power-curve thresholds, storm stop/restart behavior, icing losses, capacity scaling and CSV units. Translation coverage includes scenario/error/status messages. Browser QA covers form validation, a February/March period, reruns/history replay, turbine switching, selected-hour/3D synchronization, dark/low-vision/mobile layouts, and return to the retrospective forecast.
 
 
-### Simulation motion and period playback
+### Simulation motion
 
-The shared timeline offers **Play period** for simulation results: one real second advances one simulated hour. Graph, weather and turbine follow the same hour. Playback stops at the final hour; starting there replays from the beginning. Timeline arrows, slider and event shortcuts pause playback for inspection. Creating a new realization, leaving the analytical view, or changing reduced-motion/low-vision preferences resets playback. Manual navigation remains available when autoplay is disabled by motion preferences.
+The shared timeline, arrows, slider and event shortcuts move the selected hour; graph, weather and turbine follow the same hour. Automatic period playback was prototyped on a side branch and is not part of `main`.
 
-The model caption now explains a stopped rotor: insufficient wind, storm protection/recovery, manual pause, low-vision mode, static history or blade inspection. A positive-power icing simulation rotates with the ice geometry attached to its blades; the original educational icing inspection remains still. Protective stops never restart just because a user enables animation. The pause control is also available in live icing simulations.
-
-Validation adds a regression covering positive-power rotation and zero-power stops across every weather scenario and scene, including live icing versus still inspection. Renderer DOM diagnostics expose rotor angle and speed alongside the existing scene/camera state for browser verification.
