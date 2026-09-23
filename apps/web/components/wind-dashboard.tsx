@@ -26,7 +26,6 @@ import {
   MapPin,
   Menu,
   MoreHorizontal,
-  Radio,
   RefreshCw,
   Search,
   ShieldCheck,
@@ -38,6 +37,7 @@ import {
   Zap,
   type LucideIcon,
 } from "lucide-react"
+import { TurbineHero } from "@/components/turbine-hero"
 import { Button } from "@workspace/ui/components/button"
 import { Card } from "@workspace/ui/components/card"
 import { Badge } from "@workspace/ui/components/badge"
@@ -80,7 +80,15 @@ import {
   type TurbineId,
 } from "@/lib/forecast-data"
 
-type View = "overview" | "forecast" | "agent" | "sources" | "history"
+import {
+  resolveHour,
+  resolveSceneMode,
+  type DashboardView,
+  type SceneFocus,
+  type SceneMode,
+} from "@/lib/turbine-scene"
+
+type View = DashboardView
 const NAV: { id: View; label: string; icon: LucideIcon }[] = [
   { id: "overview", label: "Обзор", icon: LayoutDashboard },
   { id: "forecast", label: "Прогноз выработки", icon: TrendingUp },
@@ -214,11 +222,15 @@ function ForecastChart({
   horizon,
   setHorizon,
   busy,
+  onInspect,
+  inspectedHour,
 }: {
   data: ForecastPoint[]
   horizon: Horizon
   setHorizon: (h: Horizon) => void
   busy: boolean
+  onInspect: (index: number) => void
+  inspectedHour: number
 }) {
   const [active, setActive] = useState<number | null>(null)
   const [showActual, setShowActual] = useState(true)
@@ -247,7 +259,12 @@ function ForecastChart({
     .reverse()
     .map((p, i) => `L${x(data.length - i - 1)},${y(p.lower)}`)
     .join(" ")} Z`
-  const selected = active !== null ? data[active] : undefined
+  const displayIndex = active ?? inspectedHour
+  const selected = data[displayIndex]
+  function inspect(index: number) {
+    setActive(index)
+    onInspect(index)
+  }
   return (
     <Card className="wc-card wc-forecast-card">
       <div className="wc-panel-heading">
@@ -305,9 +322,9 @@ function ForecastChart({
         onKeyDown={(e) => {
           if (e.key === "ArrowRight" || e.key === "ArrowLeft") {
             e.preventDefault()
-            setActive(
+            inspect(
               clamp(
-                (active ?? 0) + (e.key === "ArrowRight" ? 1 : -1),
+                (active ?? inspectedHour) + (e.key === "ArrowRight" ? 1 : -1),
                 0,
                 data.length - 1
               )
@@ -316,7 +333,7 @@ function ForecastChart({
         }}
         onPointerMove={(e) => {
           const rect = e.currentTarget.getBoundingClientRect()
-          setActive(
+          inspect(
             clamp(
               Math.round(
                 ((((e.clientX - rect.left) / rect.width) * plotWidth - 45) /
@@ -401,18 +418,18 @@ function ForecastChart({
             strokeLinejoin="round"
             strokeLinecap="round"
           />
-          {selected && active !== null && (
+          {selected && (
             <g>
               <line
-                x1={x(active)}
-                x2={x(active)}
+                x1={x(displayIndex)}
+                x2={x(displayIndex)}
                 y1="20"
                 y2="223"
                 stroke="#718d62"
                 strokeDasharray="3 4"
               />
               <circle
-                cx={x(active)}
+                cx={x(displayIndex)}
                 cy={y(selected.forecast)}
                 r="5"
                 fill="#48794d"
@@ -453,7 +470,7 @@ function ForecastChart({
         <span>
           <ShieldCheck size={14} /> Архивный прогноз без данных из будущего
         </span>
-        <span>Шаг 1 час</span>
+        <span>Выбранный час связан с 3D-моделью</span>
       </div>
     </Card>
   )
@@ -463,11 +480,13 @@ function AgentPanel({
   step,
   onOpen,
   expanded = false,
+  onInspect,
 }: {
   busy: boolean
   step: number
   onOpen: () => void
   expanded?: boolean
+  onInspect?: (index: number) => void
 }) {
   return (
     <Card className={`wc-card wc-agent-card ${expanded ? "expanded" : ""}`}>
@@ -502,7 +521,20 @@ function AgentPanel({
                 )}
               </span>
               <div>
-                <h3>{item.title}</h3>
+                <h3>
+                  {onInspect ? (
+                    <button
+                      type="button"
+                      className="wc-step-inspect"
+                      disabled={busy}
+                      onClick={() => onInspect(i)}
+                    >
+                      {item.title}
+                    </button>
+                  ) : (
+                    item.title
+                  )}
+                </h3>
                 {expanded && <p>{item.detail}</p>}
               </div>
               <span className="wc-step-result">
@@ -528,7 +560,13 @@ function AgentPanel({
     </Card>
   )
 }
-function WeatherPanel({ data }: { data: ForecastPoint[] }) {
+function WeatherPanel({
+  data,
+  onInspect,
+}: {
+  data: ForecastPoint[]
+  onInspect: (index: number) => void
+}) {
   const selected = [0, 6, 12, 18].map((i) => data[i]!)
   return (
     <Card className="wc-card wc-weather-card">
@@ -541,7 +579,12 @@ function WeatherPanel({ data }: { data: ForecastPoint[] }) {
       </div>
       <div className="wc-weather-hours">
         {selected.map((p, i) => (
-          <div key={p.timestamp}>
+          <button
+            type="button"
+            key={p.timestamp}
+            onClick={() => onInspect(i * 6)}
+            aria-label={`Показать погодный сценарий на ${p.hour}`}
+          >
             <span>{p.hour}</span>
             {i === 0 ? (
               <CloudSun className="wc-weather-icon" />
@@ -557,7 +600,7 @@ function WeatherPanel({ data }: { data: ForecastPoint[] }) {
               <Wind size={12} />
               {number(p.wind)} м/с
             </small>
-          </div>
+          </button>
         ))}
       </div>
       <div className="wc-weather-note">
@@ -888,6 +931,10 @@ function HourlyTable({
 }
 export function WindDashboard() {
   const [view, setView] = useState<View>("overview")
+  const [sceneOverride, setSceneOverride] = useState<SceneMode | null>(null)
+  const [sceneFocus, setSceneFocus] = useState<SceneFocus>("gearbox")
+  const [sceneHour, setSceneHour] = useState(0)
+  const [inspectedStep, setInspectedStep] = useState(2)
   const [date, setDate] = useState("2026-02-01")
   const [horizon, setHorizon] = useState<Horizon>(24)
   const [turbine, setTurbine] = useState<TurbineId>("all")
@@ -953,6 +1000,32 @@ export function WindDashboard() {
     [date, horizon, turbine, revision]
   )
   const metrics = useMemo(() => getMetrics(data), [data])
+  const inspectedHour = resolveHour(sceneHour, data.length)
+  const sceneMode = resolveSceneMode(view, sceneOverride, busy, step)
+  function chooseScene(mode: SceneMode) {
+    setSceneOverride(mode)
+    if (mode === "cutaway") setSceneFocus("gearbox")
+    if (mode === "sensors") setSceneFocus("wind")
+  }
+  function inspectWeather(index: number) {
+    setSceneHour(index)
+    chooseScene(data[index]!.temperature <= 0 ? "icing" : "sensors")
+    if (data[index]!.temperature > 0) setSceneFocus("temperature")
+    document
+      .getElementById("turbine-system-view")
+      ?.scrollIntoView({ behavior: "smooth", block: "start" })
+  }
+  function inspectSource(focus: SceneFocus) {
+    chooseScene("sensors")
+    setSceneFocus(focus)
+    document
+      .getElementById("turbine-system-view")
+      ?.scrollIntoView({ behavior: "smooth", block: "start" })
+  }
+  function inspectAgentStep(index: number) {
+    setInspectedStep(index)
+    chooseScene(resolveSceneMode("agent", null, true, index))
+  }
   const provenance = getProvenance(date)
   const peak = data.reduce(
     (best, p) => (p.forecast > best.forecast ? p : best),
@@ -993,6 +1066,8 @@ export function WindDashboard() {
   }, [toast])
   function navigate(next: View) {
     setView(next)
+    setSceneOverride(null)
+    setSceneFocus(next === "sources" ? "wind" : "gearbox")
     setMobileMenu(false)
     window.scrollTo({ top: 0, behavior: "smooth" })
   }
@@ -1222,6 +1297,23 @@ export function WindDashboard() {
                 </Hint>
               </span>
             </div>
+            <div id="turbine-system-view">
+              <TurbineHero
+                view={view}
+                turbine={turbine}
+                mode={sceneMode}
+                focus={sceneFocus}
+                point={data[inspectedHour]!}
+                hourIndex={inspectedHour}
+                data={data}
+                busy={busy}
+                step={busy ? step : inspectedStep}
+                onMode={chooseScene}
+                onFocus={setSceneFocus}
+                onHour={setSceneHour}
+                onStep={inspectAgentStep}
+              />
+            </div>
             {(view === "overview" || view === "forecast") && (
               <>
                 <section className="wc-stats" aria-label="Ключевые показатели">
@@ -1273,20 +1365,29 @@ export function WindDashboard() {
                     key={`${date}-${turbine}`}
                     data={data}
                     horizon={horizon}
-                    setHorizon={setHorizon}
+                    setHorizon={(next) => {
+                      setHorizon(next)
+                      setSceneHour((hour) => resolveHour(hour, next))
+                    }}
                     busy={busy}
+                    onInspect={setSceneHour}
+                    inspectedHour={inspectedHour}
                   />
                   {view === "overview" && (
                     <AgentPanel
                       busy={busy}
                       step={step}
                       onOpen={() => navigate("agent")}
+                      onInspect={(index) => {
+                        navigate("agent")
+                        inspectAgentStep(index)
+                      }}
                     />
                   )}
                 </div>
                 {view === "overview" && (
                   <div className="wc-secondary-grid">
-                    <WeatherPanel data={data} />
+                    <WeatherPanel data={data} onInspect={inspectWeather} />
                     <TurbinePanel
                       date={date}
                       horizon={horizon}
@@ -1316,45 +1417,29 @@ export function WindDashboard() {
                   key={`${date}-${horizon}-${turbine}`}
                   data={data}
                   onExport={exportCsv}
-                  onPoint={setSelectedPoint}
+                  onPoint={(point) => {
+                    setSceneHour(
+                      data.findIndex((p) => p.timestamp === point.timestamp)
+                    )
+                    setSelectedPoint(point)
+                  }}
                   compact={view === "overview"}
                 />
               </>
             )}
             {view === "agent" && (
               <>
-                <div className="wc-agent-overview">
-                  <div>
-                    <span className="wc-note-kicker">
-                      <Sparkles size={14} /> АВТОНОМНЫЙ ЦИКЛ
-                    </span>
-                    <h2>
-                      Каждый прогноз —<br />
-                      шесть проверенных шагов.
-                    </h2>
-                    <p>
-                      Агент получает архивную погоду, подготавливает данные,
-                      формирует прогноз и проверяет результат. Нажмите «Обновить
-                      прогноз», чтобы пройти демонстрационный цикл.
-                    </p>
-                    <div className="wc-agent-facts">
-                      <span>
-                        <Radio size={15} />
-                        {busy ? "Расчёт выполняется" : "Готов к запуску"}
-                      </span>
-                      <span>
-                        <FileClock size={15} />
-                        Запусков в сессии: {runs.length}
-                      </span>
-                    </div>
-                  </div>
-                  <TurbineArt />
-                </div>
                 <div className="wc-agent-page-grid">
                   <AgentPanel
                     busy={busy}
                     step={step}
                     onOpen={() => navigate("history")}
+                    onInspect={(index) => {
+                      inspectAgentStep(index)
+                      document
+                        .getElementById("turbine-system-view")
+                        ?.scrollIntoView({ behavior: "smooth", block: "start" })
+                    }}
                     expanded
                   />
                   <Card className="wc-card wc-agent-log">
@@ -1412,9 +1497,30 @@ export function WindDashboard() {
                     <p>Март 2023 — январь 2026</p>
                     <div className="wc-data-fields">
                       <span>Временная метка</span>
-                      <span>Скорость ветра, м/с</span>
-                      <span>Нормализованная мощность</span>
-                      <span>Температура, °C</span>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          inspectSource("wind")
+                        }}
+                      >
+                        Скорость ветра, м/с
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          inspectSource("power")
+                        }}
+                      >
+                        Нормализованная мощность
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          inspectSource("temperature")
+                        }}
+                      >
+                        Температура, °C
+                      </button>
                     </div>
                     <small>
                       Схема соответствует кейсу. Исходный датасет не загружен.
@@ -1503,6 +1609,7 @@ export function WindDashboard() {
                               setHorizon(run.horizon)
                               setTurbine(run.turbine)
                               setRevision(run.revision)
+                              setSceneHour(0)
                               navigate("forecast")
                             }}
                             disabled={busy}
