@@ -1106,3 +1106,43 @@
   white-space: nowrap;
   flex-shrink: 0;
 }
+
+/* Station switch: keep the icon square and let long labels truncate instead of
+   squeezing the icon when the sidebar is narrow. */
+.wc-design-v2 .wc-station-switch {
+  gap: 10px;
+  padding: 10px;
+  min-height: 56px;
+}
+.wc-design-v2 .wc-station-symbol {
+  flex: 0 0 34px;
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+}
+.wc-design-v2 .wc-station-switch > span:not(.wc-station-symbol) {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.wc-design-v2 .wc-station-switch :is(strong, small) {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.25;
+}
+.wc-design-v2 .wc-station-switch small {
+  margin-top: 1px;
+}
+.wc-design-v2 .wc-station-switch > svg {
+  flex-shrink: 0;
+  margin-left: 2px;
+}
+
+/* Wider sidebar on desktop so the station labels fit without truncation. */
+@media (min-width: 1251px) {
+  .wc-design-v2 .wc-sidebar {
+    width: 252px;
+  }
+  .wc-design-v2 .wc-workspace {
+    margin-left: 252px;
+  }
+}
