@@ -1,0 +1,121 @@
+{
+  "kind": "observed_weather_power_curve_diagnostic",
+  "winner": "neural_network",
+  "warning": "January metrics use observed weather, NOT day-ahead forecast weather; do not present as forecast accuracy.",
+  "created_at": "2026-09-23T08:42:28.564506+00:00",
+  "data": {
+    "sources": [
+      {
+        "turbine_id": 1,
+        "file": "turbine_1.csv",
+        "sha256": "c4c341582fb2dd348b7187f0128cff265fe055f469413871ebb5db50eef58b5b",
+        "source_rows": 142360,
+        "source_last_timestamp": "2026-01-31 23:50:00",
+        "accepted_hours": 23667,
+        "excluded_hours": 1725
+      },
+      {
+        "turbine_id": 2,
+        "file": "turbine_2.csv",
+        "sha256": "820578cd18bb557cd30c2e102f3ae5a386dfc6c489a5a15743339c2b017305e5",
+        "source_rows": 149499,
+        "source_last_timestamp": "2026-01-31 23:50:00",
+        "accepted_hours": 24785,
+        "excluded_hours": 607
+      }
+    ],
+    "timezone": "unspecified; source-clock labels retained",
+    "timestamp_convention_assumption": "start",
+    "hour_label": "interval_start",
+    "aggregation": "arithmetic mean",
+    "minimum_samples_per_hour": 6,
+    "target": "normalized_power",
+    "missing_target_policy": "exclude incomplete hours; never impute"
+  },
+  "split": {
+    "train_before": "2025-12-01",
+    "model_selection": "2025-12",
+    "untouched_holdout": "2026-01",
+    "final_refit_before": "2026-01-31"
+  },
+  "selection_metric": "MAE; December only",
+  "candidates": [
+    {
+      "model": "power_curve",
+      "selection_december": {
+        "n": 1474,
+        "mae": 0.03768934218181879,
+        "rmse": 0.07591856800546143,
+        "bias": 0.013265979243858745
+      },
+      "seconds": 0.04
+    },
+    {
+      "model": "hist_boosting",
+      "selection_december": {
+        "n": 1474,
+        "mae": 0.0299390706320397,
+        "rmse": 0.07450042956596774,
+        "bias": 0.01319965222844439
+      },
+      "seconds": 0.2
+    },
+    {
+      "model": "extra_trees",
+      "selection_december": {
+        "n": 1474,
+        "mae": 0.029629173699392348,
+        "rmse": 0.07459582115409494,
+        "bias": 0.013123610931649045
+      },
+      "seconds": 0.31
+    },
+    {
+      "model": "neural_network",
+      "selection_december": {
+        "n": 1474,
+        "mae": 0.02893743244440272,
+        "rmse": 0.07332233417508051,
+        "bias": 0.008571291289014066
+      },
+      "device": "cuda",
+      "gpu": "NVIDIA GeForce RTX 5090 Laptop GPU",
+      "best_epoch": 38,
+      "epochs_run": 63,
+      "seed": 42,
+      "seconds": 2.2,
+      "inference_backend": "numpy; no GPU or torch needed"
+    }
+  ],
+  "january_diagnostic": {
+    "n": 1488,
+    "mae": 0.02493123668254316,
+    "rmse": 0.05594295870017845,
+    "bias": -0.001811501624531652
+  },
+  "january_by_turbine": {
+    "1": {
+      "n": 744,
+      "mae": 0.023661653569725914,
+      "rmse": 0.047598202286305534,
+      "bias": -0.0016718360153944807
+    },
+    "2": {
+      "n": 744,
+      "mae": 0.026200819795360403,
+      "rmse": 0.06319525611445595,
+      "bias": -0.0019511672336688243
+    }
+  },
+  "features": [
+    "wind_speed",
+    "temperature",
+    "density_adjusted_wind",
+    "turbine_id"
+  ],
+  "versions": {
+    "python": "3.12.14",
+    "sklearn": "1.9.1",
+    "numpy": "2.5.3"
+  }
+}
