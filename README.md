@@ -90,6 +90,40 @@ turbine_id,valid_time,lead_hour,predicted_power
 API с интерактивной документацией: [localhost:8000/docs](http://localhost:8000/docs).
 Если выбран другой порт, скрипт напечатает адрес.
 
+### Все команды одним списком
+
+```bash
+# Запуск
+./run.sh demo          # поднять сервис и рассчитать прогноз на 48 часов
+./run.sh all           # backend и дашборд вместе
+./run.sh start         # только backend
+./run.sh               # меню, выбор пункта цифрой
+./run.sh stop          # остановить всё
+
+# Диагностика
+./run.sh check         # проверить окружение, ничего не запуская
+./run.sh logs          # журнал backend, последние 50 строк
+tail -50 .run/web.log  # журнал дашборда
+
+# Настройка
+./run.sh setup                     # мастер: пояс, порты, обучение
+BACKEND_PORT=9000 ./run.sh demo    # другой порт API
+WEB_PORT=3100 ./run.sh all         # другой порт дашборда
+
+# Тесты и проверки
+make test              # тесты backend
+make lint              # Ruff
+npm test               # тесты frontend
+
+# Переобучение (необязательно, готовая модель уже в репозитории)
+./scripts/train.sh           # найдёт NVIDIA, иначе CPU
+./scripts/train.sh --check   # показать, что будет использовано
+./scripts/train.sh --cloud   # инструкция для NVIDIA Brev
+```
+
+Всё остальное — подробности ниже: запуск без Docker, работа через API,
+обучение по шагам.
+
 ### Меню вместо команд
 
 `./run.sh` без аргументов показывает меню — достаточно нажать цифру:

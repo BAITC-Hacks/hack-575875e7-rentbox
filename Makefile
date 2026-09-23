@@ -17,16 +17,16 @@ run: setup
 demo: setup
 	RENTBOX_SOURCE_TIMEZONE=Etc/GMT-5 RENTBOX_TIMESTAMP_MEANING=interval_start RENTBOX_ALLOW_RESEARCH_TIME_SETTINGS=true backend/.venv/bin/uvicorn src.api:app --host 127.0.0.1 --port 8000 --workers 1
 
-test:
+test: setup
 	cd backend && .venv/bin/pytest
 
-lint:
+lint: setup
 	backend/.venv/bin/ruff check --config backend/pyproject.toml backend/app backend/tests backend/scripts src/api.py
 	backend/.venv/bin/ruff format --config backend/pyproject.toml --check backend/app backend/tests backend/scripts src/api.py
 
-format:
+format: setup
 	backend/.venv/bin/ruff check --config backend/pyproject.toml --fix backend/app backend/tests backend/scripts src/api.py
 	backend/.venv/bin/ruff format --config backend/pyproject.toml backend/app backend/tests backend/scripts src/api.py
 
-openapi:
+openapi: setup
 	backend/.venv/bin/python backend/scripts/export_openapi.py
