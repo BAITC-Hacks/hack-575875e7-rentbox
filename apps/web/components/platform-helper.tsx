@@ -218,7 +218,7 @@ export function PlatformHelper({
         lang="ru"
         closeLabel="Закрыть помощник"
         initialFocus={(interaction) => interaction === "touch" ? true : input.current}
-        style={{ top: 0, right: 0, bottom: 0, left: "auto", transform: "none", width: "min(500px, 100vw)", maxWidth: "100vw", height: "100dvh", maxHeight: "100dvh", borderRadius: 0, margin: 0 }}
+        style={{ top: 0, right: 0, bottom: 0, left: "auto", transform: "none", translate: "none", width: "min(500px, 100vw)", maxWidth: "100vw", height: "100dvh", maxHeight: "100dvh", borderRadius: 0, margin: 0 }}
       >
         <DialogHeader className="wc-helper-header">
           <div className="wc-helper-heading">
