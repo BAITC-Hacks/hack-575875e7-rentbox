@@ -218,8 +218,8 @@ demo() {
     bold "Первые строки"
     cut -d, -f3,4,5,6 artifacts/demo-forecast.csv | head -5 | sed 's/^/  /'
     printf '\n'
-    info "Полный прогноз февраля: artifacts/ensemble/february_replay.csv"
-    info "Метрики и ограничения:  artifacts/ensemble/report.md"
+    info "Полный прогноз февраля: artifacts/gfs-model/february_replay.csv"
+    info "Метрики и ограничения:  artifacts/gfs-model/report.md"
 }
 
 # --- дашборд ----------------------------------------------------------------

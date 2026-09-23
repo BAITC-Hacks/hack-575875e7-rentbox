@@ -16,17 +16,7 @@
 Скрипт сам проверит окружение, создаст `.env`, соберёт образ, дождётся готовности
 сервиса, запустит расчёт и сохранит результат в `artifacts/demo-forecast.csv`.
 
-```
-✓ Docker готов — запуск в контейнере
-✓ data/incoming/turbine_1.csv
-✓ data/incoming/turbine_2.csv
-✓ кэш прогнозов погоды: 109 файлов (интернет не нужен)
-✓ получено 96 почасовых значений → artifacts/demo-forecast.csv
-
-  turbine_id,valid_time,lead_hour,predicted_power
-  1,2026-01-31T19:00:00Z,1,0.05170012513796488
-  1,2026-01-31T20:00:00Z,2,0.03352687445779642
-```
+Результат — 96 почасовых значений для двух турбин с происхождением погоды.
 
 Остальные команды:
 
@@ -40,7 +30,8 @@
 | `./run.sh stop` | остановить |
 
 **Ключи и учётные записи не нужны.** Архивные прогнозы погоды лежат в репозитории
-(`data/weather`, 109 файлов), модель — в `artifacts`. Интернет требуется только при
+(`data/gfs-runs`, 730 ежедневных циклов), основная модель — в `artifacts/gfs-model`.
+Интернет требуется при
 первой сборке образа, чтобы скачать зависимости.
 
 Нужен Docker. Если его нет, но есть `uv`, скрипт поднимет сервис локально.
@@ -51,11 +42,12 @@
 
 ## Текущее состояние
 
-Данные проверены, есть DuckDB-хранилище, обученная модель по архивным
-прогнозам GFS/ICON и ежедневный расчёт февраля. Расширенный поиск моделей
-выполняется на RTX 5090, CPU и NVIDIA Brev. Backend дашборда реализован:
+Данные проверены, есть DuckDB-хранилище, обученная модель по операционным
+прогнозам NOAA GFS и ежедневный расчёт февраля. Поиск 400 моделей завершён
+на RTX 5090, CPU и NVIDIA Brev A6000. Backend дашборда реализован:
 каталог турбин, сводка данных, очередь запусков, статусы и события, ревизии,
-CSV и replay. Агент подключён к API; первый replay завершил 29 ежедневных выпусков.
+CSV и replay. Агент подключён к API; с основной моделью завершены все 29
+ежедневных выпусков без ошибок: [отчёт replay](reports/agent-noaa-replay.json).
 Dashboard Windcast на Next.js готов и пока работает на синтетических данных.
 Подключение интерфейса к backend ещё не выполнено.
 
@@ -73,11 +65,14 @@ Dashboard Windcast на Next.js готов и пока работает на с�
 - [Результаты проверки данных](reports/data-audit.md)
 - [Скрипт проверки](scripts/audit_data.py)
 - [Протокол исторического прогноза без будущей информации](docs/FORECAST_PROTOCOL.md)
-- [Ансамбль, январские метрики и ограничения оценки](artifacts/ensemble/report.md)
-- [Прогнозы февраля, включая мартовский хвост 48-часовых выпусков](artifacts/ensemble/february_replay.csv)
+- [Ансамбль NOAA GFS, январские метрики и ограничения оценки](artifacts/gfs-model/report.md)
+- [Прогнозы февраля, включая мартовский хвост 48-часовых выпусков](artifacts/gfs-model/february_replay.csv)
+- [Требования кейса и их реализация](docs/REQUIREMENTS.md)
 
-Готовый ансамбль: январская MAE **0.16933**, RMSE **0.25432** в долях
-нормализованной мощности. Первый бустинг давал MAE 0.19420. Подбор моделей —
+Готовый ансамбль NOAA GFS: январская MAE **0.15947**, RMSE **0.23190** в долях
+нормализованной мощности. Первый бустинг давал MAE 0.19420,
+предыдущий ансамбль — 0.16933, персистенция последнего часа — 0.34268.
+Подбор моделей —
 на ноябре–декабре; январь после первого эксперимента используется для мониторинга
 разработки. Качество февраля неизвестно: фактических значений этого месяца нет.
 
@@ -91,9 +86,10 @@ Frontend (планируемое подключение) → FastAPI /api → о
 ```
 
 Конвейер прогноза: `data/incoming` → полные часы из 6 измерений → архивы
-GFS/ICON → признаки погоды и календаря → выбор модели по прошлому периоду →
-почасовой прогноз. DuckDB хранит историю через `src/storage.py`;
-автоматическая запись из агента будет подключена при реализации его цикла.
+NOAA GFS с проверкой публикации → признаки погоды и календаря → выбор модели
+по прошлому периоду → почасовой прогноз → анализ → запись в DuckDB.
+При обновлении входов агент создаёт ревизию; одинаковые входы переиспользуют
+сохранённый расчёт. История хранится через `src/storage.py`.
 
 Python 3.12, FastAPI, Pydantic, DuckDB, NumPy, pandas, scikit-learn.
 Зависимости прогноза — [requirements.txt](requirements.txt); зависимости
@@ -241,34 +237,37 @@ API не возвращает выдуманные прогнозы.
 
 ## Обучение модели
 
+Основной ансамбль NOAA GFS (GPU нужен для повторного обучения MLP):
+
 ```bash
-# Загрузить архивы (доступ к интернету, без ключа); готовые ответы есть в git.
-python -m src.weather --start 2024-01 --end 2026-03
-
-# В окружении с PyTorch: обучение, оценка января, ежедневный расчёт февраля.
-python -m scripts.train_forecast --utc-offset 5 --timestamp-convention start --device cuda
-
-# Расширенный поиск: подготовка один раз, worker-команды можно выполнять параллельно.
-python -m scripts.search_models prepare --utc-offset 5 --timestamp-convention start
-python -m scripts.search_models train --worker local-cpu
-python -m scripts.search_models train --worker local-gpu --device cuda
-python -m scripts.search_models train --worker cloud-gpu --device cuda
-python -m scripts.finalize_search
+# Готовые 730 циклов уже в git. Загрузка пропущенных дней требует ecCodes и сети.
+python -m scripts.fetch_gfs_runs --start 2024-03-01 --end 2026-02-28
+python -m scripts.train_gfs prepare
+python -m scripts.train_gfs train --worker cpu
+python -m scripts.train_gfs train --worker local-gpu
+python -m scripts.train_gfs train --worker cloud-gpu
+# При обучении на двух машинах объединить каталоги workers в artifacts/gfs-search.
+python -m scripts.train_gfs finalize
 ```
 
-Для обучения использован установленный PyTorch 2.11.0+cu128; `--device cpu`
-обучает нейросеть на CPU при наличии PyTorch. PyTorch не включён в обязательные
-зависимости инференса. Кривая `scripts/train_power_curve.py` — отдельный опыт
+Для обучения использован PyTorch 2.11.0+cu128, для загрузки GRIB — ecCodes 2.48.0
+(включён в зависимости backend). PyTorch не включён в обязательные
+зависимости инференса. Предыдущие исследования GFS/ICON сохранены в
+`artifacts/ensemble/` и `artifacts/expanded/`, их скрипты — `search_models.py`
+и `finalize_search.py`. Кривая `scripts/train_power_curve.py` — отдельный опыт
 с фактическим ветром; его MAE нельзя выдавать за ошибку прогноза на сутки.
 
 ## Конфигурация
 
 | Переменная | По умолчанию / назначение |
 |---|---|
-| RENTBOX_AGENT_FACTORY | Не задана; Python-фабрика вида src.agent:create_agent |
+| RENTBOX_AGENT_FACTORY | src.agent:create_agent |
+| RENTBOX_MODEL_DIR | artifacts/gfs-model, если артефакт есть; иначе artifacts/ensemble |
+| RENTBOX_GFS_CACHE | data/gfs-runtime; /app/state/gfs в Docker. Копируется из сохранённого архива |
 | RENTBOX_SOURCE_TIMEZONE | Не задан; часовой пояс CSV в формате IANA |
 | RENTBOX_TIMESTAMP_MEANING | Не задан; interval_start либо interval_end |
 | RENTBOX_TIME_CONFIGURATION_CONFIRMED | false; подтверждение двух настроек выше |
+| RENTBOX_ALLOW_RESEARCH_TIME_SETTINGS | false; явное разрешение расчёта с неподтверждёнными временными настройками |
 | RENTBOX_DATABASE_PATH | data/forecasts.duckdb относительно проекта; /app/state/forecasts.duckdb в Docker |
 | RENTBOX_CORS_ORIGINS | JSON-массив: http://localhost:5173 и http://localhost:3000 |
 | RENTBOX_MAX_PENDING_RUNS | 128 |
@@ -287,7 +286,11 @@ python -m scripts.finalize_search
 - Факта февраля нет, качество измеряется на январе. Повторные выпуски считаются
   отдельно. Метрики февраля в API возвращаются null.
 - Предсказывается нормализованная мощность каждой турбины 0–1, не МВт или МВт·ч.
-- Архив Previous Runs содержит значения с фиксированной заблаговременностью,
+- Основная модель использует NOAA GFS: `initialization_time` проверяется в GRIB,
+  `available_at` берётся из исходных S3 Last-Modified и должно быть `<= as_of`.
+  Между трёхчасовыми опорами одного цикла выполняется интерполяция.
+  Текущий обученный сценарий — ежедневный выпуск в 18:00 UTC, горизонт 24/48 ч.
+- В предыдущих исследовательских моделях архив Previous Runs содержит значения с фиксированной заблаговременностью,
   а не полные отдельные циклы. Точная историческая публикация не возвращается.
   В API v0.3 неизвестные `initialization_time` и `available_at` остаются `null`.
   Для каждого прогнозного часа сохраняются использованные источники GFS/ICON,
@@ -300,8 +303,10 @@ python -m scripts.finalize_search
 - Реализация предполагает один процесс-писатель DuckDB. После перезапуска
   незавершённые задания помечаются JOB_INTERRUPTED, готовые результаты сохраняются.
 - Модуль агента обязан ограничивать время инструментов и реагировать на остановку.
-- OpenAPI сгенерирован; статический анализ выполнен. Docker-сборка и сценарий
-  с настоящим агентом ещё не проверены. Публичного развёртывания пока нет.
+- Сценарий NOAA выполнен через настоящий API: 29 из 29 запусков.
+  Предыдущую Docker-версию Claude проверил из чистого клона (см. CHANGELOG).
+  Docker-сборку после подключения NOAA нужно повторить перед сдачей.
+  Публичного развёртывания пока нет.
 
 Команды разработчика: `make openapi`, `make lint`, `make test`.
 Аудит данных: `python scripts/audit_data.py` в окружении с pandas и numpy.
@@ -311,7 +316,9 @@ python -m scripts.finalize_search
 | Материал | Источник | Лицензия / условия |
 |---|---|---|
 | CSV двух турбин | Организаторы, ссылки в `reports/data-audit.md` | Предоставлены для кейса; отдельная открытая лицензия не указана |
+| Операционные прогнозы NOAA GFS | [NOAA GFS в AWS](https://registry.opendata.aws/noaa-gfs-bdp-pds/) | Открытые данные NOAA; использовать с указанием источника. Сохранены точки, метаданные и хэши GRIB-полей |
 | Архивные прогнозы GFS / ICON | [Open-Meteo](https://open-meteo.com/en/docs/previous-runs-api), NOAA / DWD | [CC BY 4.0](https://open-meteo.com/en/licence); исходные ответы сохранены, признаки преобразованы нами |
+| ecCodes, чтение GRIB | [ECMWF ecCodes](https://github.com/ecmwf/eccodes-python) | Apache-2.0 |
 | Python | [python.org](https://www.python.org/) | PSF |
 | FastAPI | [fastapi.tiangolo.com](https://fastapi.tiangolo.com/) | MIT |
 | Pydantic / settings | [docs.pydantic.dev](https://docs.pydantic.dev/) | MIT |

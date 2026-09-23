@@ -1,0 +1,94 @@
+{
+  "run_id": "run_32e96b67b3ad4764bf1c818b20012976",
+  "status": "completed",
+  "stage": "save",
+  "progress": 1.0,
+  "agent_mode": "policy",
+  "as_of": "2026-01-31T18:00:00Z",
+  "horizon_hours": 48,
+  "turbine_ids": [
+    1,
+    2
+  ],
+  "revision": 2,
+  "supersedes_run_id": null,
+  "reused_run_id": "run_a5b465ced8f2496285d7fc678c715ce6",
+  "events": [
+    {
+      "id": "event_22132cf7d14d47fd8662869c7bc9f816",
+      "timestamp": "2026-09-23T10:12:26.034650Z",
+      "stage": "validate",
+      "level": "info",
+      "message": "Проверка запроса, настроек времени и исходных файлов.",
+      "tool": "backend",
+      "attempt": 1
+    },
+    {
+      "id": "event_28901d78822146f1bdf5e0bef22c1aa0",
+      "timestamp": "2026-09-23T10:12:26.066832Z",
+      "stage": "validate",
+      "level": "info",
+      "message": "Проверены координаты, исходные файлы и граница обучающей истории.",
+      "tool": "validate_inputs",
+      "attempt": 1
+    },
+    {
+      "id": "event_ec2551fb544b4e13abdd481688f95570",
+      "timestamp": "2026-09-23T10:12:26.077404Z",
+      "stage": "weather",
+      "level": "info",
+      "message": "Проверены цикл GFS и время размещения всех исходных файлов: не позже as_of.",
+      "tool": "noaa_archive",
+      "attempt": 1
+    },
+    {
+      "id": "event_89556346af434555afd69ed05a3d3507",
+      "timestamp": "2026-09-23T10:12:26.079646Z",
+      "stage": "prepare",
+      "level": "info",
+      "message": "Подготовлены почасовые значения из прогнозных опор одного цикла; наблюдения не используются.",
+      "tool": "gfs_features",
+      "attempt": 1
+    },
+    {
+      "id": "event_2dadb5de07ec4029aea1e414032da37e",
+      "timestamp": "2026-09-23T10:12:26.083118Z",
+      "stage": "model",
+      "level": "info",
+      "message": "Загружена модель NOAA GFS, версия f4374978cd91.",
+      "tool": "load_model",
+      "attempt": 1
+    },
+    {
+      "id": "event_cefbbb159b554b1d9febc443067cc418",
+      "timestamp": "2026-09-23T10:12:26.085160Z",
+      "stage": "predict",
+      "level": "info",
+      "message": "Погода и модель не изменились: используется сохранённый расчёт.",
+      "tool": "reuse_forecast",
+      "attempt": 1
+    },
+    {
+      "id": "event_846574b9e20340498adf338786892025",
+      "timestamp": "2026-09-23T10:12:26.088695Z",
+      "stage": "review",
+      "level": "info",
+      "message": "Проверены горизонт, мощность и временные ограничения по метаданным.",
+      "tool": "backend",
+      "attempt": 1
+    },
+    {
+      "id": "event_d5bec4320301406ea6f74e39a62090a3",
+      "timestamp": "2026-09-23T10:12:26.093209Z",
+      "stage": "save",
+      "level": "info",
+      "message": "Входы не изменились; сохранена ссылка на прежний результат.",
+      "tool": "ForecastStore",
+      "attempt": 1
+    }
+  ],
+  "warnings": [
+    "Исследовательские настройки: UTC+5, начало интервала, выпуск 23:00; организаторы их ещё не подтвердили."
+  ],
+  "error": null
+}

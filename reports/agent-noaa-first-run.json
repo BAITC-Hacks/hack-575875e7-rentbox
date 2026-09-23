@@ -1,0 +1,103 @@
+{
+  "run_id": "run_a5b465ced8f2496285d7fc678c715ce6",
+  "status": "completed",
+  "stage": "save",
+  "progress": 1.0,
+  "agent_mode": "policy",
+  "as_of": "2026-01-31T18:00:00Z",
+  "horizon_hours": 48,
+  "turbine_ids": [
+    1,
+    2
+  ],
+  "revision": 2,
+  "supersedes_run_id": "run_a68aef8e854f47eb9493f5ad5509da70",
+  "reused_run_id": null,
+  "events": [
+    {
+      "id": "event_b03050c810ed4a128fb2708e0e409966",
+      "timestamp": "2026-09-23T10:11:51.661380Z",
+      "stage": "validate",
+      "level": "info",
+      "message": "Проверка запроса, настроек времени и исходных файлов.",
+      "tool": "backend",
+      "attempt": 1
+    },
+    {
+      "id": "event_5e98add0fc6d4268a9e0236f81b8ee20",
+      "timestamp": "2026-09-23T10:11:51.703372Z",
+      "stage": "validate",
+      "level": "info",
+      "message": "Проверены координаты, исходные файлы и граница обучающей истории.",
+      "tool": "validate_inputs",
+      "attempt": 1
+    },
+    {
+      "id": "event_ff952283fd6d41439ce1e62a94cf5b18",
+      "timestamp": "2026-09-23T10:11:51.720622Z",
+      "stage": "weather",
+      "level": "info",
+      "message": "Проверены цикл GFS и время размещения всех исходных файлов: не позже as_of.",
+      "tool": "noaa_archive",
+      "attempt": 1
+    },
+    {
+      "id": "event_b4b26966e65a4dbfa7d63184801c03e4",
+      "timestamp": "2026-09-23T10:11:51.723261Z",
+      "stage": "prepare",
+      "level": "info",
+      "message": "Подготовлены почасовые значения из прогнозных опор одного цикла; наблюдения не используются.",
+      "tool": "gfs_features",
+      "attempt": 1
+    },
+    {
+      "id": "event_d03657a84feb483db547ba59ed454599",
+      "timestamp": "2026-09-23T10:11:51.729009Z",
+      "stage": "model",
+      "level": "info",
+      "message": "Загружена модель NOAA GFS, версия f4374978cd91.",
+      "tool": "load_model",
+      "attempt": 1
+    },
+    {
+      "id": "event_d47e88d40bdb4f30b7a14ecc759f5c4f",
+      "timestamp": "2026-09-23T10:11:51.757866Z",
+      "stage": "predict",
+      "level": "info",
+      "message": "Рассчитаны 96 почасовых значений по NOAA GFS на CPU.",
+      "tool": "gfs_predict",
+      "attempt": 1
+    },
+    {
+      "id": "event_27464fca6693437f8783553b291e188a",
+      "timestamp": "2026-09-23T10:11:51.769405Z",
+      "stage": "review",
+      "level": "info",
+      "message": "Прогноз NOAA GFS на 48 ч: 2 турбины, мощность 0.023–0.925.",
+      "tool": "review_forecast",
+      "attempt": 1
+    },
+    {
+      "id": "event_b0aca3578def436d94804ce883098bfd",
+      "timestamp": "2026-09-23T10:11:51.772434Z",
+      "stage": "review",
+      "level": "info",
+      "message": "Проверены горизонт, мощность и временные ограничения по метаданным.",
+      "tool": "backend",
+      "attempt": 1
+    },
+    {
+      "id": "event_5d3021acb9cc4805aaf55b7137dbbf49",
+      "timestamp": "2026-09-23T10:11:51.946730Z",
+      "stage": "save",
+      "level": "info",
+      "message": "Прогноз и его происхождение сохранены в DuckDB.",
+      "tool": "ForecastStore",
+      "attempt": 1
+    }
+  ],
+  "warnings": [
+    "Исследовательские настройки: UTC+5, начало интервала, выпуск 23:00; организаторы их ещё не подтвердили."
+  ],
+  "error": null
+}

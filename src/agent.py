@@ -191,11 +191,17 @@ class ForecastAgent:
         if as_of.hour != 18:
             raise AppError(422, "VALIDATION_ERROR", "Текущий архив NOAA рассчитан на ежедневный выпуск в 18:00 UTC.")
         day = as_of.strftime("%Y-%m-%d")
-        cache = Path(os.environ.get("RENTBOX_GFS_CACHE", GFS_CACHE))
+        cache = Path(os.environ.get("RENTBOX_GFS_CACHE", ROOT / "data/gfs-runtime"))
+        cache.mkdir(parents=True, exist_ok=True)
+        for suffix in (".csv", ".meta.json"):
+            source_path = GFS_CACHE / (day + suffix)
+            destination = cache / (day + suffix)
+            if not destination.exists() and source_path.exists():
+                shutil.copy2(source_path, destination)
         if not (cache / (day + ".csv")).exists() or request.refresh_weather:
             try:
                 cache.mkdir(parents=True, exist_ok=True)
-                with httpx.Client(timeout=45, limits=httpx.Limits(max_connections=8)) as client, ThreadPoolExecutor(max_workers=4) as pool:
+                with httpx.Client(timeout=8, limits=httpx.Limits(max_connections=8)) as client, ThreadPoolExecutor(max_workers=4) as pool:
                     fetch_day(as_of.tz_convert("UTC").tz_localize(None).normalize(), cache, "0p25", pool, client,
                               refresh=request.refresh_weather)
             except (httpx.HTTPError, OSError, ImportError) as error:

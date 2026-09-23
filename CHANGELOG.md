@@ -32,7 +32,9 @@ scripts/train_*.py    обучение кривой мощности и прог
 scripts/search_models.py поиск на CPU/RTX 5090/Brev
 scripts/predict.py    запуск модели без сети, ключей и GPU
 artifacts/forecast/  модель, январская оценка, прогнозы февраля
-artifacts/ensemble/  ансамбль трёх MLP: январская MAE 0.16933, CPU-инференс
+artifacts/gfs-model/ основной ансамбль пяти MLP: январская MAE 0.15947, CPU-инференс
+data/gfs-runs/       730 операционных циклов NOAA с данными о публикации
+src/agent.py         контроллер policy: погода → модель → анализ → ревизии
 data/weather/        ответы погодного API и SHA-256
 tests/test_storage.py 10 тестов хранилища
 docs/PLAN.md          план работ и разделение ответственности
@@ -41,13 +43,11 @@ src/api.py           единая точка входа HTTP API
 backend/app/         backend дашборда: очередь, состояния, выдача, CSV и replay
 ```
 
-Обновление 14:00: реализованы `backend/app/` и точка входа `src/api.py`,
-см. запись ниже.
-
-Что ещё не сделано: цикл агента, интерфейс и проверка полного запуска.
-Требуется подтверждение временных настроек CSV и метаданных погодных выпусков.
-Расширенный поиск на локальной машине и Brev выполняется параллельно.
-HTTP-слой подготовлен к подключению агента; README описывает текущий этап и ограничения.
+Основная модель NOAA обучена на CPU, RTX 5090 и Brev A6000 (400 конфигураций).
+Агент подключён к API и DuckDB; новый replay завершил все 29 ежедневных выпусков
+февраля без ошибок. Подключение frontend остаётся задачей команды интерфейса.
+Часовой пояс и смысл меток CSV пока исследовательские; публикация использованных
+объектов NOAA проверяется относительно каждого `as_of`.
 
 ---
 
@@ -57,21 +57,20 @@ HTTP-слой подготовлен к подключению агента; REA
 
 ```python
 import joblib
-from src.weather import load_archive, select_as_of
-from src.model import predict_weather
+from src.gfs_weather import select_run
+from src.gfs_model import predict
 
-bundle = joblib.load("artifacts/ensemble/model.joblib")
-archive, manifest = load_archive()
-weather = select_as_of(archive, "2026-01-31T18:00:00Z", horizon_hours=48)
-power = predict_weather(bundle, weather)  # вектор, те же строки, [0, 1]
+bundle = joblib.load("artifacts/gfs-model/model.joblib")
+weather, manifest = select_run("2026-01-31T18:00:00Z")
+power = predict(bundle, weather)  # вектор, те же строки, [0, 1]
 ```
 
 Один вызов возвращает погоду двух турбин: 96 строк для 48 ч. Проверяется
 граница доступности погоды и конец обучения относительно `as_of`.
 Артефакт загружать только из доверенного источника.
 
-**Для фронта:** готовый ансамбль на январе — MAE 0.16933, RMSE 0.25432;
-1–24 ч MAE 0.15682, 25–48 ч MAE 0.18227. Это доли нормализованной мощности,
+**Для фронта:** основной ансамбль NOAA на январе — MAE 0.15947, RMSE 0.23190;
+1–24 ч MAE 0.15226, 25–48 ч MAE 0.16692. Это доли нормализованной мощности,
 не MAPE. Факта февраля нет. Метрики `artifacts/power_curve` с фактическим
 ветром не брать на график качества прогноза.
 
@@ -79,7 +78,10 @@ power = predict_weather(bundle, weather)  # вектор, те же строки
 метка начала 10 минут, выпуск 23:00 по часам CSV. Это не ответ организаторов.
 В артефакте сохранено `time_assumptions.confirmed_by_organizers=false`.
 
-**Интеграция погоды с API v0.3:** Previous Runs использует фиксированные offsets.
+**Интеграция погоды с API v0.3:** основная модель NOAA возвращает `single_run`
+с `initialization_time` и `available_at`, полученными из GRIB и S3.
+Пример: `reports/agent-noaa-first-forecast.json`.
+Для предыдущей исследовательской модели Previous Runs использует фиксированные offsets.
 Неизвестные `initialization_time`/`available_at` равны null. Поле модуля погоды
 `available_at_upper_bound = valid_time - offset_days*24h + 12h` передаётся
 в API как `available_at_estimate`; backend перепроверяет формулу и `<= as_of`.
@@ -185,6 +187,31 @@ python scripts/audit_data.py --input data/incoming --output reports/data-audit.j
 ---
 
 ## Хронология
+
+### 15:16 — Основная модель NOAA, CPU-экспорт и полный replay (Codex)
+
+- Завершены 400 конфигураций: 40 CPU, 180 RTX 5090, 180 Brev A6000.
+  По ноябрю–декабрю выбран ансамбль пяти MLP; январская MAE **0.15947**,
+  RMSE **0.23190**. Январь — мониторинг разработки; февральского факта нет.
+- `artifacts/gfs-model/`: веса для CPU, отдельная январская модель, метрики,
+  персистентные базовые модели, 29 февральских выпусков и краткий отчёт.
+  `artifacts/gfs-search/`: протокол и результаты всех 400 конфигураций.
+- `data/gfs-runs/`: все 730 циклов NOAA, URL и исходные даты публикации,
+  ETag, диапазоны байтов, SHA-256. Каждый исходный объект доступен не позже
+  своего исторического `as_of`. Время CSV всё ещё не подтверждено.
+- CLI теперь выбирает модель NOAA. Агент уже выбирает её автоматически;
+  API-replay завершён: **29/29**, 2784 значения. Смена модели создала ревизию,
+  одинаковый повтор переиспользовал расчёт (`reports/agent-noaa-*.json`).
+- Docker включает новую модель, архив и загрузчик. ecCodes закреплён в
+  backend/uv.lock; изменяемый погодный кэш вынесен в `/app/state/gfs`.
+  В `.gitattributes` отключена нормализация байтов погодных CSV для сохранения SHA.
+- Ruff и `git diff --check` выполнены. Тесты не запускались. Новый прогноз
+  фактически рассчитан через CLI и API; Docker после этой смены нужно
+  повторно проверить перед сдачей (предыдущие проверки Claude см. ниже).
+- Для фронта актуальны `artifacts/gfs-model/metrics.json` и пример
+  `reports/agent-noaa-first-forecast.json`. В `weather.sources` — происхождение,
+  погодные числовые признаки в API-точки пока не включены. Факта февраля и
+  вероятностных интервалов нет; рисовать их как измеренные нельзя.
 
 ### 16:05 — Стенд для интеграции фронта и backend (Claude Code)
 
