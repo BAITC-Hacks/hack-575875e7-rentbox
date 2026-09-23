@@ -9,7 +9,7 @@
 #   ./run.sh logs     показать журнал сервиса
 #
 # Ключи и внешние учётные записи не нужны: прогнозы погоды лежат в репозитории
-# (data/weather), модель — в artifacts. Достаточно Docker; если его нет,
+# (data/gfs-runs), модель — в artifacts. Достаточно Docker; если его нет,
 # скрипт поднимет сервис локально через uv.
 
 set -euo pipefail
@@ -130,7 +130,7 @@ wait_healthy() {
     local url="http://127.0.0.1:$PORT/api/health"
     printf '  ожидаю готовности'
     for _ in $(seq 1 60); do
-        if curl -s --max-time 2 "$url" >/dev/null 2>&1; then
+        if curl -fsS --max-time 2 "$url" >/dev/null 2>&1; then
             printf '\n'
             green "  ✓ сервис отвечает"
             return 0
@@ -145,7 +145,8 @@ wait_healthy() {
 start_docker() {
     bold "Запуск в Docker (порт $PORT)"
     local output
-    output=$(BACKEND_PORT="$PORT" $COMPOSE up -d --build --wait 2>&1) || true
+    local result=0
+    output=$(BACKEND_PORT="$PORT" $COMPOSE up -d --build --wait 2>&1) || result=$?
     printf '%s\n' "$output" | grep -Ev '^#|DONE|CACHED|^$' || true
 
     # В WSL порт может держать процесс Windows: из Linux он не виден как
@@ -154,6 +155,10 @@ start_docker() {
     if printf '%s' "$output" | grep -q 'ports are not available\|address already in use\|port is already allocated'; then
         die "порт $PORT занят другим процессом" \
             "Попробуйте другой порт: BACKEND_PORT=$((PORT + 100)) ./run.sh"
+    fi
+    if [ "$result" -ne 0 ]; then
+        $COMPOSE logs --tail 40 backend 2>&1 || true
+        die "Docker не смог запустить backend" "Подробности ошибки приведены выше."
     fi
     wait_healthy
 }
@@ -176,7 +181,18 @@ start_local() {
 start() {
     check
     ensure_env
-    pick_port
+    # Повторный запуск использует порт контейнера этого Compose-проекта.
+    # Иначе каждый ./run.sh all пересоздавал его на следующем порту.
+    local published=""
+    if [ "$MODE" = "docker" ]; then
+        published=$($COMPOSE port backend 8000 2>/dev/null || true)
+        published="${published##*:}"
+    fi
+    if [[ "$published" =~ ^[0-9]+$ ]] && { [ -z "${BACKEND_PORT:-}" ] || [ "$PORT" = "$published" ]; }; then
+        PORT="$published"
+    else
+        pick_port
+    fi
     if [ "$MODE" = "docker" ]; then start_docker; else start_local; fi
 
     printf '\n'
@@ -190,15 +206,17 @@ start() {
 # --- демонстрация -----------------------------------------------------------
 
 demo() {
+    start
+    # start может выбрать свободный порт; адрес строится после его выбора.
     local base="http://127.0.0.1:$PORT"
-    curl -s --max-time 3 "$base/api/health" >/dev/null 2>&1 || start
 
     printf '\n'
     bold "Расчёт прогноза на 48 часов, момент решения 2026-01-31 18:00 UTC"
     local response run_id status
-    response=$(curl -s -X POST "$base/api/agent/runs" \
+    response=$(curl --fail-with-body -sS --max-time 30 -X POST "$base/api/agent/runs" \
         -H 'Content-Type: application/json' \
-        -d '{"as_of":"2026-01-31T18:00:00Z","horizon_hours":48,"turbine_ids":[1,2]}')
+        -d '{"as_of":"2026-01-31T18:00:00Z","horizon_hours":48,"turbine_ids":[1,2]}') \
+        || die "не удалось запустить расчёт" "$response"
     run_id=$(printf '%s' "$response" | sed -n 's/.*"run_id":"\([^"]*\)".*/\1/p')
 
     if [ -z "$run_id" ]; then
@@ -209,7 +227,7 @@ demo() {
     info "запуск $run_id"
 
     for _ in $(seq 1 60); do
-        status=$(curl -s "$base/api/agent/runs/$run_id" \
+        status=$(curl -fsS --max-time 10 "$base/api/agent/runs/$run_id" \
                  | sed -n 's/.*"status":"\([^"]*\)".*/\1/p')
         case "$status" in
             completed|succeeded) break ;;
@@ -219,9 +237,13 @@ demo() {
         sleep 2
     done
     printf '\n'
+    case "$status" in
+        completed|succeeded) ;;
+        *) die "расчёт ещё не завершён" "Состояние: $base/api/agent/runs/$run_id" ;;
+    esac
 
     mkdir -p artifacts
-    curl -s "$base/api/agent/runs/$run_id/forecast.csv" -o artifacts/demo-forecast.csv
+    curl -fsS --max-time 30 "$base/api/agent/runs/$run_id/forecast.csv" -o artifacts/demo-forecast.csv
     local rows
     rows=$(($(wc -l < artifacts/demo-forecast.csv) - 1))
     green "  ✓ получено $rows почасовых значений → artifacts/demo-forecast.csv"
@@ -238,33 +260,126 @@ demo() {
 
 WEB_PORT="${WEB_PORT:-3000}"
 
-start_web() {
-    command -v npm >/dev/null 2>&1 || die "нужен Node.js 20+" "Скачать: https://nodejs.org"
+# Next.js хранит PID сервера в lock-файле. Проверяем команду и рабочую
+# директорию процесса: останавливать чужой процесс по устаревшему PID нельзя.
+web_pid() {
+    command -v node >/dev/null 2>&1 || return 0
+    node - "$PWD/apps/web" <<'NODE'
+const fs = require('node:fs');
+const { execFileSync } = require('node:child_process');
+const root = fs.realpathSync(process.argv[2]);
+try {
+    const { pid } = JSON.parse(fs.readFileSync(`${root}/.next/dev/lock`, 'utf8'));
+    if (!Number.isInteger(pid) || pid <= 1) process.exit(0);
+    process.kill(pid, 0);
+    const command = execFileSync('ps', ['-p', String(pid), '-o', 'command='], { encoding: 'utf8' });
+    if (!command.includes('next-server')) process.exit(0);
+    let cwd;
+    if (process.platform === 'linux') {
+        cwd = fs.realpathSync(`/proc/${pid}/cwd`);
+    } else {
+        const output = execFileSync('lsof', ['-a', '-p', String(pid), '-d', 'cwd', '-Fn'], { encoding: 'utf8' });
+        const line = output.split('\n').find((value) => value.startsWith('n'));
+        if (line) cwd = fs.realpathSync(line.slice(1));
+    }
+    if (cwd === root) console.log(pid);
+} catch { /* Нет запущенного сервера с подтверждённым владельцем. */ }
+NODE
+}
 
-    if [ ! -d node_modules ]; then
-        bold "Ставлю зависимости дашборда (один раз, несколько минут)"
-        npm install --no-audit --no-fund >/dev/null
+stop_web() {
+    local pid
+    pid=$(web_pid)
+    if [ -n "$pid" ]; then
+        info "останавливаю предыдущий дашборд этого проекта (PID $pid)…"
+        kill "$pid" 2>/dev/null || true
+        for _ in $(seq 1 20); do
+            kill -0 "$pid" 2>/dev/null || break
+            sleep 0.25
+        done
+        if kill -0 "$pid" 2>/dev/null; then
+            die "предыдущий дашборд ещё завершает работу" "Повторите запуск после его остановки."
+        fi
+    fi
+    rm -f .run/web.pid
+}
+
+start_web() {
+    command -v npm >/dev/null 2>&1 || die "нужны Node.js и npm" "Скачать: https://nodejs.org"
+    stop_web
+    mkdir -p .run
+
+    # Наличие node_modules не означает, что зависимости нового коммита
+    # установлены. Синхронизируем точные версии при изменении lock-файла.
+    local dependencies saved=""
+    dependencies=$(node -e '
+        const fs = require("node:fs"), crypto = require("node:crypto");
+        const hash = crypto.createHash("sha256");
+        for (const file of ["package-lock.json", "package.json", "apps/web/package.json", "packages/ui/package.json"])
+            hash.update(fs.readFileSync(file));
+        console.log(hash.digest("hex"));')
+    [ ! -f .run/web-dependencies.sha256 ] || saved=$(cat .run/web-dependencies.sha256)
+    if [ "$saved" != "$dependencies" ] || ! node -e 'for (const name of ["next", "react", "three"]) require.resolve(name, { paths: ["./apps/web"] });' >/dev/null 2>&1; then
+        bold "Синхронизирую зависимости дашборда по package-lock.json"
+        npm ci --no-audit --no-fund || die "не удалось установить зависимости дашборда"
+        printf '%s\n' "$dependencies" > .run/web-dependencies.sha256
     fi
 
+    local first_port="$WEB_PORT"
+    for _ in $(seq 1 10); do
+        port_free "$WEB_PORT" && break
+        WEB_PORT=$((WEB_PORT + 1))
+    done
+    port_free "$WEB_PORT" || die "нет свободного порта для дашборда" "Задайте WEB_PORT: WEB_PORT=3100 ./run.sh all"
+    [ "$WEB_PORT" = "$first_port" ] || info "порт $first_port занят, использую $WEB_PORT"
+
     bold "Запуск дашборда (порт $WEB_PORT)"
-    mkdir -p .run
     # Next.js проксирует /api на backend; браузер обращается к своему origin.
-    RENTBOX_API_URL="http://127.0.0.1:$PORT/api" \
-        npm run dev --workspace web -- --port "$WEB_PORT" > .run/web.log 2>&1 &
-    echo $! > .run/web.pid
+    local pid
+    pid=$(node - "$PWD" "$WEB_PORT" "$PORT" <<'NODE'
+const fs = require('node:fs');
+const { spawn } = require('node:child_process');
+const [root, port, backendPort] = process.argv.slice(2);
+const log = fs.openSync(`${root}/.run/web.log`, 'w');
+const child = spawn(process.execPath, [
+    `${root}/node_modules/next/dist/bin/next`, 'dev', '--hostname', '127.0.0.1', '--port', port,
+], {
+    cwd: `${root}/apps/web`, detached: true, stdio: ['ignore', log, log],
+    env: { ...process.env, RENTBOX_API_URL: `http://127.0.0.1:${backendPort}/api` },
+});
+child.on('error', (error) => { console.error(error.message); process.exitCode = 1; });
+child.unref();
+fs.closeSync(log);
+console.log(child.pid);
+NODE
+    )
+    printf '%s\n' "$pid" > .run/web.pid
 
     printf '  ожидаю дашборд'
     for _ in $(seq 1 45); do
-        if curl -s --max-time 2 -o /dev/null "http://127.0.0.1:$WEB_PORT"; then
+        if ! kill -0 "$pid" 2>/dev/null; then
             printf '\n'
-            green "  ✓ дашборд отвечает"
+            tail -40 .run/web.log
+            die "процесс дашборда завершился" "Полный журнал: .run/web.log"
+        fi
+        local status
+        status=$(curl -sS --max-time 5 -o /dev/null -w '%{http_code}' "http://127.0.0.1:$WEB_PORT" 2>/dev/null || true)
+        if [ "$status" = "200" ] && curl -fsS --max-time 5 "http://127.0.0.1:$WEB_PORT/api/health" >/dev/null 2>&1; then
+            printf '\n'
+            green "  ✓ дашборд и подключение к API работают"
             return 0
+        fi
+        if [ "$status" = "500" ]; then
+            printf '\n'
+            tail -40 .run/web.log
+            die "ошибка сборки страницы дашборда" "Полный журнал: .run/web.log"
         fi
         printf '.'
         sleep 2
     done
     printf '\n'
-    die "дашборд не поднялся за 90 секунд" "Журнал: tail -50 .run/web.log"
+    tail -40 .run/web.log
+    die "дашборд или его соединение с API не готовы" "Журнал: tail -50 .run/web.log"
 }
 
 all() {
@@ -320,11 +435,12 @@ RENDER
 # --- остановка --------------------------------------------------------------
 
 stop() {
+    stop_web
     detect_compose
     if [ -n "$COMPOSE" ] && docker info >/dev/null 2>&1; then
         $COMPOSE down 2>/dev/null || true
     fi
-    for name in backend web; do
+    for name in backend; do
         if [ -f ".run/$name.pid" ]; then
             kill "$(cat ".run/$name.pid")" 2>/dev/null || true
             rm -f ".run/$name.pid"
