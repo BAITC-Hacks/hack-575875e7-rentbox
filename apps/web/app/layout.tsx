@@ -2,7 +2,11 @@ import { Geist_Mono, Inter } from "next/font/google"
 
 import "@workspace/ui/globals.css"
 import "./dashboard.css"
-import type { Metadata } from "next"
+import "./dashboard-v2.css"
+import "./appearance.css"
+import "./simulation.css"
+import { AppearanceProvider } from "@/components/appearance-provider"
+import { LocaleProvider } from "@/components/locale-provider"
 import { ThemeProvider } from "@/components/theme-provider"
 import { cn } from "@workspace/ui/lib/utils"
 
@@ -15,12 +19,6 @@ const fontMono = Geist_Mono({
   subsets: ["latin"],
   variable: "--font-mono",
 })
-
-export const metadata: Metadata = {
-  title: "Windcast — прогноз выработки ВЭС",
-  description:
-    "Почасовой прогноз ветровой генерации, погода и AI-агент. Демонстрационный dashboard.",
-}
 
 export default function RootLayout({
   children,
@@ -39,7 +37,15 @@ export default function RootLayout({
       )}
     >
       <body>
-        <ThemeProvider forcedTheme="light">{children}</ThemeProvider>
+        <ThemeProvider
+          defaultTheme="light"
+          enableSystem={false}
+          storageKey="windcast.theme"
+        >
+          <LocaleProvider>
+            <AppearanceProvider>{children}</AppearanceProvider>
+          </LocaleProvider>
+        </ThemeProvider>
       </body>
     </html>
   )

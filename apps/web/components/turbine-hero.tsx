@@ -1,10 +1,10 @@
 "use client"
 
+import { useI18n } from "@/components/locale-provider"
+
 import { Box, Snowflake, Thermometer, Wind, Zap } from "lucide-react"
 import {
   AGENT_STEPS,
-  formatDate,
-  number,
   type ForecastPoint,
   type TurbineId,
 } from "@/lib/forecast-data"
@@ -14,9 +14,11 @@ import {
   type SceneFocus,
   type SceneMode,
 } from "@/lib/turbine-scene"
+import { SimulationHour } from "@/components/simulation-controls"
 import { TurbineStage } from "@/components/turbine-stage"
 
 type Props = {
+  compact?: boolean
   view: DashboardView
   turbine: TurbineId
   mode: SceneMode
@@ -77,6 +79,7 @@ const sensorNames: { id: SceneFocus; label: string; description: string }[] = [
   },
 ]
 export function TurbineHero({
+  compact = false,
   view,
   turbine,
   mode,
@@ -91,6 +94,8 @@ export function TurbineHero({
   onHour,
   onStep,
 }: Props) {
+  const { tr, number, formatDate } = useI18n()
+
   const copy = SCENE_COPY[mode]
   const details = mode === "cutaway" ? partNames : sensorNames
   const modes: SceneMode[] =
@@ -99,14 +104,15 @@ export function TurbineHero({
       : ["flow", "icing", "cutaway", "sensors"]
   return (
     <section
-      className={`wc-turbine-hero wc-system-twin ${mode === "icing" ? "is-icing" : ""}`}
-      aria-label="Модель турбины, связанная с системой"
+      className={`wc-turbine-hero wc-system-twin ${compact ? "is-compact" : ""} ${mode === "icing" ? "is-icing" : ""}`}
+      aria-label={tr("Модель турбины, связанная с системой")}
     >
       <div className="wc-twin-toolbar">
         <span className="wc-turbine-eyebrow">
-          <Box size={13} /> {viewNames[view]} <b>3D</b>
+          <Box size={15} />{" "}
+          {compact ? tr("Состояние турбины") : tr(viewNames[view])} <b>3D</b>
         </span>
-        <div className="wc-twin-modes" aria-label="Сценарий визуализации">
+        <div className="wc-twin-modes" aria-label={tr("Сценарий визуализации")}>
           {modes.map((m) => (
             <button
               key={m}
@@ -115,7 +121,8 @@ export function TurbineHero({
               disabled={busy}
               onClick={() => onMode(m)}
             >
-              {m === "icing" && <Snowflake size={12} />} {SCENE_COPY[m].label}
+              {m === "icing" && <Snowflake size={12} />}{" "}
+              {tr(SCENE_COPY[m].label)}
             </button>
           ))}
         </div>
@@ -123,33 +130,39 @@ export function TurbineHero({
       <div className="wc-turbine-hero-copy">
         <span className="wc-twin-object">
           {turbine === "all"
-            ? "ВЭС · ДВЕ ТУРБИНЫ"
+            ? tr("ВЭС · ДВЕ ТУРБИНЫ")
             : turbine === "t1"
-              ? "WTG–001 · СЕВЕРНЫЙ УЧАСТОК"
-              : "WTG–002 · ЮЖНЫЙ УЧАСТОК"}{" "}
-          <i /> {point?.hour ?? "Час не выбран"} · UTC+5
+              ? tr("WTG–001 · СЕВЕРНЫЙ УЧАСТОК")
+              : tr("WTG–002 · ЮЖНЫЙ УЧАСТОК")}{" "}
+          <i /> {point?.hour ?? tr("Час не выбран")} · UTC+5
         </span>
         <h2>
-          {copy.title}
+          {tr(copy.title)}
           <br />
-          <span>{copy.subtitle}</span>
+          <span>{tr(copy.subtitle)}</span>
         </h2>
-        <p>{copy.detail}</p>
+        <p>
+          {tr(
+            point?.simulation && mode === "icing"
+              ? "Учебный сценарий обледенения: слой на лопастях показывает заданные генератором условия. Потери рассчитаны условно."
+              : copy.detail
+          )}
+        </p>
         <div className="wc-turbine-live-metrics">
           <div>
             <span>
               <Wind size={13} />
-              Ветер
+              {tr("Ветер")}
             </span>
             <strong>
               {number(point?.wind)}
-              <small>м/с</small>
+              <small>{tr("м/с")}</small>
             </strong>
           </div>
           <div>
             <span>
               <Zap size={13} />
-              Мощность
+              {tr("Мощность")}
             </span>
             <strong>
               {number(point?.forecast)}
@@ -159,7 +172,7 @@ export function TurbineHero({
           <div>
             <span>
               <Thermometer size={13} />
-              Воздух
+              {tr("Воздух")}
             </span>
             <strong>
               {number(point?.temperature)}
@@ -167,11 +180,14 @@ export function TurbineHero({
             </strong>
           </div>
         </div>
+        {point && <SimulationHour point={point} />}
         {(mode === "cutaway" || mode === "sensors") && (
           <div className="wc-twin-details">
             <div
               aria-label={
-                mode === "cutaway" ? "Узел турбины" : "Показатель источника"
+                mode === "cutaway"
+                  ? tr("Узел турбины")
+                  : tr("Показатель источника")
               }
             >
               {details.map((p, i) => (
@@ -182,13 +198,15 @@ export function TurbineHero({
                   onClick={() => onFocus(p.id)}
                 >
                   <small>0{i + 1}</small>
-                  {p.label}
+                  {tr(p.label)}
                 </button>
               ))}
             </div>
             <p>
-              {details.find((p) => p.id === focus)?.description ??
-                details[0]!.description}
+              {tr(
+                details.find((p) => p.id === focus)?.description ??
+                  details[0]!.description
+              )}
             </p>
           </div>
         )}
@@ -196,16 +214,26 @@ export function TurbineHero({
           <div className="wc-icing-explainer">
             <Snowflake size={18} />
             <div>
-              <strong>Иллюстрация обледенения</strong>
+              <strong>{tr("Иллюстрация обледенения")}</strong>
               <span>
-                Нет данных о влажности и датчика льда. Потери мощности и
-                вероятность не рассчитаны.
+                {tr(
+                  point?.simulation
+                    ? "Влажность и потери заданы генератором. Реальных измерений льда нет."
+                    : "Нет данных о влажности и датчика льда. Потери мощности и вероятность не рассчитаны."
+                )}
               </span>
             </div>
           </div>
         )}
         <span className="wc-turbine-disclaimer">
-          {point ? "Прогноз модели" : "Ожидание прогноза"} · условная конструкция турбины
+          {tr(
+            point
+              ? point.simulation
+                ? "Синтетическая симуляция"
+                : "Прогноз модели"
+              : "Ожидание прогноза"
+          )}{" "}
+          · {tr("условная конструкция турбины")}
         </span>
       </div>
       <TurbineStage
@@ -214,41 +242,64 @@ export function TurbineHero({
         wind={point?.wind ?? null}
         power={point?.forecast ?? null}
         temperature={point?.temperature ?? null}
+        operationalStop={Boolean(point?.simulation) && point?.forecast === 0}
+        disabled={busy}
+        onFocus={(next) => {
+          if (["rotor", "gearbox", "generator"].includes(next))
+            onMode("cutaway")
+          else onMode("sensors")
+          onFocus(next)
+        }}
       />
-      <div className="wc-twin-timeline">
-        <div>
-          <span>ВЫБРАННЫЙ ЧАС</span>
-          <strong>
-            {point ? `${formatDate(point.date)} · ${point.hour}` : "Прогноз не выбран"}
-          </strong>
-        </div>
-        <div className="wc-twin-scrubber">
-          <input
-            type="range"
-            aria-label="Час 3D-модели"
-            min={0}
-            max={Math.max(0, data.length - 1)}
-            disabled={!data.length}
-            value={hourIndex}
-            onChange={(e) => onHour(Number(e.target.value))}
-            aria-valuetext={point ? `${formatDate(point.date)}, ${point.hour}` : "Нет данных"}
-          />
+      {!compact && (
+        <div className="wc-twin-timeline">
           <div>
-            <span>{data[0]?.hour ?? "—"}</span>
-            <span>{data.length ? `Горизонт ${data.length} ч · UTC+5` : "Ожидание расчёта"}</span>
-            <span>{data.at(-1)?.hour ?? "—"}</span>
+            <span>{tr("ВЫБРАННЫЙ ЧАС")}</span>
+            <strong>
+              {point
+                ? `${formatDate(point.date)} · ${point.hour}`
+                : tr("Прогноз не выбран")}
+            </strong>
           </div>
+          <div className="wc-twin-scrubber">
+            <input
+              type="range"
+              aria-label={tr("Час 3D-модели")}
+              min={0}
+              max={Math.max(0, data.length - 1)}
+              disabled={!data.length}
+              value={hourIndex}
+              onChange={(e) => onHour(Number(e.target.value))}
+              aria-valuetext={
+                point
+                  ? `${formatDate(point.date)}, ${point.hour}`
+                  : tr("Нет данных")
+              }
+            />
+            <div>
+              <span>{data[0]?.hour ?? "—"}</span>
+              <span>
+                {data.length
+                  ? `${tr("Горизонт")} ${data.length} ${tr("ч · UTC+5")}`
+                  : tr("Ожидание расчёта")}
+              </span>
+              <span>{data.at(-1)?.hour ?? "—"}</span>
+            </div>
+          </div>
+          <span className="wc-twin-sync" role="status">
+            {busy
+              ? tr("Шаг {v0}: {v1}", {
+                  v0: step + 1,
+                  v1: tr(AGENT_STEPS[step]!.title),
+                })
+              : `${tr(copy.label)} · ${tr(viewNames[view])}`}
+          </span>
         </div>
-        <span className="wc-twin-sync" role="status">
-          {busy
-            ? `Шаг ${step + 1}: ${AGENT_STEPS[step]!.title}`
-            : `${copy.label} · ${viewNames[view]}`}
-        </span>
-      </div>
+      )}
       {view === "agent" && (
         <div
           className="wc-twin-agent-steps"
-          aria-label="Этап визуализации агента"
+          aria-label={tr("Этап визуализации агента")}
         >
           {AGENT_STEPS.map((s, i) => (
             <button
@@ -259,7 +310,7 @@ export function TurbineHero({
               onClick={() => onStep(i)}
             >
               <span>{String(i + 1).padStart(2, "0")}</span>
-              {s.title}
+              {tr(s.title)}
             </button>
           ))}
         </div>
