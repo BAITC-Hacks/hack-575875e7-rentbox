@@ -42,7 +42,9 @@ detect_compose() {
 }
 
 port_free() {
-    ! (command -v curl >/dev/null 2>&1 && curl -s -o /dev/null --max-time 2 "http://127.0.0.1:$1/api/health") 2>/dev/null
+    # Занятым считается любой слушающий порт, а не только наш сервис:
+    # иначе чужой процесс на этом порту обнаружится лишь при старте контейнера.
+    ! (exec 3<>"/dev/tcp/127.0.0.1/$1") 2>/dev/null
 }
 
 pick_port() {
@@ -142,7 +144,17 @@ wait_healthy() {
 
 start_docker() {
     bold "Запуск в Docker (порт $PORT)"
-    BACKEND_PORT="$PORT" $COMPOSE up -d --build --wait 2>&1 | grep -Ev '^#|DONE|CACHED' || true
+    local output
+    output=$(BACKEND_PORT="$PORT" $COMPOSE up -d --build --wait 2>&1) || true
+    printf '%s\n' "$output" | grep -Ev '^#|DONE|CACHED|^$' || true
+
+    # В WSL порт может держать процесс Windows: из Linux он не виден как
+    # слушающий, поэтому ошибка всплывает только здесь. Сообщаем сразу,
+    # вместо двух минут ожидания health.
+    if printf '%s' "$output" | grep -q 'ports are not available\|address already in use\|port is already allocated'; then
+        die "порт $PORT занят другим процессом" \
+            "Попробуйте другой порт: BACKEND_PORT=$((PORT + 100)) ./run.sh"
+    fi
     wait_healthy
 }
 
@@ -215,8 +227,8 @@ demo() {
     green "  ✓ получено $rows почасовых значений → artifacts/demo-forecast.csv"
 
     printf '\n'
-    bold "Первые строки"
-    cut -d, -f3,4,5,6 artifacts/demo-forecast.csv | head -5 | sed 's/^/  /'
+    bold "Прогноз мощности"
+    show_forecast artifacts/demo-forecast.csv
     printf '\n'
     info "Полный прогноз февраля: artifacts/gfs-model/february_replay.csv"
     info "Метрики и ограничения:  artifacts/gfs-model/report.md"
@@ -265,6 +277,44 @@ all() {
     info "API:            http://127.0.0.1:$PORT/api"
     info "Документация:   http://127.0.0.1:$PORT/docs"
     info "Остановить:     ./run.sh stop"
+}
+
+# Человекочитаемый вид результата. Сам CSV остаётся машинным: технические имена
+# колонок, время UTC и доли 0…1 — это контракт для проверяющих и скриптов.
+show_forecast() {
+    local file="$1"
+    if ! command -v python3 >/dev/null 2>&1; then
+        head -5 "$file" | sed 's/^/  /'
+        return 0
+    fi
+    python3 - "$file" <<'RENDER' || head -5 "$file" | sed 's/^/  /'
+import csv, datetime, sys
+
+OFFSET = 5  # часовой пояс исходных измерений, см. RENTBOX_SOURCE_TIMEZONE
+
+def local(value):
+    moment = datetime.datetime.fromisoformat(value.replace("Z", "+00:00"))
+    return moment + datetime.timedelta(hours=OFFSET)
+
+with open(sys.argv[1]) as handle:
+    rows = list(csv.DictReader(handle))
+if not rows:
+    raise SystemExit("  файл пуст")
+
+print(f"  {'Турбина':<9}{'Местное время (UTC+5)':<24}{'Через':<8}{'Мощность':>9}")
+for row in rows[:5]:
+    print(f"  {row['turbine_id']:<9}{local(row['valid_time']).strftime('%d.%m %H:%M'):<24}"
+          f"{'+' + row['lead_hour'] + ' ч':<8}{float(row['predicted_power']) * 100:>8.1f}%")
+
+power = [float(row["predicted_power"]) for row in rows]
+turbines = sorted({row["turbine_id"] for row in rows})
+hours = len({row["valid_time"] for row in rows})
+start, end = local(rows[0]["valid_time"]), local(rows[-1]["valid_time"])
+print(f"\n  {hours} часов × {len(turbines)} турбины = {len(rows)} значений")
+print(f"  Период: {start:%d.%m %H:%M} — {end:%d.%m %H:%M} по местному времени")
+print(f"  Мощность от {min(power) * 100:.1f}% до {max(power) * 100:.1f}% номинала, "
+      f"в среднем {sum(power) / len(power) * 100:.1f}%")
+RENDER
 }
 
 # --- остановка --------------------------------------------------------------
