@@ -3,7 +3,7 @@
 import { useI18n } from "@/components/locale-provider"
 
 import Image from "next/image"
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useRef, useState, useSyncExternalStore } from "react"
 import { LockKeyhole, Pause, Play } from "lucide-react"
 import {
   SCENE_COPY,
@@ -13,8 +13,12 @@ import {
 import { useAppearance } from "@/components/appearance-provider"
 import type { TurbineSceneSettings } from "@/lib/turbine-renderer"
 
-import { useSystemReducedMotion } from "@/components/motion-preference"
-import type { SimulationReading } from "@/lib/wind-simulation"
+const motionQuery = "(prefers-reduced-motion: reduce)"
+function subscribeMotion(callback: () => void) {
+  const media = window.matchMedia(motionQuery)
+  media.addEventListener("change", callback)
+  return () => media.removeEventListener("change", callback)
+}
 
 export function TurbineStage({
   mode,
@@ -25,8 +29,6 @@ export function TurbineStage({
   onFocus,
   disabled = false,
   operationalStop = false,
-  liveSimulation = false,
-  operatingState,
 }: {
   mode: SceneMode
   focus: SceneFocus
@@ -34,8 +36,6 @@ export function TurbineStage({
   power: number | null
   temperature: number | null
   onFocus: (focus: SceneFocus) => void
-  liveSimulation?: boolean
-  operatingState?: SimulationReading["state"]
   operationalStop?: boolean
   disabled?: boolean
 }) {
@@ -47,7 +47,11 @@ export function TurbineStage({
   )
   const [motionRequested, setMotionRequested] = useState<boolean | null>(null)
   const { highVisibility } = useAppearance()
-  const systemReducedMotion = useSystemReducedMotion()
+  const systemReducedMotion = useSyncExternalStore(
+    subscribeMotion,
+    () => window.matchMedia(motionQuery).matches,
+    () => true
+  )
   const reducedMotion = systemReducedMotion || highVisibility
   const playing = !highVisibility && (motionRequested ?? !systemReducedMotion)
   const settingsRef = useRef<TurbineSceneSettings>({
@@ -57,7 +61,6 @@ export function TurbineStage({
     power,
     temperature,
     operationalStop,
-    liveSimulation,
     playing: false,
     reducedMotion: true,
   })
@@ -69,7 +72,6 @@ export function TurbineStage({
       power,
       temperature,
       operationalStop,
-      liveSimulation,
       playing,
       reducedMotion,
     }
@@ -82,7 +84,6 @@ export function TurbineStage({
     playing,
     reducedMotion,
     operationalStop,
-    liveSimulation,
   ])
   useEffect(() => {
     const host = hostRef.current
@@ -108,22 +109,6 @@ export function TurbineStage({
       cleanup?.()
     }
   }, [])
-  const inspectionStill = mode === "icing" && !liveSimulation
-  const motionLabel = operationalStop
-    ? operatingState === "storm"
-      ? "Штормовая защита · ротор остановлен"
-      : operatingState === "recovering"
-        ? "Ротор ждёт безопасного ветра"
-        : "Слабый ветер · ротор остановлен"
-    : highVisibility
-      ? "Анимация отключена в версии для слабовидящих"
-      : mode === "history"
-        ? "Архивный снимок · без вращения"
-        : inspectionStill
-          ? "Пауза для осмотра лопастей"
-          : !playing
-            ? "Анимация на паузе"
-            : "Ротор вращается по выбранному часу"
   const cutaway =
     mode === "cutaway" || (mode === "sensors" && focus === "power")
   const callouts: { id: SceneFocus; title: string; value: string }[] = cutaway
@@ -249,19 +234,16 @@ export function TurbineStage({
       {status === "ready" && (
         <div className="wc-scene-caption">
           <span>
-            <small>
-              <LockKeyhole size={12} />
-              {mode === "icing"
-                ? tr("Лёд на профиле лопасти · иллюстрация")
-                : mode === "cutaway"
-                  ? tr("Вал → редуктор → генератор")
-                  : mode === "sensors"
-                    ? tr("Условные точки измерений")
-                    : tr("Ракурс выбирает система")}
-            </small>
-            <strong className="wc-rotor-status">{tr(motionLabel)}</strong>
+            <LockKeyhole size={12} />
+            {mode === "icing"
+              ? tr("Лёд на профиле лопасти · иллюстрация")
+              : mode === "cutaway"
+                ? tr("Вал → редуктор → генератор")
+                : mode === "sensors"
+                  ? tr("Условные точки измерений")
+                  : tr("Ракурс выбирает система")}
           </span>
-          {!inspectionStill && mode !== "history" && (
+          {mode !== "icing" && mode !== "history" && (
             <button
               type="button"
               aria-label={

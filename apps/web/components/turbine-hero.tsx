@@ -23,7 +23,7 @@ type Props = {
   turbine: TurbineId
   mode: SceneMode
   focus: SceneFocus
-  point: ForecastPoint
+  point: ForecastPoint | null
   hourIndex: number
   data: ForecastPoint[]
   busy: boolean
@@ -134,7 +134,7 @@ export function TurbineHero({
             : turbine === "t1"
               ? tr("WTG–001 · СЕВЕРНЫЙ УЧАСТОК")
               : tr("WTG–002 · ЮЖНЫЙ УЧАСТОК")}{" "}
-          <i /> {point.hour} · UTC+5
+          <i /> {point?.hour ?? tr("Час не выбран")} · UTC+5
         </span>
         <h2>
           {tr(copy.title)}
@@ -143,7 +143,7 @@ export function TurbineHero({
         </h2>
         <p>
           {tr(
-            point.simulation && mode === "icing"
+            point?.simulation && mode === "icing"
               ? "Учебный сценарий обледенения: слой на лопастях показывает заданные генератором условия. Потери рассчитаны условно."
               : copy.detail
           )}
@@ -155,7 +155,7 @@ export function TurbineHero({
               {tr("Ветер")}
             </span>
             <strong>
-              {number(point.wind)}
+              {number(point?.wind)}
               <small>{tr("м/с")}</small>
             </strong>
           </div>
@@ -165,7 +165,7 @@ export function TurbineHero({
               {tr("Мощность")}
             </span>
             <strong>
-              {number(point.forecast)}
+              {number(point?.forecast)}
               <small>%</small>
             </strong>
           </div>
@@ -175,12 +175,12 @@ export function TurbineHero({
               {tr("Воздух")}
             </span>
             <strong>
-              {number(point.temperature)}
+              {number(point?.temperature)}
               <small>°C</small>
             </strong>
           </div>
         </div>
-        <SimulationHour point={point} />
+        {point && <SimulationHour point={point} />}
         {(mode === "cutaway" || mode === "sensors") && (
           <div className="wc-twin-details">
             <div
@@ -217,7 +217,7 @@ export function TurbineHero({
               <strong>{tr("Иллюстрация обледенения")}</strong>
               <span>
                 {tr(
-                  point.simulation
+                  point?.simulation
                     ? "Влажность и потери заданы генератором. Реальных измерений льда нет."
                     : "Нет данных о влажности и датчика льда. Потери мощности и вероятность не рассчитаны."
                 )}
@@ -226,18 +226,23 @@ export function TurbineHero({
           </div>
         )}
         <span className="wc-turbine-disclaimer">
-          {tr("Демо-данные · условная конструкция турбины")}
+          {tr(
+            point
+              ? point.simulation
+                ? "Синтетическая симуляция"
+                : "Прогноз модели"
+              : "Ожидание прогноза"
+          )}{" "}
+          · {tr("условная конструкция турбины")}
         </span>
       </div>
       <TurbineStage
         mode={mode}
         focus={focus}
-        wind={point.wind}
-        power={point.forecast}
-        temperature={point.temperature}
-        liveSimulation={Boolean(point.simulation)}
-        operatingState={point.simulation?.state}
-        operationalStop={Boolean(point.simulation) && point.forecast === 0}
+        wind={point?.wind ?? null}
+        power={point?.forecast ?? null}
+        temperature={point?.temperature ?? null}
+        operationalStop={Boolean(point?.simulation) && point?.forecast === 0}
         disabled={busy}
         onFocus={(next) => {
           if (["rotor", "gearbox", "generator"].includes(next))
@@ -251,7 +256,9 @@ export function TurbineHero({
           <div>
             <span>{tr("ВЫБРАННЫЙ ЧАС")}</span>
             <strong>
-              {formatDate(point.date)} · {point.hour}
+              {point
+                ? `${formatDate(point.date)} · ${point.hour}`
+                : tr("Прогноз не выбран")}
             </strong>
           </div>
           <div className="wc-twin-scrubber">
@@ -259,17 +266,24 @@ export function TurbineHero({
               type="range"
               aria-label={tr("Час 3D-модели")}
               min={0}
-              max={data.length - 1}
+              max={Math.max(0, data.length - 1)}
+              disabled={!data.length}
               value={hourIndex}
               onChange={(e) => onHour(Number(e.target.value))}
-              aria-valuetext={`${formatDate(point.date)}, ${point.hour}`}
+              aria-valuetext={
+                point
+                  ? `${formatDate(point.date)}, ${point.hour}`
+                  : tr("Нет данных")
+              }
             />
             <div>
-              <span>{data[0]!.hour}</span>
+              <span>{data[0]?.hour ?? "—"}</span>
               <span>
-                {tr("Горизонт")} {data.length} {tr("ч · UTC+5")}
+                {data.length
+                  ? `${tr("Горизонт")} ${data.length} ${tr("ч · UTC+5")}`
+                  : tr("Ожидание расчёта")}
               </span>
-              <span>{data.at(-1)!.hour}</span>
+              <span>{data.at(-1)?.hour ?? "—"}</span>
             </div>
           </div>
           <span className="wc-twin-sync" role="status">

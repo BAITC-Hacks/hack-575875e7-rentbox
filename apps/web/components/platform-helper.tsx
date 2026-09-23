@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState, type FormEvent, type KeyboardEvent } from "react"
 import { ArrowUpRight, BookOpen, Download, LoaderCircle, RefreshCw, Send, Sparkles, Square, Trash2 } from "lucide-react"
-import { Button } from "@workspace/ui/components/button"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@workspace/ui/components/dialog"
 import { useAppearance } from "@/components/appearance-provider"
 import {
@@ -215,121 +214,116 @@ export function PlatformHelper({
   return (
     <Dialog open={open} onOpenChange={changeOpen}>
       <DialogContent
-        className={`flex flex-col gap-4 border border-[var(--wc-theme-border,#e1ead6)] bg-[var(--wc-theme-panel,#fefffc)] text-[var(--wc-theme-text,#3c5131)] [&_button:focus-visible]:outline-[var(--wc-control-ring)] ${highVisibility ? "[&_*]:animate-none [&_*]:transition-none [&_button]:min-h-11 [&_button]:min-w-11 [&_button]:h-auto [&_button]:whitespace-normal [&_button]:py-1 leading-relaxed [&_*]:tracking-normal" : ""}`}
+        className={`wc-helper ${highVisibility ? "wc-helper-high" : ""}`}
         lang="ru"
+        closeLabel="Закрыть помощник"
         initialFocus={(interaction) => interaction === "touch" ? true : input.current}
-        style={{ width: "min(720px, calc(100vw - 2rem))", maxWidth: "calc(100vw - 2rem)", maxHeight: "min(820px, calc(100dvh - 2rem))", overflowY: "auto" }}
+        style={{ top: 0, right: 0, bottom: 0, left: "auto", transform: "none", width: "min(500px, 100vw)", maxWidth: "100vw", height: "100dvh", maxHeight: "100dvh", borderRadius: 0, margin: 0 }}
       >
-        <DialogHeader className="shrink-0 pr-8">
-          <DialogTitle className="flex items-center gap-2 text-[length:max(20px,var(--wc-min-font,0px))] font-semibold">
-            <BookOpen className="size-5 text-[var(--wc-theme-accent-text,#4e7c39)]" /> Помощник Windcast
-          </DialogTitle>
-          <DialogDescription className="text-[length:max(12px,var(--wc-min-font,0px))] leading-relaxed text-[var(--wc-theme-muted,#687b5d)]">
-            Прогнозы, источники данных и история — помогу найти нужное и разобраться в показателях.
-          </DialogDescription>
+        <DialogHeader className="wc-helper-header">
+          <div className="wc-helper-heading">
+            <span className="wc-helper-avatar"><BookOpen className="size-5" /></span>
+            <div>
+              <DialogTitle className="wc-helper-title">Помощник Windcast</DialogTitle>
+              <DialogDescription className="wc-helper-subtitle">Прогнозы, источники данных и история запусков.</DialogDescription>
+            </div>
+          </div>
+          <div className="wc-helper-toolbar">
+            <span
+              className={`wc-helper-status ${ready ? "is-ready" : ""}`}
+              aria-live="polite"
+              title={checking ? "Проверяем доступный режим ответов."
+                : statusError ? `${statusError} Подключение ASTRA не подтверждено.`
+                  : ready ? "Доступ к модели проверяется при отправке вопроса."
+                    : "ASTRA не подключена. Доступны подсказки и справка платформы."}
+            >
+              {checking ? <LoaderCircle className="size-3.5 animate-spin" /> : ready ? <Sparkles className="size-3.5" /> : <BookOpen className="size-3.5" />}
+              {checking ? "Проверяем подключение" : ready ? "ASTRA · OpenAI" : "Справка платформы"}
+            </span>
+            <button type="button" className="wc-helper-icon-button" disabled={checking} onClick={() => setStatusRevision((value) => value + 1)} aria-label="Обновить состояние помощника">
+              <RefreshCw className="size-3.5" />
+            </button>
+            <button type="button" className="wc-helper-icon-button" disabled={busy || !messages.length} aria-label="Очистить диалог" onClick={() => {
+              setMessages([]); history.current = []; completedScope.current = null; setError(null); setRetry(null); input.current?.focus()
+            }}>
+              <Trash2 className="size-3.5" />
+            </button>
+          </div>
+          <p className="wc-helper-context">{PAGE_NAMES[context.view]} · {describeContext(context)}</p>
         </DialogHeader>
 
-        <div className="shrink-0 rounded-xl border border-[var(--wc-theme-border,#e1ead6)] bg-[var(--wc-theme-soft,#f3f7ed)] p-3" aria-live="polite">
-          <div className="flex items-center justify-between gap-3">
-            <span className="flex items-center gap-2 text-[length:max(12px,var(--wc-min-font,0px))] font-semibold">
-              {checking ? <LoaderCircle className="size-4 animate-spin" /> : ready ? <Sparkles className="size-4" /> : <BookOpen className="size-4" />}
-              {checking ? "Проверяем подключение" : ready ? "OpenAI · GPT-6 Astra" : "Справка платформы"}
-            </span>
-            <Button variant="ghost" size="icon-xs" disabled={checking} onClick={() => setStatusRevision((value) => value + 1)} aria-label="Обновить состояние помощника">
-              <RefreshCw className="size-3" />
-            </Button>
-          </div>
-          <p className="mt-1 text-[length:max(12px,var(--wc-min-font,0px))] leading-relaxed text-[var(--wc-theme-muted,#687b5d)]">
-            {checking ? "Проверяем доступный режим ответов."
-              : statusError ? `${statusError} Подключение ASTRA не подтверждено.`
-                : ready ? "Доступ к модели проверяется при отправке вопроса."
-                  : "ASTRA не подключена. Доступны подсказки и справка платформы."}
-          </p>
-        </div>
-
-        <div className="flex shrink-0 items-center justify-between gap-3 text-[length:max(12px,var(--wc-min-font,0px))] text-[var(--wc-theme-muted,#687b5d)]">
-          <span>{PAGE_NAMES[context.view]} · {describeContext(context)}</span>
-          <Button variant="ghost" size="icon-xs" disabled={busy || !messages.length} aria-label="Очистить диалог" onClick={() => {
-            setMessages([]); history.current = []; completedScope.current = null; setError(null); setRetry(null); input.current?.focus()
-          }}><Trash2 className="size-3" /></Button>
-        </div>
-
-        {simulated && <p className="shrink-0 rounded-lg border border-[var(--wc-theme-border,#e7d6ae)] bg-[var(--wc-theme-warning-soft,#fff9e9)] p-3 text-[length:max(12px,var(--wc-min-font,0px))] leading-relaxed text-[var(--wc-theme-warning-text,#795e26)]" role="status">
-          Синтетическая симуляция на {context.simulation_hours ?? "—"} ч. Значения созданы в браузере и не являются результатом модели ВЭС. Выпуск реального прогноза и его CSV здесь не используются.
-        </p>}
-
-        <div ref={transcript} className="min-h-24 flex-1 space-y-4 overflow-y-auto overscroll-contain pr-1" role="log" aria-label="Диалог с помощником" aria-live="polite" aria-relevant="additions text" aria-busy={busy}>
+        <div ref={transcript} className="wc-helper-transcript" role="log" aria-label="Диалог с помощником" aria-live="polite" aria-relevant="additions text" aria-busy={busy}>
+          {simulated && <p className="wc-helper-warning" role="status">
+            Синтетическая симуляция на {context.simulation_hours ?? "—"} ч. Значения созданы в браузере и не являются результатом модели ВЭС. Выпуск реального прогноза и его CSV здесь не используются.
+          </p>}
           {!messages.length && (
-            <div className="rounded-xl border border-dashed border-[var(--wc-theme-border,#d6e1cc)] p-4 text-[length:max(14px,var(--wc-min-font,0px))] leading-relaxed">
-              <p>Задайте вопрос или выберите подсказку ниже. Помощник учитывает выбранный раздел, язык и {simulated ? "параметры синтетической симуляции" : "дату начала прогноза и выбранный выпуск"}.</p>
-              <p className="mt-2 text-[length:max(12px,var(--wc-min-font,0px))] text-[var(--wc-theme-muted,#687b5d)]">{simulated
+            <article className="wc-helper-message is-assistant">
+              <div className="wc-helper-message-meta"><BookOpen className="size-3.5" /> Помощник</div>
+              <p className="wc-helper-message-text">Здравствуйте! Задайте вопрос или выберите подсказку ниже. Я учитываю выбранный раздел, язык и {simulated ? "параметры синтетической симуляции" : "дату начала прогноза и выбранный выпуск"}.</p>
+              <p className="wc-helper-message-hint">{simulated
                 ? "Мощность в МВт в симуляции опирается на условный параметр сценария. Он не подтверждает номинальную мощность турбин из кейса."
                 : "Мощность имеет нормализованную шкалу 0–1 и отображается в процентах. База нормализации не подтверждена."}</p>
-              <div className="mt-3 flex flex-wrap gap-2">
-                <Button size="xs" variant="outline" onClick={() => navigate("forecast")}>К прогнозу <ArrowUpRight /></Button>
-                <Button size="xs" variant="outline" onClick={() => navigate("history")}>История запусков <ArrowUpRight /></Button>
+              <div className="wc-helper-actions">
+                <button type="button" className="wc-helper-chip" onClick={() => navigate("forecast")}>К прогнозу <ArrowUpRight className="size-3.5" /></button>
+                <button type="button" className="wc-helper-chip" onClick={() => navigate("history")}>История запусков <ArrowUpRight className="size-3.5" /></button>
               </div>
-            </div>
+            </article>
           )}
           {messages.map((message) => (
-            <article key={message.id} className={message.role === "user"
-              ? "ml-6 rounded-xl border border-[var(--wc-theme-border,#d9e5cf)] bg-[var(--wc-theme-accent-soft,#eef4e7)] p-3 sm:ml-12"
-              : "mr-3 rounded-xl border border-[var(--wc-theme-border,#e5eadf)] bg-[var(--wc-theme-panel,#ffffff)] p-3 sm:mr-6"}>
-              <div className="mb-2 flex items-center gap-2 text-[length:max(12px,var(--wc-min-font,0px))] font-semibold text-[var(--wc-theme-accent-text,#4e7c39)]">
+            <article key={message.id} className={`wc-helper-message ${message.role === "user" ? "is-user" : "is-assistant"}`}>
+              <div className="wc-helper-message-meta">
                 {message.role === "user" ? "Вы"
-                  : message.reply?.provider === "openai" ? <><Sparkles className="size-3.5" /> ASTRA · OpenAI · GPT-6 Astra</>
+                  : message.reply?.provider === "openai" ? <><Sparkles className="size-3.5" /> ASTRA · OpenAI</>
                     : <><BookOpen className="size-3.5" /> Справка платформы</>}
               </div>
-              <p lang={message.reply?.provider === "openai" ? message.request.context.locale ?? "ru" : undefined} className="whitespace-pre-wrap break-words text-[length:max(14px,var(--wc-min-font,0px))] leading-relaxed">{message.content}</p>
-              {message.role === "user" && <p className="mt-2 text-[length:max(11px,var(--wc-min-font,0px))] text-[var(--wc-theme-muted,#687b5d)]">{describeContext(message.request.context)}</p>}
-              {message.reply?.provider === "local_help" && <p className="mt-2 text-[length:max(12px,var(--wc-min-font,0px))] text-[var(--wc-theme-muted,#687b5d)]">Этот ответ подготовлен справкой платформы. ASTRA не использовалась.</p>}
-              {message.reply?.warning && <p className="mt-3 rounded-lg border border-[var(--wc-theme-border,#e7d6ae)] bg-[var(--wc-theme-warning-soft,#fff9e9)] p-2 text-[length:max(12px,var(--wc-min-font,0px))] leading-relaxed text-[var(--wc-theme-warning-text,#795e26)]">{message.reply.warning}</p>}
+              <p lang={message.reply?.provider === "openai" ? message.request.context.locale ?? "ru" : undefined} className="wc-helper-message-text">{message.content}</p>
+              {message.role === "user" && <p className="wc-helper-message-hint">{describeContext(message.request.context)}</p>}
+              {message.reply?.provider === "local_help" && <p className="wc-helper-message-hint">Ответ подготовлен справкой платформы, ASTRA не использовалась.</p>}
+              {message.reply?.warning && <p className="wc-helper-warning">{message.reply.warning}</p>}
               {!!message.reply?.sources.length && (
-                <div className="mt-3 border-t border-[var(--wc-theme-border,#e5eadf)] pt-2">
-                  <p className="mb-1 text-[length:max(11px,var(--wc-min-font,0px))] font-medium text-[var(--wc-theme-muted,#687b5d)]">Источники ответа</p>
-                  <div className="flex flex-wrap gap-x-3 gap-y-1">
-                    {message.reply.sources.map((source, index) => source.view ? (
-                      <button key={`${source.id}-${index}`} type="button" disabled={busy} className="inline-flex items-center gap-1 text-[length:max(12px,var(--wc-min-font,0px))] text-[var(--wc-theme-accent-text,#4e7c39)] underline underline-offset-2 disabled:opacity-50" onClick={() => source.view && navigate(source.view)}>
-                        {source.title} <ArrowUpRight className="size-3" />
-                      </button>
-                    ) : <span key={`${source.id}-${index}`} className="text-[length:max(12px,var(--wc-min-font,0px))] text-[var(--wc-theme-muted,#687b5d)]">{source.title}</span>)}
-                  </div>
+                <div className="wc-helper-sources">
+                  <span>Источники ответа</span>
+                  {message.reply.sources.map((source, index) => source.view ? (
+                    <button key={`${source.id}-${index}`} type="button" disabled={busy} className="wc-helper-link" onClick={() => source.view && navigate(source.view)}>
+                      {source.title} <ArrowUpRight className="size-3" />
+                    </button>
+                  ) : <span key={`${source.id}-${index}`} className="wc-helper-source">{source.title}</span>)}
                 </div>
               )}
-              {!!message.reply?.actions.length && <div className="mt-3 flex flex-wrap gap-2">
+              {!!message.reply?.actions.length && <div className="wc-helper-actions">
                 {message.reply.actions.filter((action) => !simulated || action.type !== "download_csv").map((action, index) => (
-                  <Button key={`${action.type}-${index}`} size="sm" variant="outline" className="h-auto min-h-8 whitespace-normal text-left text-[length:max(12px,var(--wc-min-font,0px))]" disabled={!actionEnabled(action)} title={action.type === "download_csv" && action.run_id !== downloadableRunId ? "Откройте выпуск, к которому относится этот ответ, чтобы скачать его CSV." : undefined} onClick={() => act(action)}>
-                    {action.type === "download_csv" ? <Download /> : <ArrowUpRight />} {action.label}
-                  </Button>
+                  <button key={`${action.type}-${index}`} type="button" className="wc-helper-chip is-action" disabled={!actionEnabled(action)} title={action.type === "download_csv" && action.run_id !== downloadableRunId ? "Откройте выпуск, к которому относится этот ответ, чтобы скачать его CSV." : undefined} onClick={() => act(action)}>
+                    {action.type === "download_csv" ? <Download className="size-3.5" /> : <ArrowUpRight className="size-3.5" />} {action.label}
+                  </button>
                 ))}
               </div>}
             </article>
           ))}
-          {busy && <div className="flex items-center gap-2 py-2 text-[length:max(12px,var(--wc-min-font,0px))] text-[var(--wc-theme-muted,#687b5d)]" role="status"><LoaderCircle className="size-4 animate-spin" /> Готовим ответ…</div>}
-          {error && <div className="rounded-xl border border-[var(--wc-theme-border,#e7d6ae)] bg-[var(--wc-theme-warning-soft,#fff9e9)] p-3 text-[length:max(12px,var(--wc-min-font,0px))] text-[var(--wc-theme-warning-text,#795e26)]" role="alert">
+          {busy && <div className="wc-helper-typing" role="status"><LoaderCircle className="size-4 animate-spin" /> Готовим ответ…</div>}
+          {error && <div className="wc-helper-warning is-error" role="alert">
             <p>{error}</p>
-            {retry && <Button className="mt-2" size="sm" variant="outline" disabled={busy} onClick={() => void send(retry, false)}><RefreshCw /> Повторить вопрос</Button>}
+            {retry && <button type="button" className="wc-helper-chip" disabled={busy} onClick={() => void send(retry, false)}><RefreshCw className="size-3.5" /> Повторить вопрос</button>}
           </div>}
         </div>
 
-        <div className="flex shrink-0 flex-wrap gap-2" aria-label="Быстрые вопросы">
-          {(simulated ? SIMULATION_QUESTIONS : QUESTIONS).map((question) => <Button key={question} variant="outline" size="xs" className="h-auto min-h-7 whitespace-normal py-1 text-left" disabled={busy} onClick={() => ask(question)}>{question}</Button>)}
-        </div>
-        <form className="shrink-0 space-y-2 border-t border-[var(--wc-theme-border,#e1ead6)] pt-3" onSubmit={submit}>
-          <label className="sr-only" htmlFor="platform-helper-message">Вопрос помощнику платформы</label>
-          <textarea
-            ref={input} id="platform-helper-message" value={draft} onChange={(event) => setDraft(event.target.value)}
-            onKeyDown={keyDown} maxLength={2000} rows={2} disabled={busy}
-            placeholder="Например: почему нет фактической мощности за февраль?"
-            className="w-full resize-none rounded-xl border border-[var(--wc-theme-border,#d6e1cc)] bg-[var(--wc-theme-panel,#ffffff)] px-3 py-2 text-[length:max(14px,var(--wc-min-font,0px))] text-[var(--wc-theme-text,#3c5131)] outline-none placeholder:text-[var(--wc-theme-muted,#849575)] focus:border-[var(--wc-theme-focus,#749c5e)] focus:ring-2 focus:ring-[var(--wc-theme-focus,#dce8d2)] disabled:opacity-60"
-          />
-          <div className="flex items-center justify-between gap-2">
-            <span className="text-[length:max(11px,var(--wc-min-font,0px))] text-[var(--wc-theme-muted,#687b5d)]">Enter — отправить · Shift+Enter — новая строка · {draft.length}/2000</span>
-            {busy ? <Button type="button" size="sm" variant="outline" onClick={stop}><Square /> Остановить</Button>
-              : <Button type="submit" size="sm" className="bg-[var(--wc-theme-accent,#3b6545)] text-[var(--wc-theme-on-accent,#ffffff)] hover:opacity-90" disabled={!draft.trim()}><Send /> Отправить</Button>}
+        <div className="wc-helper-composer">
+          <div className="wc-helper-suggestions" aria-label="Быстрые вопросы">
+            {(simulated ? SIMULATION_QUESTIONS : QUESTIONS).map((question) => <button key={question} type="button" className="wc-helper-chip" disabled={busy} onClick={() => ask(question)}>{question}</button>)}
           </div>
-          <p className="text-[length:max(11px,var(--wc-min-font,0px))] text-[var(--wc-theme-muted,#687b5d)]">Диалог хранится до обновления страницы. Последние сообщения передаются помощнику вместе с выбранным контекстом.</p>
-        </form>
+          <form className="wc-helper-form" onSubmit={submit}>
+            <label className="sr-only" htmlFor="platform-helper-message">Вопрос помощнику платформы</label>
+            <textarea
+              ref={input} id="platform-helper-message" value={draft} onChange={(event) => setDraft(event.target.value)}
+              onKeyDown={keyDown} maxLength={2000} rows={1} disabled={busy}
+              placeholder="Напишите вопрос…"
+              className="wc-helper-input"
+            />
+            {busy
+              ? <button type="button" className="wc-helper-send" onClick={stop} aria-label="Остановить"><Square className="size-4" /></button>
+              : <button type="submit" className="wc-helper-send" disabled={!draft.trim()} aria-label="Отправить"><Send className="size-4" /></button>}
+          </form>
+          <p className="wc-helper-footnote">Enter — отправить · Shift+Enter — новая строка · {draft.length}/2000 · диалог хранится до обновления страницы</p>
+        </div>
       </DialogContent>
     </Dialog>
   )
