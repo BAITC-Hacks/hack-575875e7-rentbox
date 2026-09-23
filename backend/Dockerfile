@@ -16,9 +16,12 @@ COPY backend/config ./backend/config
 COPY src ./src
 COPY reports ./reports
 COPY data/incoming ./data/incoming
+COPY data/weather ./data/weather
+COPY artifacts/ensemble ./artifacts/ensemble
 RUN useradd --uid 10001 --create-home appuser && \
     mkdir -p /app/state && chown appuser:appuser /app/state
 USER appuser
-ENV RENTBOX_DATABASE_PATH=/app/state/forecasts.duckdb
+ENV RENTBOX_DATABASE_PATH=/app/state/forecasts.duckdb \
+    RENTBOX_WEATHER_CACHE=/app/state/weather
 EXPOSE 8000
 CMD ["uvicorn", "src.api:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "1"]

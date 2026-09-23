@@ -1294,6 +1294,14 @@
             "type": "boolean",
             "title": "Time Configuration Ready"
           },
+          "time_configuration_confirmed": {
+            "type": "boolean",
+            "title": "Time Configuration Confirmed"
+          },
+          "research_mode": {
+            "type": "boolean",
+            "title": "Research Mode"
+          },
           "turbines_count": {
             "type": "integer",
             "title": "Turbines Count"
@@ -1304,6 +1312,8 @@
         "required": [
           "agent_configured",
           "time_configuration_ready",
+          "time_configuration_confirmed",
+          "research_mode",
           "turbines_count"
         ],
         "title": "HealthResponse"

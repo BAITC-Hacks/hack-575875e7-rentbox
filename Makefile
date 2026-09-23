@@ -2,7 +2,7 @@ UV ?= $(if $(wildcard $(CURDIR)/.tools/bin/uv),$(CURDIR)/.tools/bin/uv,uv)
 export UV_CACHE_DIR := $(CURDIR)/.tools/uv-cache
 export UV_PYTHON_INSTALL_DIR := $(CURDIR)/.tools/python
 
-.PHONY: setup dev run test lint format openapi
+.PHONY: setup dev run demo test lint format openapi
 
 setup:
 	"$(UV)" sync --project backend --frozen
@@ -12,6 +12,10 @@ dev: setup
 
 run: setup
 	backend/.venv/bin/uvicorn src.api:app --host 127.0.0.1 --port 8000 --workers 1
+
+# Явные исследовательские настройки; подтверждение организаторов не подменяется.
+demo: setup
+	RENTBOX_SOURCE_TIMEZONE=Etc/GMT-5 RENTBOX_TIMESTAMP_MEANING=interval_start RENTBOX_ALLOW_RESEARCH_TIME_SETTINGS=true backend/.venv/bin/uvicorn src.api:app --host 127.0.0.1 --port 8000 --workers 1
 
 test:
 	cd backend && .venv/bin/pytest

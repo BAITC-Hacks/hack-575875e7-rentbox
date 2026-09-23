@@ -65,11 +65,12 @@ class ForecastService:
             raise AppError(503, "SERVER_STOPPING", "Сервер останавливается.", retryable=True)
         for turbine_id in turbine_ids:
             self.turbines.get(turbine_id)
-        if self.settings.missing_time_settings:
+        if self.settings.blocking_time_settings:
             raise AppError(
                 409,
                 "CONFIGURATION_REQUIRED",
-                "Подтвердите настройки времени: " + ", ".join(self.settings.missing_time_settings),
+                "Подтвердите настройки времени или явно включите исследовательский режим: "
+                + ", ".join(self.settings.blocking_time_settings),
             )
         if self.engine is None:
             raise AppError(503, "AGENT_NOT_CONFIGURED", "Модуль агента ещё не подключён.")

@@ -30,7 +30,7 @@ CACHE = ROOT / "data/weather"
 PUBLICATION_MARGIN_HOURS = 12
 
 
-def fetch_month(model: str, month: str, *, cache: Path = CACHE) -> Path:
+def fetch_month(model: str, month: str, *, cache: Path = CACHE, refresh: bool = False) -> Path:
     if model not in MODELS:
         raise ValueError(f"Unsupported weather model: {model}")
     start = pd.Period(month, freq="M").start_time
@@ -46,7 +46,7 @@ def fetch_month(model: str, month: str, *, cache: Path = CACHE) -> Path:
     directory.mkdir(parents=True, exist_ok=True)
     path = directory / f"{month}.json"
     metadata_path = directory / f"{month}.meta.json"
-    if path.exists() and metadata_path.exists():
+    if path.exists() and metadata_path.exists() and not refresh:
         meta = json.loads(metadata_path.read_text())
         if meta["sha256"] == hashlib.sha256(path.read_bytes()).hexdigest() and meta["params"] == params:
             return path

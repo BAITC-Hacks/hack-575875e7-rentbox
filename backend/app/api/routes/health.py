@@ -11,6 +11,8 @@ class HealthResponse(Schema):
     status: Literal["ok"] = "ok"
     agent_configured: bool
     time_configuration_ready: bool
+    time_configuration_confirmed: bool
+    research_mode: bool
     turbines_count: int
 
 
@@ -19,6 +21,8 @@ def health(request: Request) -> HealthResponse:
     request.app.state.store.ping()
     return HealthResponse(
         agent_configured=request.app.state.forecasts.engine is not None,
-        time_configuration_ready=not request.app.state.settings.missing_time_settings,
+        time_configuration_ready=not request.app.state.settings.blocking_time_settings,
+        time_configuration_confirmed=request.app.state.settings.time_configuration_confirmed,
+        research_mode=request.app.state.settings.allow_research_time_settings,
         turbines_count=len(request.app.state.turbines.list().items),
     )

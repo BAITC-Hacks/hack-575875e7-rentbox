@@ -22,10 +22,11 @@ class Settings(BaseSettings):
     audit_file: Path = PROJECT_DIR / "reports" / "data-audit.json"
     input_dir: Path = PROJECT_DIR / "data" / "incoming"
     database_path: Path = PROJECT_DIR / "data" / "forecasts.duckdb"
-    agent_factory: str | None = None
+    agent_factory: str | None = "src.agent:create_agent"
     source_timezone: str | None = None
     timestamp_meaning: Literal["interval_start", "interval_end"] | None = None
     time_configuration_confirmed: bool = False
+    allow_research_time_settings: bool = False
     max_pending_runs: int = Field(default=128, ge=1, le=1000)
     max_replay_runs: int = Field(default=62, ge=1, le=366)
     max_events_per_run: int = Field(default=500, ge=20, le=5000)
@@ -47,3 +48,8 @@ class Settings(BaseSettings):
     def missing_time_settings(self) -> list[str]:
         names = ("source_timezone", "timestamp_meaning", "time_configuration_confirmed")
         return [name for name in names if not getattr(self, name)]
+
+    @property
+    def blocking_time_settings(self) -> list[str]:
+        return [name for name in self.missing_time_settings
+                if name != "time_configuration_confirmed" or not self.allow_research_time_settings]
