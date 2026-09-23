@@ -16,8 +16,11 @@ class HelpMessage(Schema):
 
 class HelpContext(Schema):
     view: HelpView = "overview"
+    mode: Literal["forecast", "simulation"] = "forecast"
+    locale: Literal["ru", "en", "kk"] = "ru"
     date: Date | None = None
     horizon_hours: ForecastHorizon = 48
+    simulation_hours: int | None = Field(default=None, strict=True, ge=1, le=10000)
     turbine_ids: TurbineIds = Field(default_factory=lambda: [1, 2])
 
 

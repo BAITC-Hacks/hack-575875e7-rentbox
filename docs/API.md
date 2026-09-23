@@ -349,8 +349,11 @@ run_id,as_of,turbine_id,valid_time,lead_hour,predicted_power,wind_speed_100m,win
   "run_id": null,
   "context": {
     "view": "forecast",
+    "mode": "forecast",
+    "locale": "ru",
     "date": "2026-02-01",
     "horizon_hours": 48,
+    "simulation_hours": null,
     "turbine_ids": [1, 2]
   }
 }
@@ -360,6 +363,10 @@ run_id,as_of,turbine_id,valid_time,lead_hour,predicted_power,wind_speed_100m,win
 - `history`: до 8 сообщений `{role: user|assistant, content}`, до 3000 символов каждое;
 - `run_id`: ID выбранного запуска формата `run_` + 32 hex-символа либо `null`;
 - `context.view`: `overview`, `forecast`, `agent`, `sources`, `history`;
+- `context.mode`: `forecast` (по умолчанию) либо `simulation`; в симуляции сервер
+  игнорирует `run_id`, не подмешивает сохранённый прогноз и не даёт кнопку его CSV;
+- `context.locale`: `ru` (по умолчанию), `en`, `kk` — язык ответа ASTRA;
+- `context.simulation_hours`: длительность синтетического сценария либо `null`;
 - `context.date`: дата **начала прогноза** в интерфейсе, не as_of; допускается `null`;
 - горизонт 24/48 и номера турбин используют ту же валидацию, что запуск прогноза.
 

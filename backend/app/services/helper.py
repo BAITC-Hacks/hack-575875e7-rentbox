@@ -138,7 +138,8 @@ def build_evidence(payload: HelpRequest, service: ForecastService) -> tuple[list
                 "data": {"unavailable": True, "note": "Сервер не смог прочитать аудит измерений."},
             }
         )
-    if payload.run_id:
+    # Synthetic UI scenarios never inherit a cached real forecast's provenance.
+    if payload.run_id and payload.context.mode == "forecast":
         try:
             run = service.store.get_run(payload.run_id)
             selected = run.model_dump(mode="json", exclude={"events", "error"})
@@ -223,10 +224,12 @@ def local_help(
     """Deterministic navigation aid, explicitly labelled as ordinary help."""
     message = payload.message.casefold()
     topics = [
+        (("симул", "сценари"), "guide.simulation"),
+        (("тема", "тёмн", "темн", "зрени", "язык"), "guide.appearance"),
         (("csv", "скача", "экспорт"), "guide.export"),
         (("феврал", "факт", "измерен"), "guide.limits"),
         (("мвт", "номин", "точност", "mae", "rmse", "процент", "мощност"), "guide.units"),
-        (("врем", "часов", "as_of", "utc"), "guide.time"),
+        (("врем", "часов", "as_of", "utc", "предупрежд", "допущен"), "guide.time"),
         (("погод", "источник", "ветер", "температур"), "guide.sources"),
         (("истори", "прошл", "ревизи"), "guide.history"),
         (("обуч", "nvidia", "gpu", "датчик"), "guide.training"),
@@ -236,6 +239,8 @@ def local_help(
     source_id = next(
         (topic for words, topic in topics if any(w in message for w in words)), "guide.overview"
     )
+    if payload.context.mode == "simulation" and source_id != "guide.appearance":
+        source_id = "guide.simulation"
     source = next(item for item in evidence if item["id"] == source_id)
     buttons = [actions[f"navigate.{source['view']}"]]
     if source_id == "guide.export" and "download_csv" in actions:

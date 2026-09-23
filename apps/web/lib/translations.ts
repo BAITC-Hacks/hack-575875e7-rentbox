@@ -1,5 +1,13 @@
 // Source keys are the Russian copy; technical IDs and CSV columns remain stable.
 export const translations: Record<string, { en: string; kk: string }> = {
+  "Помощник": {
+    en: "Help",
+    kk: "Көмекші",
+  },
+  "Открыть помощник Windcast": {
+    en: "Open Windcast help",
+    kk: "Windcast көмекшісін ашу",
+  },
   // Strings of the API-connected dashboard (merged from main on 23.09.2026).
   "Факт отсутствует": {
     en: "No actuals",
@@ -817,9 +825,9 @@ export const translations: Record<string, { en: string; kk: string }> = {
     en: "h",
     kk: "сағ",
   },
-  "Нормализованная мощность · % от номинальной": {
-    en: "Normalized power · % of rated capacity",
-    kk: "Нормаланған қуат · номиналды қуаттың %-ы",
+  "Нормализованная мощность · %": {
+    en: "Normalized power · %",
+    kk: "Нормаланған қуат · %",
   },
   "Горизонт прогноза": {
     en: "Forecast horizon",
@@ -1219,10 +1227,10 @@ export const translations: Record<string, { en: string; kk: string }> = {
     en: "{v0} full-load hours",
     kk: "{v0} толық жүктеме сағаты",
   },
-  "Средняя прогнозная мощность в процентах от номинальной. Для двух турбин используется среднее нормализованных значений.":
+  "Средняя нормализованная мощность в процентах. Для двух турбин используется среднее нормализованных значений.":
     {
-      en: "Average forecast power as a percentage of rated capacity. For two turbines, the mean of normalized values is used.",
-      kk: "Номиналды қуатқа қатысты орташа болжамды қуат, пайызбен. Екі турбина үшін нормаланған мәндердің орташа шамасы алынады.",
+      en: "Average normalized power as a percentage. For two turbines, the mean of normalized values is used.",
+      kk: "Орташа нормаланған қуат, пайызбен. Екі турбина үшін нормаланған мәндердің орташа шамасы алынады.",
     },
   "Пиковая выработка": {
     en: "Peak generation",

@@ -1,7 +1,7 @@
 {
   "openapi": "3.1.0",
   "info": {
-    "title": "RentBox Energy API",
+    "title": "Windcast Energy API",
     "description": "API дашборда ВЭС: исторические прогнозы, состояние агента и CSV. Расчёты доступны после подключения агента и подтверждения настроек времени.",
     "version": "0.3.0"
   },
@@ -2073,6 +2073,25 @@
             "title": "View",
             "default": "overview"
           },
+          "mode": {
+            "type": "string",
+            "enum": [
+              "forecast",
+              "simulation"
+            ],
+            "title": "Mode",
+            "default": "forecast"
+          },
+          "locale": {
+            "type": "string",
+            "enum": [
+              "ru",
+              "en",
+              "kk"
+            ],
+            "title": "Locale",
+            "default": "ru"
+          },
           "date": {
             "anyOf": [
               {
@@ -2093,6 +2112,19 @@
             ],
             "title": "Horizon Hours",
             "default": 48
+          },
+          "simulation_hours": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 10000.0,
+                "minimum": 1.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Simulation Hours"
           },
           "turbine_ids": {
             "items": {

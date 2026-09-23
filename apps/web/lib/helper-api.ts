@@ -6,6 +6,9 @@ export type HelperContext = {
   date: string | null
   horizon_hours: Horizon
   turbine_ids: (1 | 2)[]
+  mode?: "forecast" | "simulation"
+  locale?: "ru" | "en" | "kk"
+  simulation_hours?: number | null
 }
 export type HelperHistory = { role: "user" | "assistant"; content: string }
 export type HelperRequest = {
