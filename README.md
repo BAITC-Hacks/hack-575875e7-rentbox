@@ -11,8 +11,9 @@
 прогнозам GFS/ICON и ежедневный расчёт февраля. Расширенный поиск моделей
 выполняется на RTX 5090, CPU и NVIDIA Brev. Backend дашборда реализован:
 каталог турбин, сводка данных, очередь запусков, статусы и события, ревизии,
-CSV и replay. Цикл агента, подключение модели к API и интерфейс находятся
-в разработке.
+CSV и replay. Цикл агента и подключение модели к API находятся в разработке.
+Dashboard Windcast на Next.js готов и пока работает на синтетических данных.
+Подключение интерфейса к backend ещё не выполнено.
 
 **Временные настройки пока исследовательские:** CSV считаются UTC+5, метки —
 началом десятиминутного интервала, выпуск — в 23:00 по этим часам. Требуется
@@ -32,7 +33,7 @@ CSV и replay. Цикл агента, подключение модели к API
 ## Архитектура и технологии
 
 ```text
-Frontend → FastAPI /api → очередь → Python-модуль агента
+Frontend (планируемое подключение) → FastAPI /api → очередь → Python-модуль агента
                          ↓                 ↓
                   статусы и события   результат + происхождение
                          └──── DuckDB / ForecastStore ────┘
@@ -51,6 +52,21 @@ backend и точные версии — [pyproject.toml](backend/pyproject.toml
 Общая точка входа — `src.api:app`; HTTP-слой находится в `backend/app/`.
 Один процесс Uvicorn и один поток исполнения агента.
 ML-числа, происхождение погоды и решения предоставляет модуль агента.
+
+## Dashboard (frontend)
+
+Русскоязычный dashboard Windcast: прогноз на 24/48 часов, две турбины,
+интерактивный график, таблица с CSV-экспортом, имитация AI-агента и история запусков.
+Интерфейс использует синтетические данные и пока не подключён к Python-модели или API.
+
+Node.js 22.20+ и npm 11. Из корня репозитория:
+
+```bash
+npm install
+npm run dev
+```
+
+Открыть http://localhost:3000. [Устройство frontend, проверки и ограничения](docs/FRONTEND.md).
 
 ## Установка и зависимости
 
@@ -226,6 +242,20 @@ python -m scripts.search_models train --worker local-gpu --device cuda
 | uv | [docs.astral.sh](https://docs.astral.sh/uv/) | MIT / Apache-2.0 |
 | pytest / Ruff | [pytest.org](https://docs.pytest.org/), [docs.astral.sh/ruff](https://docs.astral.sh/ruff/) | MIT |
 
+| next (frontend) | [npm](https://www.npmjs.com/package/next) | MIT |
+| react (frontend) | [npm](https://www.npmjs.com/package/react) | MIT |
+| shadcn (frontend) | [npm](https://www.npmjs.com/package/shadcn) | MIT |
+| @base-ui/react (frontend) | [npm](https://www.npmjs.com/package/@base-ui/react) | MIT |
+| tailwindcss (frontend) | [npm](https://www.npmjs.com/package/tailwindcss) | MIT |
+| typescript (frontend) | [npm](https://www.npmjs.com/package/typescript) | Apache-2.0 |
+| turbo (frontend) | [npm](https://www.npmjs.com/package/turbo) | MIT |
+| lucide-react (frontend) | [npm](https://www.npmjs.com/package/lucide-react) | ISC |
+| next-themes (frontend) | [npm](https://www.npmjs.com/package/next-themes) | MIT |
+| tw-animate-css (frontend) | [npm](https://www.npmjs.com/package/tw-animate-css) | MIT |
+| class-variance-authority (frontend) | [npm](https://www.npmjs.com/package/class-variance-authority) | Apache-2.0 |
+| zod (frontend) | [npm](https://www.npmjs.com/package/zod) | MIT |
+| cn (frontend) | [npm](https://www.npmjs.com/package/cn) | MIT |
+
 Погодные данные: [Weather data by Open-Meteo.com](https://open-meteo.com/).
 Транзитивные зависимости backend закреплены в uv.lock.
 
@@ -234,8 +264,8 @@ python -m scripts.search_models train --worker local-gpu --device cuda
 Организационная документация и служебные скрипты подготовлены до реализации.
 Для обучения использовано подготовленное локальное Python/CUDA-окружение.
 Код прогнозирования, каркас backend и API написаны под кейс в этом
-репозитории 23.09.2026; готовые шаблоны UI пока не включены в основную
-реализацию.
+репозитории 23.09.2026. Для dashboard использованы Next.js и shadcn/ui
+(Vega, Base UI); интерфейс пока работает на моковых данных.
 
 ## AI-инструменты и вклад участников
 
@@ -243,5 +273,5 @@ Codex — аудит, погода, обучение, прогноз, backend, �
 Claude Code — DuckDB-хранилище, исправление определения турбин по именам файлов
 и бэклог. Разработчик агента отвечает за данные, погоду, модель и цикл агента;
 пользователь backend — за HTTP-слой дашборда; коллеги — за интерфейс
-в `frontend/`. Личные вклады подтверждаются историей коммитов; имена
+в `apps/web/` и `packages/ui/`. Личные вклады подтверждаются историей коммитов; имена
 и окончательный вклад команды следует заполнить перед сдачей.

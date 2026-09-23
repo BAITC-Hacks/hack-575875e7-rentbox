@@ -104,3 +104,11 @@
 **P2:** публичный деплой; схема архитектуры; материалы к Demo Day.
 
 **17:30 — feature freeze:** `scripts/check-clean-env.sh` → `git clone` в чистую папку → пройти README с нуля → финальный коммит и push **до 18:00** (п. 5.4.13).
+
+## Next.js frontend
+
+<!-- BEGIN:nextjs-agent-rules -->
+# This is NOT the Next.js you know
+
+This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` before writing any code. Heed deprecation notices.
+<!-- END:nextjs-agent-rules -->
