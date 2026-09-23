@@ -1,5 +1,21 @@
 // Source keys are the Russian copy; technical IDs and CSV columns remain stable.
 export const translations: Record<string, { en: string; kk: string }> = {
+  "Нужна помощь?": {
+    en: "Need help?",
+    kk: "Көмек керек пе?",
+  },
+  "Помощник объяснит прогноз, источники погоды и подскажет, что нажать.": {
+    en: "The assistant explains the forecast and weather sources and tells you what to click.",
+    kk: "Көмекші болжамды, ауа райы дереккөздерін түсіндіреді және не басу керегін айтады.",
+  },
+  "Открыть чат": {
+    en: "Open chat",
+    kk: "Чатты ашу",
+  },
+  "Скрыть подсказку": {
+    en: "Hide the tip",
+    kk: "Кеңесті жасыру",
+  },
   "Помощник": {
     en: "Help",
     kk: "Көмекші",

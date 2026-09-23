@@ -44,6 +44,7 @@ import {
 } from "@/components/appearance-provider"
 import { TurbineHero } from "@/components/turbine-hero"
 import { PlatformHelper } from "@/components/platform-helper"
+import { AssistantLauncher } from "@/components/assistant-launcher"
 import { ForecastInsights, ForecastTimeline } from "@/components/forecast-focus"
 import type { ForecastInsight } from "@/lib/forecast-insights"
 import { Button } from "@workspace/ui/components/button"
@@ -2295,6 +2296,12 @@ export function WindDashboard() {
               <X size={15} />
             </button>
           </div>
+        )}
+        {!mobileMenu && (
+          <AssistantLauncher
+            open={dialog === "help"}
+            onOpen={() => setDialog("help")}
+          />
         )}
         <PlatformHelper
           open={dialog === "help"}
