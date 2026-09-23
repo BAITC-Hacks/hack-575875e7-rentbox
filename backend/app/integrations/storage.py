@@ -52,7 +52,15 @@ def comparable_result(result: AgentResult | ForecastRead) -> dict:
             {
                 "turbine_id": item.turbine_id,
                 "points": [
-                    point.model_dump(mode="json", exclude={"weather_inputs"})
+                    point.model_dump(
+                        mode="json",
+                        exclude={
+                            "weather_inputs",
+                            "wind_speed_100m",
+                            "wind_speed_10m",
+                            "temperature_2m",
+                        },
+                    )
                     | {"weather_inputs": item.weather.comparable_inputs(point.weather_inputs)}
                     for point in item.points
                 ],

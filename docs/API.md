@@ -175,7 +175,10 @@
 - `turbine_id`;
 - `storage_run_id`: числовой `run_id` записи этой турбины в DuckDB;
 - `points`: массив из 24/48 объектов `valid_time`, `lead_hour`, `predicted_power`,
-  `weather_inputs`;
+  `wind_speed_100m`, `wind_speed_10m`, `temperature_2m`, `weather_inputs`.
+  Погодные поля — значения того же прогноза погоды, по которому рассчитана
+  мощность (м/с и °C); для Previous Runs это среднее по моделям. В выпусках,
+  сохранённых до появления этих полей, они равны `null`;
 - `weather.sources`: каталог всех использованных погодных ответов для этой серии.
 
 Источник содержит `source_id`, `provider`, `model`, `product`, `initialization_time`,
@@ -219,10 +222,11 @@ Backend заново вычисляет оценку и отклоняет не�
 CSV: UTF-8, одна строка на турбину и прогнозный час:
 
 ```text
-run_id,as_of,turbine_id,valid_time,lead_hour,predicted_power,weather_initialization_time,weather_available_at,model_version,weather_available_at_estimate,weather_availability_basis,weather_inputs_json
+run_id,as_of,turbine_id,valid_time,lead_hour,predicted_power,wind_speed_100m,wind_speed_10m,temperature_2m,weather_initialization_time,weather_available_at,model_version,weather_available_at_estimate,weather_availability_basis,weather_inputs_json
 ```
 
-Первые девять колонок сохранены. `weather_initialization_time` заполнена только
+Три погодные колонки после `predicted_power` пустые для старых выпусков.
+Остальные колонки сохранены. `weather_initialization_time` заполнена только
 для единственного источника Single Run у данного часа. `weather_available_at`
 содержит максимальное известное время доступности, если оно известно для всех
 входов; при наличии Previous Runs остаётся пустой. Если есть оценки,

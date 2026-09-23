@@ -58,6 +58,9 @@ export type ApiForecast = {
       valid_time: string
       lead_hour: number
       predicted_power: number
+      wind_speed_100m: number | null
+      wind_speed_10m: number | null
+      temperature_2m: number | null
       weather_inputs: WeatherInput[]
     }[]
     weather: { sources: WeatherSource[] }
@@ -180,9 +183,17 @@ export function forecastPoints(result: ApiForecast | null, turbine: TurbineId): 
     return {
       timestamp: point.valid_time, date: local.slice(0, 10), hour: local.slice(11, 16),
       forecast: series.reduce((sum, item) => sum + item.points[index]!.predicted_power, 0) / series.length * 100,
-      actual: null, lower: null, upper: null, wind: null, temperature: null,
+      actual: null, lower: null, upper: null,
+      wind: average(series.map((item) => item.points[index]!.wind_speed_100m ?? null)),
+      temperature: average(series.map((item) => item.points[index]!.temperature_2m ?? null)),
     }
   })
+}
+// Weather readouts are per turbine; the station view shows their mean. Runs
+// stored before the backend exported weather have no values and stay "—".
+function average(values: (number | null | undefined)[]) {
+  const known = values.filter((value): value is number => typeof value === "number" && Number.isFinite(value))
+  return known.length === values.length && known.length ? known.reduce((sum, value) => sum + value, 0) / known.length : null
 }
 export function forecastSources(result: ApiForecast | null) {
   const sources = new Map<string, WeatherSource>()

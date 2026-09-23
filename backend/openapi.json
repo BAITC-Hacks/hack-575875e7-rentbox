@@ -1083,6 +1083,44 @@
             "minimum": 0.0,
             "title": "Predicted Power"
           },
+          "wind_speed_100m": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Wind Speed 100M",
+            "description": "Ветер на 100 м, м/с"
+          },
+          "wind_speed_10m": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Wind Speed 10M",
+            "description": "Ветер на 10 м, м/с"
+          },
+          "temperature_2m": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Temperature 2M",
+            "description": "Температура на 2 м, °C"
+          },
           "weather_inputs": {
             "items": {
               "$ref": "#/components/schemas/WeatherInput"

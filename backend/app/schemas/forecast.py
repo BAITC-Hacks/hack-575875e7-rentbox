@@ -91,6 +91,11 @@ class ForecastPoint(Schema):
     valid_time: UTCDateTime
     lead_hour: int = Field(strict=True, ge=1, le=48)
     predicted_power: float = Field(strict=True, ge=0, le=1)
+    # Weather at the forecast hour, taken from the same inputs the model used.
+    # Absent in runs stored before this field existed.
+    wind_speed_100m: float | None = Field(default=None, ge=0, description="Ветер на 100 м, м/с")
+    wind_speed_10m: float | None = Field(default=None, ge=0, description="Ветер на 10 м, м/с")
+    temperature_2m: float | None = Field(default=None, description="Температура на 2 м, °C")
     weather_inputs: list[WeatherInput] = Field(min_length=1, max_length=16)
 
     @model_validator(mode="after")

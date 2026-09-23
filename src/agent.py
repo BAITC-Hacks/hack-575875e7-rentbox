@@ -36,6 +36,15 @@ from src.model import predict_weather
 from src.weather import CACHE, MODELS, fetch_month, load_archive, select_as_of
 
 
+WEATHER_FIELDS = ("wind_speed_100m", "wind_speed_10m", "temperature_2m")
+
+
+def point_weather(row, prefixes: tuple[str, ...] = ("",)) -> dict[str, float]:
+    """Weather values for one hour, averaged across the given column prefixes."""
+    return {field: round(float(np.mean([getattr(row, prefix + field) for prefix in prefixes])), 3)
+            for field in WEATHER_FIELDS}
+
+
 def digest(value: object) -> str:
     return hashlib.sha256(json.dumps(value, sort_keys=True, separators=(",", ":"),
                                      ensure_ascii=False).encode()).hexdigest()
@@ -130,7 +139,7 @@ class ForecastAgent:
         model_hash = hashlib.sha256(model_path.read_bytes()).hexdigest()
         inputs = digest({"weather": weather_hash, "weather_archives": [row["sha256"] for row in relevant], "model": model_hash, "source_hashes": source_hashes,
                          "as_of": as_of.isoformat(), "horizon": request.horizon_hours,
-                         "turbines": request.turbine_ids, "assumptions": assumptions, "controller": "policy-v2"})
+                         "turbines": request.turbine_ids, "assumptions": assumptions, "controller": "policy-v3"})
         emit("weather", 0.35, f"Выбраны {len(weather)} архивных погодных точек с допустимой границей доступности.", "select_as_of")
         emit("prepare", 0.45, "Подготовлена почасовая погода; будущая телеметрия не используется.", "prepare_features")
         emit("model", 0.55, f"Загружена модель {metadata['winner']}, версия {model_hash[:12]}.", "load_model")
@@ -163,7 +172,8 @@ class ForecastAgent:
             used_months = set(group.valid_time.dt.strftime("%Y-%m"))
             series.append(ComputedSeries(turbine_id=int(turbine), points=[ForecastPoint(
                 valid_time=row.valid_time.to_pydatetime(), lead_hour=int(row.lead_hour),
-                predicted_power=float(row.predicted_power), weather_inputs=[WeatherInput(
+                predicted_power=float(row.predicted_power),
+                **point_weather(row, tuple(f"{model}_" for model in MODELS)), weather_inputs=[WeatherInput(
                     source_id=sources_by_key[model, row.valid_time.strftime("%Y-%m")].source_id,
                     forecast_offset_days=int(row.forecast_offset_days),
                     available_at_estimate=row.available_at_upper_bound.to_pydatetime(),
@@ -217,7 +227,7 @@ class ForecastAgent:
         model_hash = hashlib.sha256(model_path.read_bytes()).hexdigest()
         inputs = digest({"weather": manifest["sha256"], "model": model_hash, "sources": source_hashes,
             "as_of": as_of.isoformat(), "horizon": request.horizon_hours, "turbines": request.turbine_ids,
-            "assumptions": bundle["metadata"]["time_assumptions"], "controller": "noaa-policy-v1"})
+            "assumptions": bundle["metadata"]["time_assumptions"], "controller": "noaa-policy-v2"})
         emit("model", 0.55, f"Загружена модель NOAA GFS, версия {model_hash[:12]}.", "load_model")
         if context.previous is not None and context.previous_input_sha256 == inputs:
             emit("predict", 0.8, "Погода и модель не изменились: используется сохранённый расчёт.", "reuse_forecast")
@@ -238,8 +248,8 @@ class ForecastAgent:
             retrieved_at=manifest["retrieved_at"], sha256=manifest["sha256"])
         series = [ComputedSeries(turbine_id=int(turbine), weather=WeatherProvenance(sources=[source]),
             points=[ForecastPoint(valid_time=row.valid_time.to_pydatetime(), lead_hour=int(row.lead_hour),
-                predicted_power=float(row.predicted_power), weather_inputs=[WeatherInput(source_id=source.source_id)])
-                    for row in group.itertuples()]) for turbine, group in selected.groupby("turbine_id")]
+                predicted_power=float(row.predicted_power), **point_weather(row),
+                weather_inputs=[WeatherInput(source_id=source.source_id)]) for row in group.itertuples()]) for turbine, group in selected.groupby("turbine_id")]
         summary = f"Прогноз NOAA GFS на {request.horizon_hours} ч: {len(series)} турбины, мощность {selected.predicted_power.min():.3f}–{selected.predicted_power.max():.3f}."
         emit("review", 0.92, summary, "review_forecast")
         return AgentResult(input_sha256=inputs, agent_mode="policy", model_name=bundle["metadata"]["winner"],
